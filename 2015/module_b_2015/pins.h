@@ -30,8 +30,8 @@ public:
         return _count;
     }
 
-    inline boolean hasEvent(byte i) const {
-        return _inputStates[i] >= _inputDelay;
+    inline boolean hasEvent(byte pin) const {
+        return _inputStates[pin] >= _inputDelay;
     }
 
 private:

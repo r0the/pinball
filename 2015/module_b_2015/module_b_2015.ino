@@ -17,8 +17,8 @@
 #define SPEAKER_PIN 9
 #define SD_CARD_CHIP_SELECT_PIN 10
 
-const byte INPUT_PINS[] = { A5, A4, A3, A2, A1, A0, 1, 2, 3 };
-#define INPUT_COUNT 9
+const byte PINS[] = { A5, A4, A3, A2, A1, A0, 1, 2, 3 };
+#define PIN_COUNT 9
 
 // --------------------------------------------------------------------------------------------------
 // Other constants
@@ -76,7 +76,7 @@ class PinballProgram {
     byte _demoMode;
     char* _filename;
     unsigned long _highScore;
-    Pins _input;
+    Pins _pins;
     boolean _newHighScore;
     unsigned long _score;
     unsigned long _scoreToAdd;
@@ -117,8 +117,8 @@ class PinballProgram {
         }
 
         if (_demoMode == 2) {
-            for (int i = 0; i < _input.count(); ++i) {
-                if (_input.hasEvent(i)) {
+            for (int i = 0; i < _pins.count(); ++i) {
+                if (_pins.hasEvent(i)) {
                     _score = i + 1;
                 }
             }
@@ -129,9 +129,9 @@ class PinballProgram {
         byte oldBalls = _balls;
 
         // Process inputs
-        _input.loop();
-        for (int i = 0; i < _input.count(); ++i) {
-            if (_input.hasEvent(i)) {
+        _pins.loop();
+        for (int i = 0; i < _pins.count(); ++i) {
+            if (_pins.hasEvent(i)) {
                 event(i);
             }
         }
@@ -289,12 +289,12 @@ class PinballProgram {
     }
 
 public:
-    PinballProgram(int inputCount, const byte* inputPins) :
+    PinballProgram(int pinCount, const byte* pins) :
         _audio(),
         _balls(3),
         _demoMode(0),
         _filename(new char[9]),
-        _input(inputCount, inputPins),
+        _pins(pinCount, pins),
         _score(0),
         _scoreDisplay(),
         _scoreToAdd(0),
@@ -322,7 +322,7 @@ public:
 
     void loop() {
         unsigned long oldScore = _score;
-        _input.loop();
+        _pins.loop();
         if (_demoMode != 0) {
             demo();
         }
@@ -353,7 +353,7 @@ public:
 PinballProgram* program;
 
 void setup() {
-    program = new PinballProgram(INPUT_COUNT, INPUT_PINS);
+    program = new PinballProgram(PIN_COUNT, PINS);
     program->init();
 }
 

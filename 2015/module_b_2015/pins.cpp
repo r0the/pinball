@@ -26,27 +26,27 @@ Pins::Pins(byte count, const byte* pins) :
     _inputStates(new byte[count]),
     _pins(pins)
 {
-    for (int i = 0; i < _count; ++i) {
-        _inputLock[i] = 0;
-        _inputStates[i] = 0;
-        pinMode(_pins[i], INPUT_PULLUP);
+    for (int pin = 0; pin < _count; ++pin) {
+        _inputLock[pin] = 0;
+        _inputStates[pin] = 0;
+        pinMode(_pins[pin], INPUT_PULLUP);
     }
 }
 
 void Pins::loop() {
     unsigned long now = millis();
-    for (int i = 0; i < _count; ++i) {
-        if (_inputLock[i] < now) {
-            int state = digitalRead(_pins[i]);
+    for (int pin = 0; pin < _count; ++pin) {
+        if (_inputLock[pin] < now) {
+            int state = digitalRead(_pins[pin]);
             if (state == HIGH) {
-                _inputStates[i] = 0;
+                _inputStates[pin] = 0;
             }
             else {
-                if (_inputStates[i] < _inputDelay) {
-                    ++_inputStates[i];
+                if (_inputStates[pin] < _inputDelay) {
+                    ++_inputStates[pin];
                 }
                 else {
-                    _inputStates[i] = 0;
+                    _inputStates[pin] = 0;
                 }
             }
         }
