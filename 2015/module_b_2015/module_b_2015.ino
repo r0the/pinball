@@ -153,6 +153,7 @@ class PinballProgram {
         unsigned long time = millis();
         if (_demoMode == 1 && time > 1000) {
             _scrollText.setTextProgmem(DEMO_TEXT);
+            _showText = true;
             _demoMode = 2;
             randomSeed(analogRead(0));
         }
