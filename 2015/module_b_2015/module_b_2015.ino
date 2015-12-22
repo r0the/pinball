@@ -4,6 +4,7 @@
 #include "scroll_text.h"
 #include "sure_display.h"
 #include "_TMRpcm.h"
+#include "pins.h"
 
 // --------------------------------------------------------------------------------------------------
 // Pins
@@ -18,8 +19,6 @@
 
 const byte INPUT_PINS[] = { A5, A4, A3, A2, A1, A0, 1, 2, 3 };
 #define INPUT_COUNT 9
-
-#define INPUT_DELAY 50
 
 // --------------------------------------------------------------------------------------------------
 // Other constants
@@ -51,59 +50,6 @@ const char SD_CARD_NOT_READY[] PROGMEM = "ERROR: SD card not ready.";
 const char DEMO_TEXT[] PROGMEM = "FF Technisches Konstruieren";
 
 // --------------------------------------------------------------------------------------------------
-// Input
-// --------------------------------------------------------------------------------------------------
-
-class Input {
-    byte _inputCount;
-    unsigned long* _inputLocks;
-    const byte* _inputPins;
-    byte* _inputPinStates;
-
-public:
-    Input(byte inputCount, const byte* inputPins) :
-        _inputCount(inputCount),
-        _inputLocks(new unsigned long[inputCount]),
-        _inputPins(inputPins),
-        _inputPinStates(new byte[inputCount])
-    {
-        for (int i = 0; i < _inputCount; ++i) {
-            _inputLocks[i] = 0;
-            _inputPinStates[i] = 0;
-            pinMode(_inputPins[i], INPUT_PULLUP);
-        }
-    }
-
-    void loop() {
-        unsigned long now = millis();
-        for (int i = 0; i < _inputCount; ++i) {
-            if (_inputLocks[i] < now) {
-                int state = digitalRead(_inputPins[i]);
-                if (state == HIGH) {
-                    _inputPinStates[i] = 0;
-                }
-                else {
-                    if (_inputPinStates[i] < INPUT_DELAY) {
-                        ++_inputPinStates[i];
-                    }
-                    else {
-                        _inputPinStates[i] = 0;
-                    }
-                }
-            }
-        }
-    }
-    
-    int count() const {
-        return _inputCount;
-    }
-
-    boolean hasEvent(byte i) const {
-        return _inputPinStates[i] == INPUT_DELAY;
-    }
-};
-
-// --------------------------------------------------------------------------------------------------
 // Program
 // --------------------------------------------------------------------------------------------------
 
@@ -117,7 +63,7 @@ class PinballProgram {
     byte _demoMode;
     char* _filename;
     unsigned long _highScore;
-    Input _input;
+    Pins _input;
     boolean _newHighScore;
     unsigned long _score;
     unsigned long _scoreToAdd;
@@ -379,7 +325,6 @@ public:
 
     void init() {
         event(INIT_EVENT);
-        
     }
 
     void loop() {
