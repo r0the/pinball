@@ -29,10 +29,23 @@ const byte INPUT_PINS[] = { A5, A4, A3, A2, A1, A0, 1, 2, 3 };
 #define HIGH_EVENT 10
 #define OVER_EVENT 11
 
+const char event_in01[] PROGMEM = "in01";
+const char event_in02[] PROGMEM = "in02";
+const char event_in03[] PROGMEM = "in03";
+const char event_in04[] PROGMEM = "in04";
+const char event_in05[] PROGMEM = "in05";
+const char event_in06[] PROGMEM = "in06";
+const char event_in07[] PROGMEM = "in07";
+const char event_in08[] PROGMEM = "in08";
+const char event_in09[] PROGMEM = "in09";
+const char event_init[] PROGMEM = "init";
+const char event_high[] PROGMEM = "high";
+const char event_over[] PROGMEM = "over";
+
 // Event names
-const char* EVENT_NAME[] = { 
-    "in01", "in02", "in03", "in04", "in05", "in06", "in07", "in08", "in09",
-    "init", "high", "over"
+const char* const eventName[] PROGMEM = {
+  event_in01, event_in02, event_in03, event_in04, event_in05, event_in06,
+  event_in07, event_in08, event_in09, event_init, event_high, event_over
 };
 
 // Score points to add in each step when counting slow
@@ -262,10 +275,7 @@ class PinballProgram {
     }
 
     void event(byte id) {
-        for (byte i = 0; i < 4; ++i) {
-            _filename[i] = EVENT_NAME[id][i];
-        }
-
+        strcpy_P(_filename, (char*) pgm_read_word(&(eventName[id])));
         _filename[4] = '.';
         _filename[5] = 'w';
         _filename[6] = 'a';
