@@ -114,7 +114,6 @@ class PinballProgram {
             _scrollText.setTextProgmem(DEMO_TEXT);
             _showText = true;
             _demoMode = 2;
-            randomSeed(analogRead(0));
         }
 
         if (_demoMode == 2) {
@@ -122,22 +121,6 @@ class PinballProgram {
                 if (_input.hasEvent(i)) {
                     _score = i + 1;
                 }
-            }
-        }
-
-        if (_demoMode == 3) {
-            long r = random(500000);
-            if (r == 0) {
-                _score += 1000;
-            }
-            else if (r < 10) {
-                _score += 100;
-            }
-            else if (r < 20) {
-                _score += 10;
-            }
-            else if (r < 50) {
-                _score += 5;
             }
         }
     }
