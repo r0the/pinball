@@ -1,0 +1,398 @@
+\environment e-intern
+\environment e-tikz
+\environment e-circuits
+
+\setupinfo[
+	department=FS Informatik,
+	author=ros]
+\starttext
+
+\title{Mikrocontroller-Modul für Flipperautomaten\subtitle{Variante B, Version 2015}}
+
+\section{Einleitung}
+
+Durch ein Mikrocontroller-Modul kann der Flipperautomat mit folgenden Funktionen erweitert werden:
+
+\startitemize
+	\item Sound: Abspielen von Audiodateien
+	\item Display: Anzeige von Punktestand und Lauftext sowie weiteren Informationen
+	\item Spiellogik: Zählen von Punkten, Spielende nach definierbarer Anzahl Bällen, permanente Speicherung des Punkterekords (\flang{Highscore})
+\stopitemize
+
+Das Abspielen von Audiodateien und die Aktionen der Spiellogik werden durch das Schliessen von Kontakten ausgelöst. Die konkreten Aktionen können für jeden Kontakt ohne Programmierkenntnisse konfiguriert werden. Es können bis zu zehn unterschiedliche Aktionen definiert werden.
+
+Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Karte gespeichert.
+
+\section{Anschlüsse}
+
+\subsection{Stromversorgung}
+
+Die Stromversorgung wird über das USB-Kabel sichergestellt.
+
+\subsection{Kontakte und Lautsprecher}
+
+Die Kontakte des Automaten und die Lautsprecher werden über eine 14-polige Schraubklemme angeschlossen.
+
+\placefigure[here][fig:automat]{Schraubklemme}{\externalfigure[images/schraubklemme.jpg][height=20mm]}
+
+Auf den Anschlüssen IN1 bis IN10 stehen Eingänge für den Anschluss von Kontaktschaltern zu Verfügung. Wenn einer dieser Pins durch Schliessen eines Schalters mit der Masse (GND) verbunden wird, löst dies eine oder mehrere konfigurierbare Aktionen aus.
+
+An den Anschlüssen SPK+ und SPK- wird der Lautsprecher angeschlossen.
+
+\placetable[force]{Anschlüsse Schraubklemme}{\bTABLE
+	\setupTABLE[column][1,4][background=color,backgroundcolor=gray,align=middle]
+\bTABLEhead
+	\bTR\bTH Anschluss \eTH\bTH Bezeichnung \eTH\bTH Bedeutung \eTH\bTH Anschluss \eTH\bTH Bezeichnung \eTH\bTH Bedeutung \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD 1 \eTD\bTD IN1 \eTD\bTD Eingang 1 (A) \eTD\bTD 8 \eTD\bTD IN8 \eTD\bTD Eingang 8 \eTD\eTR
+	\bTR\bTD 2 \eTD\bTD IN2 \eTD\bTD Eingang 2 (A) \eTD\bTD 9 \eTD\bTD IN9 \eTD\bTD Eingang 9 \eTD\eTR
+	\bTR\bTD 3 \eTD\bTD IN3 \eTD\bTD Eingang 3 (A) \eTD\bTD 10 \eTD\bTD - \eTD\bTD -- \eTD\eTR
+	\bTR\bTD 4 \eTD\bTD IN4 \eTD\bTD Eingang 4 (A) \eTD\bTD 11 \eTD\bTD GND \eTD\bTD Masse \unit{0 volt} \eTD\eTR
+	\bTR\bTD 5 \eTD\bTD IN5 \eTD\bTD Eingang 5 (A) \eTD\bTD 12 \eTD\bTD 5V \eTD\bTD Spannungsversorgung \unit{5 volt}  \eTD\eTR
+	\bTR\bTD 6 \eTD\bTD IN6 \eTD\bTD Eingang 6 (A) \eTD\bTD 13 \eTD\bTD SPK- \eTD\bTD Lautsprecher Masse \unit{0 volt}  \eTD\eTR
+	\bTR\bTD 7 \eTD\bTD IN7 \eTD\bTD Eingang 7 (A) \eTD\bTD 14 \eTD\bTD SPK+ \eTD\bTD Lautsprecher \eTD\eTR
+\eTABLEbody
+\eTABLE}
+
+\subsection{Anschluss von Kontakten}
+
+Damit das Mikrocontroller-Modul auf einen Kontakt reagieren kann, müssen die Kontakte auf dem Spielfeld mit dem Modul verbunden werden. Dazu wird der Kontakt zwischen dem gewünschten Eingang und der Masse (\unit{0 volt}) geschaltet. Wenn mehrere Kontakte die gleiche Bedeutung haben, so können sie parallel am gleichen Eingang angeschlossen werden (siehe \in{Abbildung}[fig:contacts]{}).
+
+\placefigure[here][fig:contacts]{Anschluss von Kontakten}{
+\startcombination[2*1]
+{\hbox{\starttikzpicture[circuit ee IEC, thick, circuit symbol unit=5mm]
+	\draw[dashed] (0.25, -0.25) rectangle (7.25, 0.25);
+	\foreach \i/\l in {1/IN1, 2/IN2, 3/IN3, 4/IN4, 5/IN5, 6/IN6, 7/IN7, 8/IN8, 9/IN9, 10/IN10, 11/GND, 12/5V, 13/SPK-, 14/SPK+}{
+		\node[contact, label={[label distance=0.25cm, text depth=-0.5ex, rotate=-90]right:\l}] (\l) at (0.5*\i, 0) {};
+	}
+	
+	\draw let \p1 = (IN1), \p2 = (GND) in (\p1) -- (\x1, 1) to[make contact] (\x2, 1) -- (\p2);
+\stoptikzpicture}}{}
+{\hbox{\starttikzpicture[circuit ee IEC, thick, circuit symbol unit=5mm]
+	\draw[dashed] (0.25, -0.25) rectangle (7.25, 0.25);
+	\foreach \i/\l in {1/IN1, 2/IN2, 3/IN3, 4/IN4, 5/IN5, 6/IN6, 7/IN7, 8/IN8, 9/IN9, 10/IN10, 11/GND, 12/5V, 13/SPK-, 14/SPK+}{
+		\node[contact, label={[label distance=0.25cm, text depth=-0.5ex, rotate=-90]right:\l}] (\l) at (0.5*\i, 0) {};
+	}
+
+	\draw let \p1 = (IN1) in node[contact] (A) at (\x1, 1) {};
+	\draw let \p1 = (GND) in node[contact] (B) at (\x1, 1) {};
+
+	\draw (IN1) -- (A) to[make contact] (B) -- (GND);
+	\draw let \p1 = (IN1), \p2 = (GND) in (A) -- (\x1, 2) to[make contact] (\x2, 2) -- (B);
+
+\stoptikzpicture}}{}
+\stopcombination}
+
+\subsection{LED-Matrixanzeige}
+
+An das Steuerungsmodul können bis zu view \dim{32}{8}-LED-Matrizen von SURE Electronics angeschlossen werden. Diese Anzeigen werden über ein 16-poliges Flachbandkabel in Serie geschaltet. Die erste Matrix wird am Steuerungsmodul angeschlossen. Für das Kabel ist auf der Platine eine \dim{2}{8}-polige Wannensteckleiste vorhanden (siehe \in{Abbildung}[fig:ledmatrix]{}).
+
+\placefigure[force][fig:ledmatrix]{Wannenstiftleiste mit Pinbezeichnung}{\startcombination[2*1]
+{\externalfigure[images/wannenstiftleiste.jpg][height=20mm]}{}
+{\mbox{\starttikzpicture[scale=0.5, font=\tfxx]
+
+\foreach \x/\l in {1/2, 2/4, 3/6, 4/8, 5/10, 6/12, 7/14, 8/16}{
+	\node[draw, minimum size=4mm, inner sep=0.1, circle] at (\x, 1.5) {\l};
+}
+
+\foreach \x/\l in {1/1, 2/3, 3/5, 4/7, 5/9, 6/11, 7/13, 8/15}{
+	\node[draw, minimum size=4mm, inner sep=0.1, circle] at (\x, 0.5) {\l};
+}
+
+\draw[very thick] (3.5, 0) -- (0, 0) -- (0, 2) -- (9, 2) -- (9, 0) -- (5.5, 0);
+
+\stoptikzpicture}}{}
+\stopcombination}
+
+Da alle Matrizen über den gleichen Anschluss angesteuert werden, wird die Matrix, mit welcher kommuniziert werden soll, über eine sogenanntes \flang{chip select}-Signal ausgewählt. Die Pins 1 bis 4 dienen diesem Zweck.
+
+Damit das funktioniert, muss auf jeder Matrix eine entsprechende, eindeutige Adresse eingestellt werden.
+
+Zur Kommunikation mit der Matrix werden die Pins 5 und 7 benötigt.
+
+Die Spannungsversorgung von \unit{5 volt} und die Masse (GND) können auf mehreren Pins angeschlossen werden. Es spielt keine Rolle, welcher Pin gewählt wird.
+
+\placetable[force]{Anschluss LED-Matrixanzeige}{\bTABLE
+\setupTABLE[column][1,4][background=color,backgroundcolor=gray, align=middle]
+\bTABLEhead
+	\bTR\bTH Pin \eTH\bTH Bezeichnung \eTH\bTH Bedeutung \eTH\bTH Pin \eTH\bTH Bezeichnung \eTH\bTH Bedeutung \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD 1 \eTD\bTD CS2 \eTD\bTD Auswahl Matrix 2 (\flang{chip select 2}) \eTD\bTD 9 \eTD\bTD OSC \eTD\bTD (nicht benötigt) \eTD\eTR
+	\bTR\bTD 2 \eTD\bTD CS3 \eTD\bTD Auswahl Matrix 3 (\flang{chip select 3}) \eTD\bTD 10 \eTD\bTD SYNC \eTD\bTD (nicht benötigt) \eTD\eTR
+	\bTR\bTD 3 \eTD\bTD CS1 \eTD\bTD Auswahl Matrix 1 (\flang{chip select 1}) \eTD\bTD 11 \eTD\bTD GND \eTD\bTD Masse (\unit{0 volt}) \eTD\eTR
+	\bTR\bTD 4 \eTD\bTD CS4 \eTD\bTD  Auswahl Matrix 4 (\flang{chip select 4}) \eTD\bTD 12 \eTD\bTD VCC \eTD\bTD  Spannungsversorgung \unit{5 volt} \eTD\eTR
+	\bTR\bTD 5 \eTD\bTD WR \eTD\bTD Schreibtakt (\flang{write clock}) \eTD\bTD 13 \eTD\bTD GND  \eTD\bTD Masse (\unit{0 volt}) \eTD\eTR
+	\bTR\bTD 6 \eTD\bTD RD \eTD\bTD  Lesetakt (\flang{read clock}, nicht benötigt) \eTD\bTD 14 \eTD\bTD VCC \eTD\bTD Spannungsversorgung \unit{5 volt} \eTD\eTR
+	\bTR\bTD 7 \eTD\bTD DATA \eTD\bTD Datenleitung \eTD\bTD 15 \eTD\bTD GND  \eTD\bTD Masse (\unit{0 volt}) \eTD\eTR
+	\bTR\bTD 8 \eTD\bTD GND \eTD\bTD Masse (\unit{0 volt})\eTD\bTD 16 \eTD\bTD VCC \eTD\bTD Spannungsversorgung \unit{5 volt} \eTD\eTR
+\eTABLEbody
+\eTABLE}
+
+\section{Konfiguration}
+
+Das Modul kann über die Speicherkarte konfiguriert werden.
+
+\subsection{Speicherkarte}
+
+Die SD-Speicherkarte muss mit dem \emph{FAT16}-Dateisystem formatiert sein. Dateinamen müssen alle \emph{klein} geschrieben werden, und dürfen höchstens acht Zeichen lang sein. Die Dateiendung darf aus maximal drei Zeichen bestehen.
+
+\subsection{Ereignisse}
+
+Das Mikrocontroller-Modul reagiert auf bestimmte Ereignisse, indem es Dateien mit einem entsprechenden Namen auf der Speicherkarte sucht. \in{Tabelle}[tab:events]{} zeigt die Zuordnung von Ereignissen zu Dateinamen.
+
+\placetable[force][tab:events]{Ereignisse}{\bTABLE
+\bTABLEhead
+	\bTR\bTH Ereignis \eTH\bTH Dateiname \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD Das Modul ist eingeschaltet worden. \eTD\bTD \src{init} \eTD\eTR
+	\bTR\bTD Ein Eingang ist aktiviert worden. \eTD\bTD \src{in01} bis \src{in10} \eTD\eTR
+	\bTR\bTD Es ist ein neuer Highscore erreicht worden. \eTD\bTD \src{high} \eTD\eTR
+	\bTR\bTD Das Spiel ist vorbei. \eTD\bTD \src{over} \eTD\eTR
+\eTABLEbody
+\eTABLE}
+
+\subsection{Dateitypen}
+
+Für jedes Ereignis können mehrere Dateien mit unterschiedlicher Endung auf der Karte vorhanden sein (siehe \in{Tabelle}[tab:filetypes]{}). Je nach Dateiendung wird eine andere Aktion durchgeführt.
+
+\placetable[force][tab:filetypes]{Dateitypen}{\bTABLE
+\bTABLEhead
+	\bTR\bTH Dateiendung \eTH\bTH Aktion \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD \src{.prg} \eTD\bTD Der Inhalt der Datei wird als Befehl ausgeführt. \eTD\eTR
+	\bTR\bTD \src{.txt} \eTD\bTD Der Inhalt der Textdatei wird als Laufschrift angezeigt. \eTD\eTR
+	\bTR\bTD \src{.wav} \eTD\bTD Die Audiodatei wird abgespielt. \eTD\eTR
+\eTABLEbody
+\eTABLE}
+
+Beispielsweise wird die Audiodatei \emph{init.wav} abgespielt, wenn der Automat eingeschaltet wird. Der Inhalt der Datei \emph{high.txt} wird als Laufschrift angezeigt, wenn ein neuer Highscore erreicht wird. Die Befehle in der Datei \emph{in05.prg} werden ausgeführt, wenn der Eingang 5 aktiviert wird.
+
+\subsection{Befehlsdateien (.prg)}
+
+Das Modul speichert den Punktestand und die Anzahl verfügbarer Bälle. Diese Zahlen können durch Befehle geändert werden. \in{Tabelle}[tab:commands]{} zeigt alle verfügbaren Befehle und deren Auswirkung. Mit Ausnahme von \src{n} (neues Spiel) werden Befehle nur ausgeführt, wenn die Anzahl verfügbarer Bälle nicht Null ist.
+
+Ein Befehl besteht aus einem Zeichen auf welches manchmal eine Zahl folgt. Beispielsweise erhöht der Befehl \src{+100} den Punktestand um 100 Punkte, der Befehl \src{n3} beginnt ein neues Spiel mit drei Bällen.
+
+\placetable[force][tab:commands]{Befehle}{\bTABLE
+\bTABLEhead
+	\bTR\bTH Befehl \eTH\bTH Bedeutung \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD \src{+} Zahl \eTD\bTD Erhöht den Punktestand um die angegebene Zahl \eTD\eTR
+	\bTR\bTD \src{*} Zahl \eTD\bTD Erhöhe den Punktestand langsam um die angegebene Zahl \eTD\eTR
+	\bTR\bTD \src{n} Zahl \eTD\bTD Neues Spiel: Setzt den Punktestand auf Null und die Anzahl Bälle auf die angegebene Zahl \eTD\eTR
+	\bTR\bTD \src{b} \eTD\bTD Ballverlust: Reduziert die Anzahl Bälle um eins. Bei Null Bällen wird das Spiel beendet und ein allfälliger Punktestandrekord gespeichert \eTD\eTR
+	\bTR\bTD \src{x} \eTD\bTD Extraball: Erhöht die Anzahl Bälle um eins\eTD\eTR
+\eTABLEbody
+\eTABLE}
+
+Mit Hilfe dieser Befehle lässt sich ein Flipperautomat mit vollständiger Spiellogik bauen. Dazu benötigt der Automat einen Sensor, welcher jeden Ballverlust erkennt sowie einen Schalter, um ein neues Spiel zu beginnen.
+
+Alternativ dazu kann ein einfacher Automat gebaut werden, bei welchem das Spiel immer läuft. Dazu muss beim Einschalten des Automaten die Anzahl Bälle auf eine Zahl grösser Null gesetzt werden. Dass heisst, in der Datei \src{init.prg} muss der Befehl \src{n1} stehen.
+
+\subsection{Textdateien (.txt)}
+
+Wenn eine Aktion ausgelöst wird und eine entsprechende Textdatei vorhanden ist, wird der Inhalt der Datei als Lauftext angezeigt. Sobald der ganze Text über die Anzeige gelaufen ist, wird wieder der Punktestand angezeigt.
+
+Der Lauftext kann höchstens 40 Zeichen lang sein.
+
+\subsection{Audiodateien (.wav)}
+
+Das Steuerungsmodul kann nur Audiodaten im PCM-Format (Puls-Code-Modulation) abspielen. Die Dateien müssen im WAV-Format (Waveform Audio File Format) mit einem Kanal (Mono), einer Bit-Tiefe von 8 und einer Abtastfrequenz von \unit{16000 hertz} vorliegen.
+
+Mit dem frei verfügbaren Programm \emph{Audacity} kann jede Audiodatei mit kleinem Aufwand in das geeignete Format umgewandelt werden:
+
+\startitemize[n]
+	\item Audiodatei öffnen.
+	\item Menüpunkt \emph{Spuren} / \emph{Stereosput in Mono umwandeln} auswählen.
+	\item Projektfrequenz auf \unit{16000 hertz} stellen (unten links).
+	\item Exportieren als \emph{Andere unkomprimierte Dateien} mit Optionen:
+		\startitemize
+			\item Header: WAV (Microsoft)
+			\item Codec: Unsigned 8 bit PCM
+		\stopitemize
+\stopitemize
+
+\section{Zusammenbau}
+
+\subsection{Bauteile}
+
+Für die Realisierung des Moduls werden folgende Bauteile benötigt:
+
+\placetable[force]{Bauteile Grundmodul}{\bTABLE
+	\setupTABLE[column][3,4,5][align=left]
+\bTABLEhead
+	\bTR\bTH  Bauteil \eTH\bTH Lieferant \eTH\bTH Preis \eTH\bTH Anzahl \eTH\bTH Total \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD Arduino Duemilanove \eTD\bTD Play-Zone \eTD\bTD 25.00 \eTD\bTD 1 \eTD\bTD 25.00 \eTD\eTR
+	\bTR\bTD Lötplatine \dim{80}{120} \unit{millimeter}, Punktraster \eTD\bTD Play-Zone \eTD\bTD 9.00 \eTD\bTD 1 \eTD\bTD 9.00 \eTD\eTR
+	\bTR\bTD 75HC4050 HEX Konverter IC \eTD\bTD Conrad \eTD\bTD 0.60 \eTD\bTD 1 \eTD\bTD 0.60 \eTD\eTR
+	\bTR\bTD IC-Sockel \dim{2}{8}-Pol \eTD\bTD Conrad \eTD\bTD 0.30 \eTD\bTD 1 \eTD\bTD 0.30 \eTD\eTR
+	\bTR\bTD Wannenstiftleiste \dim{2}{8}-Pol (Anschluss Display) \eTD\bTD Conrad \eTD\bTD 0.50 \eTD\bTD 1 \eTD\bTD 0.50 \eTD\eTR
+	\bTR\bTD Buchsenleiste \dim{2}{8}-Pol (Anschluss SD-Kartenleser) \eTD\bTD Conrad \eTD\bTD 0.60 \eTD\bTD 1 \eTD\bTD 0.60 \eTD\eTR
+	\bTR\bTD Stiftleiste \dim{1}{6}-Pol (Anschluss Arduino) \eTD\bTD Conrad \eTD\bTD 0.30 \eTD\bTD 2 \eTD\bTD 0.60 \eTD\eTR
+	\bTR\bTD Stiftleiste \dim{1}{8}-Pol (Anschluss Arduino) \eTD\bTD Conrad \eTD\bTD 0.35 \eTD\bTD 2 \eTD\bTD 0.70 \eTD\eTR
+	\bTR\bTD SD-Kartenleser \eTD\bTD Play-Zone \eTD\bTD 8.00 \eTD\bTD 1 \eTD\bTD 8.00 \eTD\eTR
+	\bTR\bTD SD-Karte 2 GB \eTD\bTD Conrad \eTD\bTD 6.00 \eTD\bTD 1 \eTD\bTD 6.00 \eTD\eTR
+	\bTR\bTD USB-Netzteil \eTD\bTD Conrad \eTD\bTD 11.00 \eTD\bTD 1 \eTD\bTD 11.00 \eTD\eTR
+	\bTR\bTD USB-Kabel A-B 80 cm \eTD\bTD Play-Zone \eTD\bTD 3.00 \eTD\bTD 1 \eTD\bTD 3.00 \eTD\eTR
+	\bTR\bTD Schraubklemme 6-Pol (Anschluss Kontakte) \eTD\bTD Conrad \eTD\bTD 0.85 \eTD\bTD 2 \eTD\bTD 1.70 \eTD\eTR
+	\bTR\bTH[nc=4] Total \eTH\bTH 67.00 \eTH\eTR
+\eTABLEbody
+\eTABLE}
+
+
+\subsection{LED-Matrix-Anzeige}
+
+Für die Ansteuerung der LED-Matrix-Anzeige müssen die benötigten \flang{chip select}-Pins, die zwei Datenübertragungsleitungen (\emph{WR} und \emph{DATA})und die Stromversorgung (\emph{VCC} und \emph{GND}) mit dem Arduino verbunden werden. \in{Diagramm}[fig:wire-display]{} zeigt, wie die Verbindungen realisiert werden müssen.
+
+\def\ledx{0}
+\def\ledy{0}
+\def\ardx{10}
+\def\ardya{0}
+\def\ardyb{-10}
+
+\placefigure[force][fig:wire-display]{Anschluss LED-Matrix}{
+\mbox{\starttikzpicture[scale=0.5]
+
+% LED-Anschluss ----------------------------------------------------------------
+\foreach \x/\l in {1/2, 2/4, 3/6, 4/8, 5/10, 6/12, 7/14, 8/16}{
+	\node[draw, minimum size=4mm, inner sep=0.1, circle] (\l) at (\ledx+\x, \ledy+1.5) {\tfxx \l};
+}
+
+\foreach \x/\l in {1/1, 2/3, 3/5, 4/7, 5/9, 6/11, 7/13, 8/15}{
+	\node[draw, minimum size=4mm, inner sep=0.1, circle] (\l) at (\ledx+\x, \ledy+0.5) {\tfxx \l};
+}
+
+\draw[very thick] (\ledx+3.5, \ledy) -- (\ledx, \ledy) -- (\ledx, \ledy+2) -- (\ledx+9, \ledy+2) -- (\ledx+9, \ledy) -- (\ledx+5.5, \ledy);
+
+% Arduino Top ------------------------------------------------------------------
+
+\foreach \x/\l in {1/0, 2/1, 3/2, 4/3, 5/4, 6/5, 7/6, 8/7, 10/8, 11/9, 12/10, 13/11, 14/12, 15/13, 16/, 17/} {
+	\node[circle, inner sep=0, minimum size=1mm, fill=black, label=\l] (Arduino \l) at (\ardx+\x, \ardya) {};
+}
+
+\draw (\ardx+0.5, \ardya-0.3) rectangle (\ardx+8.5, \ardya+0.3);
+\draw (\ardx+9.5, \ardya-0.3) rectangle (\ardx+17.5, \ardya+0.3);
+
+% Arduino Bottom ---------------------------------------------------------------
+
+\foreach \x/\l in {1/A5, 2/A4, 3/A3, 4/A2, 5/A1, 6/A0, 8/, 9/, 10/, 11/, 12/, 13/} {
+	\node[circle, inner sep=0, minimum size=1mm, fill=black, label=below:\l] (Arduino \l) at (\ardx+\x, \ardyb) {};
+}
+
+\draw (\ardx+0.5, \ardyb+0.3) rectangle (\ardx+6.5, \ardyb-0.3);
+\draw (\ardx+7.5, \ardyb+0.3) rectangle (\ardx+13.5, \ardyb-0.3);
+
+
+\draw (1) -- (1, -2) -- (\ardx+7, \ardya-2) -- (17, \ardya);
+\draw (2) -- (1, 3) -- (18, 3) -- (18, \ardya);
+\draw (3) -- (2, -1.5) -- (16, -1.5) -- (16, \ardya);
+\draw (5) -- (3, -1) -- (15, -1) -- (15, \ardya);
+\draw (7) -- (4, -0.5) -- (20, -0.5) -- (20, \ardya);
+\draw[red] (16) -- (\ledx+8, \ledy+2.5) -- (\ledx+9.5, \ledy+2.5) -- (\ledx+9.5, \ardyb+4) -- (\ardx+11, \ardyb+4) -- (\ardx+11, \ardyb);
+\draw[blue] (15) -- (\ledx+8, \ledy-4.5) -- (\ardx+9, -4.5) -- (\ardx+9, \ardyb);
+
+\draw[dashed] (10, -8.5) rectangle (33, 1);
+\stoptikzpicture}}
+
+\subsection{SD-Kartenleser}
+
+Zum Lesen der Befehls- und Audiodateien von der SD-Karte wird ein SD-Kartenleser benötigt. SD-Karten werden über das Serial Peripheral Interface (SPI) angesteuert (siehe \in{Abbildung}[fig:spi]{}). Diese Schnittstelle benötigt vier Datenleitungen.
+
+\placefigure[here][fig:spi]{Serial Peripheral Interface (SPI)}{\externalfigure[images/spi.pdf][width=100mm]}
+
+SD-Karten werden mit \unit{3.3 volt} betrieben, der Arduino jedoch mit \unit{5 volt}. Deshalb muss die Spannung der drei Busleitungen \emph{SCK}, \emph{MOSI} und \emph{\ol{CS}} heruntertransformiert werden. Dazu wird ein \emph{74HC4050}-Chip eingesetzt. Dieser IC ist mit sechs Operationsverstärkern bestückt. \in{Abbildung}[fig:wire-sd]{} zeigt, wie der SD-Kartenleser mit dem 74HC4050-Chip und dem Arduino verdrahtet wird.
+
+\placefigure[here][fig:wire-sd]{Anschluss SD-Kartenleser}{\hbox{\starttikzpicture
+
+% Kartenleser
+
+\draw (0, 5) rectangle +(8, 2);
+\node at (4, 6.5) {SD-Kartenleser};
+
+\foreach \x/\l in {0/GND, 1/3V3, 2/5V, 3/CS, 4/MOSI, 5/SCK, 6/MISO, 7/GND}{
+	\node[fill, circle, inner sep=1.5, label=\l] (SD \l) at (0.5+\x, 5.3) {};
+}
+
+% 74HC4050
+
+\draw (0, 1) rectangle +(8, 2);
+\node at (4, 2) {74HC4050};
+
+\foreach \x/\l in {0/--, 1/Q6, 2/A6, 3/--, 4/Q5, 5/A5, 6/Q4, 7/A4}{
+	\node[fill, circle, inner sep=1.5, label=below:\l] (C \l) at (0.5+\x, 3) {};
+}
+
+\foreach \x/\l in {0/VDD, 1/Q1, 2/A1, 3/Q2, 4/A2, 5/Q3, 6/A3, 7/GND}{
+	\node[fill, circle, inner sep=1.5, label=\l] (C \l) at (0.5+\x, 1) {};
+}
+
+% Arduino
+
+\draw (11, -0.5) rectangle +(2, 6);
+\node at (12, 2) {Arduino};
+
+\foreach \y/\l in {0/3V3, 0.5/GND, 3.5/13, 4/12, 4.5/11, 5/10}{
+	\node[fill, circle, inner sep=1.5, label=right:\l] (A \l) at (11, \y) {};
+}
+
+% Verdrahtung
+
+\node[fill, circle, inner sep=1.5] at (0.5, 0) (VDD) {};
+
+\draw (SD SCK) -- +(0, -0.5) -- (C Q4);
+\draw (SD MOSI) -- +(0, -0.5) -- (C Q5);
+\draw (SD CS) -- +(0, -0.5) -- (C Q6);
+
+\draw (A GND) -- (C GND);
+\draw (C VDD) -- (VDD) -- (A 3V3);
+\draw (SD 3V3) -- +(0, -1) -- +(-2, -1) -- (-0.5, 0) -- (VDD);
+\draw (SD GND) -- +(0, -0.5) -- (A GND);
+
+\draw (SD MISO) -- +(0, -0.5) -- (A 12);
+\draw (C A4) -- (A 13);
+\draw (C A5) -- (A 11);
+\draw (C A6) -- (A 10);
+
+\stoptikzpicture}}
+
+\subsection{Arduino}
+
+Die folgende Tabelle zeigt, wie die Anschlüsse des Arduino belegt sind:
+
+\placetable[here]{Anschluss des Arduino}{\bTABLE
+\bTABLEhead
+	\bTR\bTH  Pin Arduino \eTH\bTH Funktion \eTH\bTH Anschluss an \eTH\eTR
+\eTABLEhead
+\bTABLEbody
+	\bTR\bTD A0 \eTD\bTD Eingang 6 (IN6)\eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD A1 \eTD\bTD Eingang 5 (IN5) \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD A2 \eTD\bTD Eingang 4 (IN4) \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD A3 \eTD\bTD Eingang 3 (IN3) \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD A4 \eTD\bTD Eingang 2 (IN2) \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD A5 \eTD\bTD Eingang 1 (IN1) \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD 0 \eTD\bTD Eingang 7 \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD 1 \eTD\bTD Eingang 8 \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD 2 \eTD\bTD Eingang 9 \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD 3 \eTD\bTD Eingang 10 \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD 4 \eTD\bTD LED-Matrix-Anzeige WR \eTD\bTD Steckleiste \dim{2}{8} \eTD\eTR
+	\bTR\bTD 5 \eTD\bTD LED-Matrix-Anzeige CS1 \eTD\bTD Steckleiste \dim{2}{8} \eTD\eTR
+	\bTR\bTD 6 \eTD\bTD LED-Matrix-Anzeige CS2 \eTD\bTD Steckleiste \dim{2}{8} \eTD\eTR
+	\bTR\bTD 7 \eTD\bTD LED-Matrix-Anzeige CS3 \eTD\bTD Steckleiste \dim{2}{8} \eTD\eTR
+	\bTR\bTD 8 \eTD\bTD LED-Matrix-Anzeige DATA \eTD\bTD Steckleiste \dim{2}{8} \eTD\eTR
+	\bTR\bTD 9 \eTD\bTD Audioausgang \eTD\bTD Schraubklemme \eTD\eTR
+	\bTR\bTD 10 \eTD\bTD \ol{CS} SD-Kartenleser \eTD\bTD 74HC4050 \eTD\eTR
+	\bTR\bTD 11 \eTD\bTD SPI MOSI (Master Out Slave In) \eTD\bTD 74HC4050 \eTD\eTR
+	\bTR\bTD 12 \eTD\bTD SPI MISO (Master In Slave Out) \eTD\bTD SD-Kartenleser \eTD\eTR
+	\bTR\bTD 13 \eTD\bTD SPI SCK (Serial Clock) \eTD\bTD 74HC4050 \eTD\eTR
+\eTABLEbody
+\eTABLE}
+
+
+\stoptext
