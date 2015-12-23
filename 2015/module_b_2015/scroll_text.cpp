@@ -19,6 +19,8 @@
 #include "scroll_text.h"
 #include "sure_display.h"
 
+#define SCROLL_DELAY_MILLIS 25
+
 char* strnmove(char* target, const char* source, size_t targetSize) {
     if (targetSize > 0) {
         size_t copySize = strlen(source);
@@ -55,7 +57,7 @@ void ScrollText::loop() {
     if (now > _nextScrollTime) {
         write(-_scrollPos, _text);
         ++_scrollPos;
-        _nextScrollTime = now + 50;
+        _nextScrollTime = now + SCROLL_DELAY_MILLIS;
     }
 }
 
