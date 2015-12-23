@@ -217,6 +217,7 @@ class PinballProgram {
                 }
                 else {
                     executeCommand(command, number);
+                    number = 0;
                     mode = PARSE_COMMAND;
                 }
 
@@ -238,11 +239,13 @@ class PinballProgram {
                 if (mode == PARSE_NUMBER) {
                     number = number * 10 + (ch - '0');
                 }
+
                 break;
 
             default:
                 if (mode == PARSE_NUMBER) {
                     executeCommand(command, number);
+                    number = 0;
                 }
 
                 mode = PARSE_COMMAND;
