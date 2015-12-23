@@ -20,6 +20,8 @@
 
 #include <Arduino.h>
 
+#define INPUT_DELAY 100
+
 class Pins {
 public:
     Pins(byte count, const byte* pins);
@@ -31,12 +33,14 @@ public:
     }
 
     inline boolean hasEvent(byte pin) const {
-        return _inputStates[pin] >= _inputDelay;
+        return _inputStates[pin] >= INPUT_DELAY;
     }
 
+    void setLow(int pin);
+    void setHigh(int pin);
 private:
+    byte* _config;
     byte _count;
-    byte _inputDelay;
     unsigned long* _inputLock;
     byte* _inputStates;
     const byte* _pins;

@@ -17,18 +17,20 @@
  
 #include "pins.h"
  
-#define DEFAULT_INPUT_DELAY 50
+#define CONFIG_INPUT 0
+#define CONFIG_OUTPUT 1
 
 Pins::Pins(byte count, const byte* pins) :
+    _config(new byte[count]),
     _count(count),
-    _inputDelay(DEFAULT_INPUT_DELAY),
     _inputLock(new unsigned long[count]),
     _inputStates(new byte[count]),
     _pins(pins)
 {
     for (int pin = 0; pin < _count; ++pin) {
+        _config[pin] = CONFIG_INPUT;
         _inputLock[pin] = 0;
-        _inputStates[pin] = 0;
+        _inputStates[pin] = 1;
         pinMode(_pins[pin], INPUT_PULLUP);
     }
 }
@@ -36,20 +38,32 @@ Pins::Pins(byte count, const byte* pins) :
 void Pins::loop() {
     unsigned long now = millis();
     for (int pin = 0; pin < _count; ++pin) {
-        if (_inputLock[pin] < now) {
+        // Clear event from last loop
+        if (_inputStates[pin] >= INPUT_DELAY) {
+          _inputStates[pin] = 0;
+        }
+
+        if (_config[pin] == CONFIG_INPUT && _inputLock[pin] < now) {
             int state = digitalRead(_pins[pin]);
             if (state == HIGH) {
-                _inputStates[pin] = 0;
+                _inputStates[pin] = 1;
             }
-            else {
-                if (_inputStates[pin] < _inputDelay) {
-                    ++_inputStates[pin];
-                }
-                else {
-                    _inputStates[pin] = 0;
-                }
+            else if (0 < _inputStates[pin] && _inputStates[pin] < INPUT_DELAY) {
+                ++_inputStates[pin];
             }
         }
     }
+}
+
+void Pins::setHigh(int pin) {
+    _config[pin] = CONFIG_OUTPUT;
+    pinMode(_pins[pin], OUTPUT);
+    digitalWrite(_pins[pin], HIGH);
+}
+
+void Pins::setLow(int pin) {
+    _config[pin] = CONFIG_OUTPUT;
+    pinMode(_pins[pin], OUTPUT);
+    digitalWrite(_pins[pin], LOW);
 }
 
