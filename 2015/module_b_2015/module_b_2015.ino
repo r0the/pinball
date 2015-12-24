@@ -7,6 +7,13 @@
 #include "pins.h"
 
 // --------------------------------------------------------------------------------------------------
+// Customization
+// --------------------------------------------------------------------------------------------------
+//#define CHRISTOPHE
+#define STEFAN
+
+
+// --------------------------------------------------------------------------------------------------
 // Pins
 // --------------------------------------------------------------------------------------------------
 
@@ -83,6 +90,20 @@ class PinballProgram {
     VirtualDisplay _scoreDisplay;
     ScrollText _scrollText;
     boolean _showText;
+
+// --------------------------------------------------------------------------------------------------
+// Customization for individual students
+// --------------------------------------------------------------------------------------------------
+
+#ifdef CHRISTOPHE
+#include "custom_christophe.h"
+#elif defined STEFAN
+#include "custom_stefan.h"
+#else
+#include "custom_empty.h"
+#endif
+
+// --------------------------------------------------------------------------------------------------
 
     void saveHighScore() {
         File file = SD.open("hiscore.dat", FILE_WRITE);
@@ -261,6 +282,7 @@ class PinballProgram {
     }
 
     void event(byte id) {
+        customEvent(id + 1);
         strcpy_P(_filename, (char*) pgm_read_word(&(eventName[id])));
         _filename[4] = '.';
         _filename[5] = 'w';
@@ -321,6 +343,7 @@ public:
 
     void init() {
         event(INIT_EVENT);
+        customInit();
     }
 
     void loop() {
@@ -346,6 +369,8 @@ public:
                 _scoreDisplay.showNumber(_score, 5);
             }
         }
+
+        customLoop();
     }
 };
 
