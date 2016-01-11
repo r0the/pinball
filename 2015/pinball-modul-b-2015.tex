@@ -45,13 +45,13 @@ An den Anschlüssen SPK+ und SPK- wird der Lautsprecher angeschlossen.
 	\bTR\bTH Anschluss \eTH\bTH Bezeichnung \eTH\bTH Bedeutung \eTH\bTH Anschluss \eTH\bTH Bezeichnung \eTH\bTH Bedeutung \eTH\eTR
 \eTABLEhead
 \bTABLEbody
-	\bTR\bTD 1 \eTD\bTD IN1 \eTD\bTD Eingang 1 (A) \eTD\bTD 8 \eTD\bTD IN8 \eTD\bTD Eingang 8 \eTD\eTR
-	\bTR\bTD 2 \eTD\bTD IN2 \eTD\bTD Eingang 2 (A) \eTD\bTD 9 \eTD\bTD IN9 \eTD\bTD Eingang 9 \eTD\eTR
-	\bTR\bTD 3 \eTD\bTD IN3 \eTD\bTD Eingang 3 (A) \eTD\bTD 10 \eTD\bTD - \eTD\bTD -- \eTD\eTR
-	\bTR\bTD 4 \eTD\bTD IN4 \eTD\bTD Eingang 4 (A) \eTD\bTD 11 \eTD\bTD GND \eTD\bTD Masse \unit{0 volt} \eTD\eTR
-	\bTR\bTD 5 \eTD\bTD IN5 \eTD\bTD Eingang 5 (A) \eTD\bTD 12 \eTD\bTD 5V \eTD\bTD Spannungsversorgung \unit{5 volt}  \eTD\eTR
-	\bTR\bTD 6 \eTD\bTD IN6 \eTD\bTD Eingang 6 (A) \eTD\bTD 13 \eTD\bTD SPK- \eTD\bTD Lautsprecher Masse \unit{0 volt}  \eTD\eTR
-	\bTR\bTD 7 \eTD\bTD IN7 \eTD\bTD Eingang 7 (A) \eTD\bTD 14 \eTD\bTD SPK+ \eTD\bTD Lautsprecher \eTD\eTR
+	\bTR\bTD 1 \eTD\bTD IN1 \eTD\bTD Eingang 1 \eTD\bTD 8 \eTD\bTD IN7 \eTD\bTD Eingang 7 \eTD\eTR
+	\bTR\bTD 2 \eTD\bTD IN2 \eTD\bTD Eingang 2 \eTD\bTD 9 \eTD\bTD IN8 \eTD\bTD Eingang 8 \eTD\eTR
+	\bTR\bTD 3 \eTD\bTD IN3 \eTD\bTD Eingang 3 \eTD\bTD 10 \eTD\bTD IN9 \eTD\bTD Eingang 9 \eTD\eTR
+	\bTR\bTD 4 \eTD\bTD IN4 \eTD\bTD Eingang 4 \eTD\bTD 11 \eTD\bTD GND \eTD\bTD Masse \unit{0 volt} \eTD\eTR
+	\bTR\bTD 5 \eTD\bTD IN5 \eTD\bTD Eingang 5 \eTD\bTD 12 \eTD\bTD 5V \eTD\bTD Spannungsversorgung \unit{5 volt}  \eTD\eTR
+	\bTR\bTD 6 \eTD\bTD IN6 \eTD\bTD Eingang 6 \eTD\bTD 13 \eTD\bTD SPK- \eTD\bTD Lautsprecher Masse \unit{0 volt}  \eTD\eTR
+	\bTR\bTD 7 \eTD\bTD -- \eTD\bTD -- \eTD\bTD 14 \eTD\bTD SPK+ \eTD\bTD Lautsprecher \eTD\eTR
 \eTABLEbody
 \eTABLE}
 
@@ -186,7 +186,10 @@ Ein Befehl besteht aus einem Zeichen auf welches manchmal eine Zahl folgt. Beisp
 	\bTR\bTD \src{*} Zahl \eTD\bTD Erhöhe den Punktestand langsam um die angegebene Zahl \eTD\eTR
 	\bTR\bTD \src{n} Zahl \eTD\bTD Neues Spiel: Setzt den Punktestand auf Null und die Anzahl Bälle auf die angegebene Zahl \eTD\eTR
 	\bTR\bTD \src{b} \eTD\bTD Ballverlust: Reduziert die Anzahl Bälle um eins. Bei Null Bällen wird das Spiel beendet und ein allfälliger Punktestandrekord gespeichert \eTD\eTR
-	\bTR\bTD \src{x} \eTD\bTD Extraball: Erhöht die Anzahl Bälle um eins\eTD\eTR
+	\bTR\bTD \src{x} \eTD\bTD Extraball: Erhöht die Anzahl Bälle um eins \eTD\eTR
+	\bTR\bTD \src{/} Zahl \eTD\bTD Ausgang: Setzt den Pin mit der angegebenen Nummer auf +5V \eTD\eTR
+	\bTR\bTD \src{\textbackslash{}} Zahl \eTD\bTD Ausgang: Setzt den Pin mit der angegebenen Nummer auf 0V \eTD\eTR
+
 \eTABLEbody
 \eTABLE}
 

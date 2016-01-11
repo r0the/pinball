@@ -22,4 +22,4 @@ Es gibt zwei Varianten, welche sich in der Art des Displays unterscheiden.
 - Das **Variante B** stellt Punktestand und allenfalls weitere Informationen auf einer oder mehreren
   LED-Matrixanzeigen dar.
 
-Pro Jahrgang steht zur Zeit nur eine Variante zu Verfügung.
+Zur Zeit steht pro Jahrgang steht nur eine Variante zu Verfügung.
