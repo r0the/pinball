@@ -10,6 +10,7 @@
 // Customization
 // --------------------------------------------------------------------------------------------------
 //#define CHRISTOPHE
+//#define NOELL
 #define STEFAN
 
 
@@ -99,6 +100,8 @@ class PinballProgram {
 #include "custom_christophe.h"
 #elif defined STEFAN
 #include "custom_stefan.h"
+#elif defined NOELL
+#include "custom_noell.h"
 #else
 #include "custom_empty.h"
 #endif
