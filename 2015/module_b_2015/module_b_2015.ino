@@ -248,7 +248,7 @@ class PinballProgram {
                 break;
             case 'b':
             case 'x':
-                executeCommand(command, number);
+                executeCommand(ch, number);
                 break;
             case '0':
             case '1':
@@ -265,7 +265,6 @@ class PinballProgram {
                 }
 
                 break;
-
             default:
                 if (mode == PARSE_NUMBER) {
                     executeCommand(command, number);
