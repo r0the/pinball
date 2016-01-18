@@ -11,7 +11,7 @@ Die Module bieten die folgende Funktionalität:
 - Anzeige des aktuellen Punktestands
 - Abspielen von Audiodateien
 - Speichern des Punktehöchststands (Highscore)
-- Steuerung von Lampen oder Leutchtdioden des Automaten
+- Steuerung von Lampen oder Leuchtdioden des Automaten
 - Anzeige eines Lauftextes (nur Modul B)
 
 ## Varianten
