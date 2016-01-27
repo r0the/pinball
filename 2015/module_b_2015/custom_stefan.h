@@ -1,7 +1,7 @@
 #define LAMP_PIN 8
 #define MAX_BLINK
 #define LAMP_ON_MILLIS 200
-#define LAMP_OFF_MILLIS 500;
+#define LAMP_OFF_MILLIS 500
 
 unsigned long _blinkCount;
 unsigned long _lampTimeout;
@@ -22,8 +22,8 @@ void customEvent(int id) {
 }
 
 void customLoop() {
-      unsigned long now = millis();
-      if (_blinkCount > 0 && _lampTimeout < now) {
+    unsigned long now = millis();
+    if (_blinkCount > 0 && _lampTimeout < now) {
         if (_lampOn) {
           _lampTimeout = now + LAMP_OFF_MILLIS;
           _pins.setLow(LAMP_PIN);
@@ -35,6 +35,6 @@ void customLoop() {
           _pins.setHigh(LAMP_PIN);
           _lampOn = true;
         }
-      }
+    }
 }
 

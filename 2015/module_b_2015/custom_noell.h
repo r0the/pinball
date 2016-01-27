@@ -1,6 +1,6 @@
-#define RED_PIN 8
-#define GREEN_PIN 9
-#define BLUE_PIN 10
+#define RED_PIN 1
+#define GREEN_PIN 2
+#define BLUE_PIN 3
 
 byte red;
 byte green;
@@ -10,9 +10,17 @@ void customInit() {
     pinMode(RED_PIN, OUTPUT);
     pinMode(GREEN_PIN, OUTPUT);
     pinMode(BLUE_PIN, OUTPUT);
-    red = LOW;
-    green = LOW;
-    blue = LOW;
+    setColor(HIGH, LOW, LOW);
+    customLoop();
+    delay(200);
+    setColor(LOW, HIGH, LOW);
+    customLoop();
+    delay(200);
+    setColor(LOW, LOW, HIGH);    
+    customLoop();
+    delay(200);
+    setColor(LOW, LOW, LOW);
+    customLoop();
 }
 
 void setColor(byte r, byte g, byte b) {
