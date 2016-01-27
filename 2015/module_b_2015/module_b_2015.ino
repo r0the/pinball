@@ -11,7 +11,7 @@
 // --------------------------------------------------------------------------------------------------
 //#define CHRISTOPHE
 //#define NOELL
-#define STEFAN
+//#define STEFAN
 
 
 // --------------------------------------------------------------------------------------------------
@@ -59,6 +59,8 @@ const char* const eventName[] PROGMEM = {
 // Score points to add in each step when counting slow
 #define SCORE_STEP 10
 
+#define INIT_DELAY 6000
+
 // Parse modes
 #define PARSE_COMMAND 1
 #define PARSE_NUMBER 2
@@ -84,6 +86,7 @@ class PinballProgram {
     byte _demoMode;
     char* _filename;
     unsigned long _highScore;
+    unsigned long _initTime;
     Pins _pins;
     boolean _newHighScore;
     unsigned long _score;
@@ -116,6 +119,7 @@ class PinballProgram {
             number = number / 10;
         }
 
+        file.flush();
         file.close();
     }
 
@@ -171,14 +175,23 @@ class PinballProgram {
         }
 
         if (!_newHighScore && _highScore < _score) {
-            event(HIGH_EVENT);
             _newHighScore = true;
+            event(HIGH_EVENT);
+        }
+
+        unsigned long now = millis();
+        if (_initTime != 0 && _initTime < now) {
+            event(INIT_EVENT);
+            _initTime = 0;      
         }
 
         if (_balls != oldBalls && _balls == 0) {
             event(OVER_EVENT);
+            _initTime = now + INIT_DELAY;
+
             if (_newHighScore) {
                 saveHighScore();
+                _score = 0;
                 _newHighScore = false;
             }
         }
@@ -321,6 +334,8 @@ public:
         _balls(3),
         _demoMode(0),
         _filename(new char[9]),
+        _initTime(0),
+        _newHighScore(false),
         _pins(pinCount, pins),
         _score(0),
         _scoreDisplay(),
