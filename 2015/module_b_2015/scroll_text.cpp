@@ -19,7 +19,7 @@
 #include "scroll_text.h"
 #include "sure_display.h"
 
-#define SCROLL_DELAY_MILLIS 25
+#define SCROLL_DELAY_MILLIS 15
 
 char* strnmove(char* target, const char* source, size_t targetSize) {
     if (targetSize > 0) {
