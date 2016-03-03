@@ -16,7 +16,7 @@ void customInit() {
 void customEvent(int id) {
     if (id == 7) {
         _blinkCount = 5;
-        _score = _score * 2;
+        _logic.setScore(_logic.score() * 2);
         _lampOn = false;
     }
 }

@@ -32,10 +32,12 @@ void setColor(byte r, byte g, byte b) {
 void customEvent(int id) {
     if (id == 1) {
         setColor(LOW, LOW, HIGH);
+        _logic.addScore(200);
     }
 
     if (id == 2) {
         setColor(HIGH, LOW, LOW);
+        
     }
 
     if (id == 3) {
@@ -49,6 +51,11 @@ void customEvent(int id) {
         else {
             setColor(HIGH, HIGH, HIGH);
         }
+        _logic.addScore(50);
+    }
+
+    if (id == 5) {
+//        _score += 155;
     }
 
     if (id == 6) {

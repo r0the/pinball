@@ -3,6 +3,7 @@
 #include "virtual_display.h"
 #include "scroll_text.h"
 #include "sure_display.h"
+#include "logic.h"
 #include "_TMRpcm.h"
 #include "pins.h"
 
@@ -56,9 +57,6 @@ const char* const eventName[] PROGMEM = {
   event_in07, event_in08, event_in09, event_init, event_high, event_over
 };
 
-// Score points to add in each step when counting slow
-#define SCORE_STEP 10
-
 #define INIT_DELAY 6000
 
 // Parse modes
@@ -82,15 +80,11 @@ const char DEMO_TEXT[] PROGMEM = "FF Technisches Konstruieren";
 
 class PinballProgram {
     TMRpcm _audio;
-    byte _balls;
     byte _demoMode;
     char* _filename;
-    unsigned long _highScore;
     unsigned long _initTime;
+    Logic _logic;
     Pins _pins;
-    boolean _newHighScore;
-    unsigned long _score;
-    unsigned long _scoreToAdd;
     VirtualDisplay _scoreDisplay;
     ScrollText _scrollText;
     boolean _showText;
@@ -113,7 +107,7 @@ class PinballProgram {
 
     void saveHighScore() {
         File file = SD.open("hiscore.dat", FILE_WRITE);
-        unsigned long number = _highScore;
+        unsigned long number = _logic.highScore();
         while (number > 0) {
             file.write('0' + (number % 10));
             number = number / 10;
@@ -124,16 +118,17 @@ class PinballProgram {
     }
 
     void loadHighScore() {
-        _highScore = 0;
+        unsigned long highScore = 0;
         File file = SD.open("hiscore.dat", FILE_READ);
         while (file.available()) {
             char ch = file.read();
             if ('0' <= ch && ch <= '9') {
-                _highScore = _highScore * 10 + (ch - '0');
+                highScore = highScore * 10 + (ch - '0');
             }
         }
 
         file.close();
+        _logic.setHighScore(highScore);
     }
 
     void demo() {
@@ -147,14 +142,14 @@ class PinballProgram {
         if (_demoMode == 2) {
             for (int i = 0; i < _pins.count(); ++i) {
                 if (_pins.hasEvent(i)) {
-                    _score = i + 1;
+                    _logic.setScore(i + 1);
                 }
             }
         }
     }
 
     void game() {
-        byte oldBalls = _balls;
+        _logic.beginLoop();
 
         // Process inputs
         _pins.loop();
@@ -165,17 +160,8 @@ class PinballProgram {
         }
 
         // Process delayed score
-        if (_scoreToAdd >= SCORE_STEP) {
-            _score += SCORE_STEP;
-            _scoreToAdd -= SCORE_STEP;
-        }
-        else if (_scoreToAdd > 0) {
-            _score += _scoreToAdd;
-            _scoreToAdd = 0;
-        }
-
-        if (!_newHighScore && _highScore < _score) {
-            _newHighScore = true;
+        _logic.endLoop();
+        if (_logic.checkState(NEW_HIGH_SCORE_NOW)) {
             event(HIGH_EVENT);
         }
 
@@ -185,14 +171,12 @@ class PinballProgram {
             _initTime = 0;      
         }
 
-        if (_balls != oldBalls && _balls == 0) {
+        if (_logic.checkState(GAME_OVER_NOW)) {
             event(OVER_EVENT);
             _initTime = now + INIT_DELAY;
 
-            if (_newHighScore) {
+            if (_logic.checkState(NEW_HIGH_SCORE)) {
                 saveHighScore();
-                _score = 0;
-                _newHighScore = false;
             }
         }
     }
@@ -200,33 +184,19 @@ class PinballProgram {
     void executeCommand(char command, unsigned long number) {
         switch (command) {
         case '+':
-            if (_balls > 0) {
-                _score += number;
-            }
-
+            _logic.addScore(number);
             break;
         case '*':
-            if (_balls > 0) {
-                _scoreToAdd += number;
-            }
-
+            _logic.addScoreSlow(number);
             break;
         case 'n':
-            _score = 0;
-            _scoreToAdd = 0;
-            _balls = number;
+            _logic.newGame(number);
             break;
         case 'b':
-            if (_balls > 0) {
-                --_balls;
-            }
-
+            _logic.loseBall();
             break;
         case 'x':
-            if (_balls > 0) {
-                ++_balls;
-            }
-
+            _logic.addBall();
             break;
         }
     }
@@ -331,27 +301,23 @@ class PinballProgram {
 public:
     PinballProgram(int pinCount, const byte* pins) :
         _audio(),
-        _balls(3),
         _demoMode(0),
         _filename(new char[9]),
         _initTime(0),
-        _newHighScore(false),
         _pins(pinCount, pins),
-        _score(0),
         _scoreDisplay(),
-        _scoreToAdd(0),
         _scrollText(),
         _showText(false)
     {
         _scoreDisplay.addDisplay(new SureDisplay(DISPLAY_CHIP_SELECT_PIN_B, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN));
         _scoreDisplay.clear();
-        _scoreDisplay.showNumber(_score, 5);
+        _scoreDisplay.showNumber(_logic.score(), 5);
         _scrollText.addDisplay(new SureDisplay(DISPLAY_CHIP_SELECT_PIN_A, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN));
         _scrollText.addDisplay(new SureDisplay(DISPLAY_CHIP_SELECT_PIN_B, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN));
         _audio.speakerPin = SPEAKER_PIN;
         loadHighScore();
         if (SD.begin(SD_CARD_CHIP_SELECT_PIN)) {
-            _scoreDisplay.showNumber(_score, 5);
+            _scoreDisplay.showNumber(_logic.score(), 5);
         }
         else {
             _demoMode = 1;
@@ -364,7 +330,7 @@ public:
     }
 
     void loop() {
-        unsigned long oldScore = _score;
+        unsigned long oldScore = _logic.score();
         _pins.loop();
         if (_demoMode != 0) {
             demo();
@@ -377,13 +343,13 @@ public:
             _scrollText.loop();
             if (_scrollText.isFinished()) {
                 _showText = false;
-                _scoreDisplay.showNumber(_score, 5);
+                _scoreDisplay.showNumber(_logic.score(), 5);
             }
         }
         else {        
             // Update score on display if it has changed
-            if (_score != oldScore) {
-                _scoreDisplay.showNumber(_score, 5);
+            if (_logic.score() != oldScore) {
+                _scoreDisplay.showNumber(_logic.score(), 5);
             }
         }
 

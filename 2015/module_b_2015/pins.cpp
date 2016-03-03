@@ -20,6 +20,11 @@
 #define CONFIG_INPUT 0
 #define CONFIG_OUTPUT 1
 
+#define STATE_OPEN 0
+#define STATE_CLOSED 1
+
+#define INPUT_DELAY 200
+
 Pins::Pins(byte count, const byte* pins) :
     _config(new byte[count]),
     _count(count),
@@ -38,21 +43,21 @@ Pins::Pins(byte count, const byte* pins) :
 void Pins::loop() {
     unsigned long now = millis();
     for (int pin = 0; pin < _count; ++pin) {
-        // Clear event from last loop
-        if (_inputStates[pin] >= INPUT_DELAY) {
-          _inputStates[pin] = 0;
-        }
-
-        if (_config[pin] == CONFIG_INPUT && _inputLock[pin] < now) {
-            int state = digitalRead(_pins[pin]);
-            if (state == HIGH) {
-                _inputStates[pin] = 1;
-            }
-            else if (0 < _inputStates[pin] && _inputStates[pin] < INPUT_DELAY) {
-                ++_inputStates[pin];
+        if (_config[pin] == CONFIG_INPUT) {
+            _inputStates[pin] = STATE_OPEN;
+            if (_inputLock[pin] < now) {
+                int state = digitalRead(_pins[pin]);
+                if (state == LOW) {
+                    _inputStates[pin] = STATE_CLOSED;
+                    _inputLock[pin] = now + INPUT_DELAY;
+                }
             }
         }
     }
+}
+
+boolean Pins::hasEvent(byte pin) const {
+    return _inputStates[pin] == STATE_CLOSED;
 }
 
 void Pins::setHigh(int pin) {
