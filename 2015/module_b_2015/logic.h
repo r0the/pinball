@@ -34,8 +34,8 @@ public:
     void addScore(unsigned long scoreToAdd);
     void addScoreSlow(unsigned long scoreToAdd);
     void beginLoop();
-    inline bool checkState(byte state) const { return (_state & state) == state; }
     void endLoop();
+    inline bool hasState(byte state) const { return (_state & state) == state; }
     inline unsigned long highScore() const { return _highScore; }
     void loseBall();
     void newGame(byte balls);

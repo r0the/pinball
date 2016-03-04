@@ -1,11 +1,10 @@
-#include <SD.h>
-#include <SPI.h>
 #include "virtual_display.h"
 #include "scroll_text.h"
 #include "sure_display.h"
 #include "logic.h"
 #include "_TMRpcm.h"
 #include "pins.h"
+#include "sdcard.h"
 
 // --------------------------------------------------------------------------------------------------
 // Customization
@@ -64,7 +63,8 @@ const char* const eventName[] PROGMEM = {
 #define PARSE_NUMBER 2
 
 // --------------------------------------------------------------------------------------------------
-// Messages
+// Messages.
+
 // --------------------------------------------------------------------------------------------------
 
 const char SD_CARD_NOT_READY[] PROGMEM = "ERROR: SD card not ready.";
@@ -79,14 +79,13 @@ const char DEMO_TEXT[] PROGMEM = "FF Technisches Konstruieren";
 #define MAX_TEXT_SIZE 40
 
 class PinballProgram {
-    TMRpcm _audio;
     byte _demoMode;
-    char* _filename;
     unsigned long _initTime;
     Logic _logic;
     Pins _pins;
     VirtualDisplay _scoreDisplay;
     ScrollText _scrollText;
+    SdCard _sdCard;
     boolean _showText;
 
 // --------------------------------------------------------------------------------------------------
@@ -104,32 +103,6 @@ class PinballProgram {
 #endif
 
 // --------------------------------------------------------------------------------------------------
-
-    void saveHighScore() {
-        File file = SD.open("hiscore.dat", FILE_WRITE);
-        unsigned long number = _logic.highScore();
-        while (number > 0) {
-            file.write('0' + (number % 10));
-            number = number / 10;
-        }
-
-        file.flush();
-        file.close();
-    }
-
-    void loadHighScore() {
-        unsigned long highScore = 0;
-        File file = SD.open("hiscore.dat", FILE_READ);
-        while (file.available()) {
-            char ch = file.read();
-            if ('0' <= ch && ch <= '9') {
-                highScore = highScore * 10 + (ch - '0');
-            }
-        }
-
-        file.close();
-        _logic.setHighScore(highScore);
-    }
 
     void demo() {
         unsigned long time = millis();
@@ -161,7 +134,7 @@ class PinballProgram {
 
         // Process delayed score
         _logic.endLoop();
-        if (_logic.checkState(NEW_HIGH_SCORE_NOW)) {
+        if (_logic.hasState(NEW_HIGH_SCORE_NOW)) {
             event(HIGH_EVENT);
         }
 
@@ -171,142 +144,45 @@ class PinballProgram {
             _initTime = 0;      
         }
 
-        if (_logic.checkState(GAME_OVER_NOW)) {
+        if (_logic.hasState(GAME_OVER_NOW)) {
             event(OVER_EVENT);
             _initTime = now + INIT_DELAY;
 
-            if (_logic.checkState(NEW_HIGH_SCORE)) {
-                saveHighScore();
+            if (_logic.hasState(NEW_HIGH_SCORE)) {
+                _sdCard.saveHighScore(_logic.highScore());
             }
         }
-    }
-
-    void executeCommand(char command, unsigned long number) {
-        switch (command) {
-        case '+':
-            _logic.addScore(number);
-            break;
-        case '*':
-            _logic.addScoreSlow(number);
-            break;
-        case 'n':
-            _logic.newGame(number);
-            break;
-        case 'b':
-            _logic.loseBall();
-            break;
-        case 'x':
-            _logic.addBall();
-            break;
-        }
-    }
-
-    void executeProgram(const char* filename) {
-        File file = SD.open(filename, FILE_READ);
-        if (!file) {
-            // ignore
-            return;
-        }
-
-        byte mode = PARSE_COMMAND;
-        char command = '\0';
-        char ch = '\0';
-        unsigned long number = 0;
-        while (file.available()) {
-            ch = file.read();
-            switch (ch) {
-            case '+':
-            case '*':
-            case 'n':
-                if (mode == PARSE_COMMAND) {
-                    command = ch;
-                    mode = PARSE_NUMBER;
-                }
-                else {
-                    executeCommand(command, number);
-                    number = 0;
-                    mode = PARSE_COMMAND;
-                }
-
-                break;
-            case 'b':
-            case 'x':
-                executeCommand(ch, number);
-                break;
-            case '0':
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-            case '9':
-                if (mode == PARSE_NUMBER) {
-                    number = number * 10 + (ch - '0');
-                }
-
-                break;
-            default:
-                if (mode == PARSE_NUMBER) {
-                    executeCommand(command, number);
-                    number = 0;
-                }
-
-                mode = PARSE_COMMAND;
-                break;
-            }
-        }
-
-        if (mode == PARSE_NUMBER) {
-            executeCommand(command, number);
-        }
-
-        file.close();
     }
 
     void event(byte id) {
         customEvent(id + 1);
-        strcpy_P(_filename, (char*) pgm_read_word(&(eventName[id])));
-        _filename[4] = '.';
-        _filename[5] = 'w';
-        _filename[6] = 'a';
-        _filename[7] = 'v';
-        _filename[8] = '\0';
-        if (SD.exists(_filename)) {
-            if (_audio.isPlaying()) {
-                _audio.stopPlayback();
-            }
-    
-            _audio.play(_filename);
+        if (_sdCard.hasAction(id, ACTION_SCORE)) {
+            _logic.addScore(_sdCard.number(id));
         }
 
-        _filename[5] = 't';
-        _filename[6] = 'x';
-        _filename[7] = 't';
-        if (SD.exists(_filename)) {
-            _scrollText.loadText(_filename);
-            _showText = true;
+        if (_sdCard.hasAction(id, ACTION_LOSE_BALL)) {
+            _logic.loseBall();
         }
 
-        _filename[5] = 'p';
-        _filename[6] = 'r';
-        _filename[7] = 'g';
-        if (SD.exists(_filename)) {
-            executeProgram(_filename);
+        if (_sdCard.hasAction(id, ACTION_EXTRABALL)) {
+            _logic.addBall();
         }
+
+        if (_sdCard.hasAction(id, ACTION_TEXT)) {
+            _scrollText.loadText(_sdCard.filename(id));
+        }
+
+        _sdCard.play(id);
     }
 
 public:
     PinballProgram(int pinCount, const byte* pins) :
-        _audio(),
         _demoMode(0),
-        _filename(new char[9]),
         _initTime(0),
         _pins(pinCount, pins),
         _scoreDisplay(),
         _scrollText(),
+        _sdCard(SD_CARD_CHIP_SELECT_PIN, SPEAKER_PIN),
         _showText(false)
     {
         _scoreDisplay.addDisplay(new SureDisplay(DISPLAY_CHIP_SELECT_PIN_B, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN));
@@ -314,14 +190,14 @@ public:
         _scoreDisplay.showNumber(_logic.score(), 5);
         _scrollText.addDisplay(new SureDisplay(DISPLAY_CHIP_SELECT_PIN_A, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN));
         _scrollText.addDisplay(new SureDisplay(DISPLAY_CHIP_SELECT_PIN_B, DISPLAY_CLOCK_PIN, DISPLAY_DATA_PIN));
-        _audio.speakerPin = SPEAKER_PIN;
-        loadHighScore();
-        if (SD.begin(SD_CARD_CHIP_SELECT_PIN)) {
-            _scoreDisplay.showNumber(_logic.score(), 5);
+        if (_sdCard.error() > 0) {
+            _scoreDisplay.showNumber(_sdCard.error(), 5);
         }
         else {
-            _demoMode = 1;
+            _scoreDisplay.showNumber(_logic.score(), 5);
         }
+
+        _logic.setHighScore(_sdCard.highScore());
     }
 
     void init() {
