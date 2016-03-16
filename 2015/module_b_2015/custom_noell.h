@@ -10,16 +10,24 @@ void customInit() {
     pinMode(RED_PIN, OUTPUT);
     pinMode(GREEN_PIN, OUTPUT);
     pinMode(BLUE_PIN, OUTPUT);
-    setColor(HIGH, LOW, LOW);
+    digitalWrite(RED_PIN, HIGH);
+    digitalWrite(GREEN_PIN, LOW); 
+    digitalWrite(BLUE_PIN, LOW); 
     customLoop();
     delay(200);
-    setColor(LOW, HIGH, LOW);
+    digitalWrite(RED_PIN, LOW);
+    digitalWrite(GREEN_PIN, HIGH); 
+    digitalWrite(BLUE_PIN, LOW); 
     customLoop();
     delay(200);
-    setColor(LOW, LOW, HIGH);    
+    digitalWrite(RED_PIN, LOW);
+    digitalWrite(GREEN_PIN, LOW); 
+    digitalWrite(BLUE_PIN, HIGH); 
     customLoop();
     delay(200);
-    setColor(LOW, LOW, LOW);
+    digitalWrite(RED_PIN, LOW);
+    digitalWrite(GREEN_PIN, LOW); 
+    digitalWrite(BLUE_PIN, LOW); 
     customLoop();
 }
 
@@ -30,42 +38,52 @@ void setColor(byte r, byte g, byte b) {
 }
 
 void customEvent(int id) {
+    // Entry
     if (id == 1) {
-        setColor(LOW, LOW, HIGH);
-        _logic.addScore(200);
+        digitalWrite(RED_PIN, LOW); 
+        digitalWrite(GREEN_PIN, LOW); 
+        digitalWrite(BLUE_PIN, HIGH); 
     }
 
+    // Multiball
     if (id == 2) {
-        setColor(HIGH, LOW, LOW);
-        
+        digitalWrite(RED_PIN, HIGH); 
+        digitalWrite(GREEN_PIN, LOW); 
+        digitalWrite(BLUE_PIN, LOW); 
     }
 
+    // 
     if (id == 3) {
-        setColor(LOW, HIGH, LOW);
+        digitalWrite(RED_PIN, LOW); 
+        digitalWrite(GREEN_PIN, HIGH); 
+        digitalWrite(BLUE_PIN, LOW); 
     }
 
     if (id == 4) {
-        if (red || green || blue) {
-            setColor(LOW, LOW, LOW);
+        if (digitalRead(RED_PIN) == HIGH) {
+            digitalWrite(RED_PIN, LOW);
+            digitalWrite(GREEN_PIN, LOW); 
+            digitalWrite(BLUE_PIN, LOW); 
         }
         else {
-            setColor(HIGH, HIGH, HIGH);
+            digitalWrite(RED_PIN, HIGH); 
+            digitalWrite(GREEN_PIN, HIGH); 
+            digitalWrite(BLUE_PIN, HIGH); 
         }
-        _logic.addScore(50);
     }
 
     if (id == 5) {
-//        _score += 155;
+            digitalWrite(RED_PIN, HIGH); 
+            digitalWrite(GREEN_PIN, LOW); 
+            digitalWrite(BLUE_PIN, HIGH); 
     }
-
     if (id == 6) {
-        setColor(LOW, LOW, LOW);
+        digitalWrite(RED_PIN, LOW);
+        digitalWrite(GREEN_PIN, LOW); 
+        digitalWrite(BLUE_PIN, LOW); 
     }
 }
 
 void customLoop() {
-    digitalWrite(RED_PIN, red); 
-    digitalWrite(GREEN_PIN, green); 
-    digitalWrite(BLUE_PIN, blue); 
 }
 
