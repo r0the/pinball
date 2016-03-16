@@ -10,7 +10,7 @@
 // Customization
 // --------------------------------------------------------------------------------------------------
 //#define CHRISTOPHE
-//#define NOELL
+// #define NOELL
 //#define STEFAN
 
 
@@ -32,35 +32,7 @@ const byte PINS[] = { A5, A4, A3, A2, A1, A0, 1, 2, 3 };
 // Other constants
 // --------------------------------------------------------------------------------------------------
 
-// Events
-#define INIT_EVENT 9
-#define HIGH_EVENT 10
-#define OVER_EVENT 11
-
-const char event_in01[] PROGMEM = "in01";
-const char event_in02[] PROGMEM = "in02";
-const char event_in03[] PROGMEM = "in03";
-const char event_in04[] PROGMEM = "in04";
-const char event_in05[] PROGMEM = "in05";
-const char event_in06[] PROGMEM = "in06";
-const char event_in07[] PROGMEM = "in07";
-const char event_in08[] PROGMEM = "in08";
-const char event_in09[] PROGMEM = "in09";
-const char event_init[] PROGMEM = "init";
-const char event_high[] PROGMEM = "high";
-const char event_over[] PROGMEM = "over";
-
-// Event names
-const char* const eventName[] PROGMEM = {
-  event_in01, event_in02, event_in03, event_in04, event_in05, event_in06,
-  event_in07, event_in08, event_in09, event_init, event_high, event_over
-};
-
 #define INIT_DELAY 6000
-
-// Parse modes
-#define PARSE_COMMAND 1
-#define PARSE_NUMBER 2
 
 // --------------------------------------------------------------------------------------------------
 // Messages.
