@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 by Stefan Rothe
+ * Copyright (C) 2015 - 2016 by Stefan Rothe
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,7 @@
 #define CONFIG_OUTPUT 1
 
 #define STATE_OPEN 0
-#define STATE_CLOSED 1
+#define STATE_CLOSED 20
 
 #define INPUT_DELAY 200
 
@@ -35,7 +35,7 @@ Pins::Pins(byte count, const byte* pins) :
     for (int pin = 0; pin < _count; ++pin) {
         _config[pin] = CONFIG_INPUT;
         _inputLock[pin] = 0;
-        _inputStates[pin] = 1;
+        _inputStates[pin] = STATE_OPEN;
         pinMode(_pins[pin], INPUT_PULLUP);
     }
 }
@@ -44,12 +44,17 @@ void Pins::loop() {
     unsigned long now = millis();
     for (int pin = 0; pin < _count; ++pin) {
         if (_config[pin] == CONFIG_INPUT) {
-            _inputStates[pin] = STATE_OPEN;
+            if (_inputStates[pin] == STATE_CLOSED) {
+                _inputStates[pin] = STATE_OPEN;
+                _inputLock[pin] = now + INPUT_DELAY;
+            }
             if (_inputLock[pin] < now) {
                 int state = digitalRead(_pins[pin]);
-                if (state == LOW) {
-                    _inputStates[pin] = STATE_CLOSED;
-                    _inputLock[pin] = now + INPUT_DELAY;
+                if (state == LOW && _inputStates[pin] < STATE_CLOSED) {
+                    ++_inputStates[pin];
+                }
+                if (state == HIGH) {
+                    _inputStates[pin] = STATE_OPEN;
                 }
             }
         }
