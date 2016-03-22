@@ -36,7 +36,7 @@ Masse des Ausgabemoduls verbunden. Nun wird der andere Kontakt des ersten Target
 IOA des Moduls verbunden, anschliessend der andere Kontakt des zweiten Targets mit dem Eingang IOB
 und schliesslich der andere Kontakt des dritten Targets mit dem Eingang IOC.
 
-[](example-target.png)
+![](example-target.png)
 
 Wenn nun ein Target getroffen wird, so wird der Stromkreis geschlossen und am entsprechenden Eingang
 liegt eine Spannung von 0 Volt an und das Ausgabemodul erkennt den Eingang als "aktiv".
