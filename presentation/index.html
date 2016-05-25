@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Digitalelektronik</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+        <link rel="stylesheet" href="lib/katex/katex.min.css">
+        <link rel="stylesheet" href="lib/reveal/reveal.css">
+        <link rel="stylesheet" href="lib/highlight/github.css">
+        <link rel="stylesheet" href="lib/kinet/kinet.css" id="theme">
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <!-- Hier beginnt der Inhalt -->
+                <section>
+                    <h1>Digitalelektronik</h1>
+                    <figure><img class="plain" src="sample-resources/gk_logo_internal_blue.svg" width="200"></figure>
+                </section>
+                <section>
+                    <h2>Aufgaben</h2>
+                    <ul>
+                        <li>Audioausgabe</li>
+                        <li>Zählen und Anzeigen der Punkte</li>
+                        <li>Spiellogik (Anzahl Bälle, Punktehöchststand)</li>
+                        <li>Steuerung von Spielfeld-Komponenten</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Komponenten</h2>
+                    <p>
+                        <img class="fragment" src="images/arduino-duemilanove.png" width="200">
+                        <img class="fragment" src="images/sd-card.png" width="50">
+                        <img class="fragment" src="images/usb-speaker.png" width="100">
+                        <span class="fragment">
+                            <img src="images/seven-segment-1.svg" height="100">
+                            <img src="images/seven-segment-6.svg" height="100">
+                            <img src="images/seven-segment-9.svg" height="100">
+                            <img src="images/seven-segment-8.svg" height="100">
+                            <img src="images/seven-segment-5.svg" height="100">
+                        </span>
+                    </p>
+                </section>
+                <section>
+                    <h2>Arduino</h2>
+                    <div class="left">
+                        <img src="images/arduino-duemilanove.png">
+                    </div>
+                    <div class="right">
+                        <ul class="fragment current-visible stack">
+                            <li>Mikrocontroller-Board</li>
+                            <li>Open Source</li>
+                            <li>Grosse Community</li>
+                        </ul>
+                        <ul class="fragment current-visible stack">
+                            <li>RAM: 2 KB<br>(1'000'000 KB)</li>
+                            <li>Flash: 32 KB<br>(32'000'000 KB)</li>
+                            <li>16 MHz<br>(13'000 MHz)</li>
+                        </ul>
+                        <ul class="fragment current-visible stack">
+                            <li>Kein Betriebssystem</li>
+                            <li>&laquo;einfach&raquo; programmierbar</li>
+                            <li>18 Ein-/Ausgänge</li>
+                        </ul>
+                    </div>
+                </section>
+                <section>
+                    <h2>Audioausgabe</h2>
+                    <p>
+                        <img class="fragment" src="images/mac-book.png" width="200">
+                        <img class="fragment" src="images/sd-card.png" width="50">
+                        <img class="fragment" src="images/arduino-duemilanove.png" width="200">
+                        <img class="fragment" src="images/usb-speaker.png" width="100">
+                    </p>
+                </section>
+                <section>
+                    <h2>Spiellogik</h2>
+                    <pre><code>if (_highScore < _score) {
+    if (_state & NEW_HIGH_SCORE) {
+        _state &= ~NEW_HIGH_SCORE_NOW;
+    }
+    else {
+        _state |= NEW_HIGH_SCORE | NEW_HIGH_SCORE_NOW;
+    }
+}
+
+if (_state & BALLS_CHANGED && _balls == 0) {
+    if (_state & GAME_OVER) {
+        _state &= ~GAME_OVER_NOW;
+    } else {
+        _state |= GAME_OVER | GAME_OVER_NOW;
+    }
+}</code></pre>
+                </section>
+                <section>
+                    <h2>Anzeige</h2>
+                    <div class="left">
+                        <h3>Siebensegment</h3>
+                        <p>
+                            <img src="images/seven-segment-1.svg" height="100">
+                            <img src="images/seven-segment-6.svg" height="100">
+                            <img src="images/seven-segment-9.svg" height="100">
+                            <img src="images/seven-segment-8.svg" height="100">
+                            <img src="images/seven-segment-5.svg" height="100">
+                        </p>
+                        <p class="fragment">7 &times; 5 = 35 Eingänge</p>
+                    </div>
+                    <div class="right">
+                        <h3>Matrix</h3>
+                        <p>
+                            <img src="images/led-matrix-1.svg" height="100">
+                            <img src="images/led-matrix-6.svg" height="100">
+                            <img src="images/led-matrix-9.svg" height="100">
+                            <img src="images/led-matrix-8.svg" height="100">
+                            <img src="images/led-matrix-5.svg" height="100">
+                        </p>
+                        <p class="fragment">8 &times; 64 = 512 Eingänge</p>
+                        <p class="fragment">8 + 64 = 72 Eingänge</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2>Platine 2016</h2>
+                    <p>
+                        <img src="images/shield-2016-front-bare.jpg">
+                        <img src="images/shield-2016-back-sd-reader.jpg">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Platine 2016 bestückt</h2>
+                    <p>
+                        <img src="images/shield-2016-front-populated.jpg">
+                        <img src="images/shield-2016-back-populated.png">
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Platine 2016 mit Chips</h2>
+                    <p>
+                        <img src="images/shield-2016-back-arduino.png">
+                    </p>
+                </section>
+                <section>
+                    <h2>Sicht der Schüler/innen</h2>
+                    <ul>
+                        <li>Platine bestücken (löten)</li>
+                        <li>Mit Automaten verbinden</li>
+                        <li>Audiodateien konvertieren</li>
+                        <li>Konfigurieren</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Fakultativfach Informatik</h2>
+                    <ul>
+                        <li>Programmieren</li>
+                        <li>Digitalelektronik</li>
+                    </ul>
+                    <p>Überschneidung: ~3 Schüler/innen pro Jahr</p>
+                </section>
+                <section>
+                </section>
+                <section>
+                    <h2>Ablauf</h2>
+                    <ol>
+                        <li>Arduino</li>
+                        <li>Audio</li>
+                        <li>Anzeige</li>
+                        <li>Schieberegister</li>
+                        <li>FET</li>
+                        <li>Gates</li>
+                        <li></li>
+                        <li>Programmierung</li>
+                    </ol>
+                </section>
+                <section>
+                    <h2>Anknüpfungspunkte</h2>
+                    <ul>
+                        <li>Anwendung: Technik</li>
+                        <li>Transistoren: Physik</li>
+                        <li>Logik: Geogres Boole, Mathematik</li>
+                        <li>Automatentheorie: Noam Chomsky, Linguistik</li>
+                    </ul>
+
+                </section>
+                <!-- Hier Endet der Inhalt -->
+            </div>
+        </div>
+        <script src="lib/jquery/jquery.min.js"></script>
+        <script src="lib/highcharts/highcharts.js"></script>
+        <script src="lib/highlight/highlight.pack.js"></script>
+        <script src="lib/katex/katex.min.js"></script>
+        <script src="lib/reveal/head.min.js"></script>
+        <script src="lib/reveal/reveal.js"></script>
+        <script src="lib/kinet/jeda.js"></script>
+        <script src="lib/kinet/jeda-html.js"></script>
+        <script src="lib/kinet/kinet.js"></script>
+        <script>
+            // Full list of configuration options available at:
+            // https://github.com/hakimel/reveal.js#configuration
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: false,
+
+                transition: 'slide',
+            });
+
+            Kinet.setup({
+                official: false
+            });
+        </script>
+        <!-- Das muss noch weg: -->
+        <script>
+            $('#sample-chart').highcharts({
+                chart: {
+                    type: 'column'
+                },
+                colors: [
+                    '#41a7d1', '#74bf3d', '#fca400', '#e8cc00', '#3348b5'
+                ],
+                title: {
+                    text: 'Ein Balkendiagramm'
+                },
+                xAxis: {
+                    categories: ['A', 'B', 'C']
+                },
+                yAxis: {
+                    min: 0,
+                    max: 4,
+                    title: ''
+                },
+                series: [{
+                    name: 'Häufigkeit',
+                    data: [1, 2, 3],
+                    showInLegend: false,
+                    animation: false
+                }]
+            });
+        </script>
+    </body>
+</html>

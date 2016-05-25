@@ -1,0 +1,13 @@
+{
+    "cols": [
+        { "title": "Browser"},
+        { "title": "Anteil (%)"}
+    ],
+    "data": [
+        [ "Firefox", 29.5],
+        [ "Chrome", 27],
+        [ "Safari", 20.4],
+        [ "IE", 10.1],
+        [ "Opera", 2.2]
+    ]
+}
