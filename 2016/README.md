@@ -21,6 +21,31 @@
 | 15  | 5V          | 5V      |
 | 16  | RESET       | RESET   |
 
+## Preis
+
+| Komponente            | Einzelpreis | Anzahl | Totel |
+| Siebensegmentanzeige  |  2.90       | 5      | 14.50 |
+| Schieberegister       |  0.50       | 5      |  2.50 |
+| Klinkensteckverbinder |  1.25       | 1      |  1.25 |
+| IC-Fassung 16 Pol     |  0.30       | 6      |  1.80 |
+| Puffer-Treiber        |  0.40       | 1      |  0.40 |
+| SD-Kartensockel       |  3.00       | 1      |  3.00 |
+| SD-Karte              |  8.95       | 1      |  8.95 |
+| Arduino               | 20.00       | 1      | 20.00 |
+| Platine               |  5.00       | 1      |  5.00 |
+| Verbrauchsmaterial    |  2.60       |        |  2.60 |
+| **Total**             |             |        | 60.00 |
+
+## Komponenten
+
+- Siebensegmentanzeige: [Kingbright SC10-21HWA](http://www.conrad.ch/ce/de/product/160040/)
+- Klinkensteckverbinder 3.5mm: [BKL Electronic 1109050](http://www.conrad.ch/ce/de/product/730294/)
+- Schieberegister: [Texas Instruments SN74HC595N PDIP-16](http://www.conrad.ch/ce/de/product/1016774/)
+- Schraubklemmblock: [AKZ692/8-2.54-V-GRÜN](http://www.conrad.ch/ce/de/product/567844/)
+- SD-Karte: [2 GB Transcend](https://www.conrad.ch/ce/de/product/992826/)
+- SD-Kartensockel: [Attend 104H-TDA0-R01 1](http://www.conrad.ch/ce/de/product/1308325/)
+- Puffer-Treiber: [Texas Instruments CD74HC4050E PDIP-16](https://www.conrad.ch/ce/de/product/164895/)
+
 ## Ereignisse
 
 | Name   | Beschreibung                                 |
@@ -52,10 +77,12 @@ Mit dem frei verfügbaren Programm Audacity kann jede Audiodatei mit kleinem Auf
 Format umgewandelt werden:
 
 1. Audiodatei öffnen.
-2. Menüpunkt Spuren / Stereosput in Mono umwandeln auswählen.
-3. Projektfrequenz auf 16000 Hz stellen (unten links).
-4. Exportieren als *Andere unkomprimierte Dateien* mit den folgenden Optionen:
-    − Header: WAV (Microsoft)
+2. Spur auswählen.
+3. Menüpunkt Spuren / Stereosput in Mono umwandeln auswählen.
+4. Projektfrequenz auf 16000 Hz stellen (unten links).
+5. Exportieren als *Andere unkomprimierte Dateien* mit den folgenden Optionen:
+
+    - Header: WAV (Microsoft)
     - Codec: Unsigned 8 bit PCM
 
 ### Dateiname
@@ -63,7 +90,7 @@ Format umgewandelt werden:
 Der Dateiname muss mit dem Namen eines *Ereignisses* übereinstimmen. Die Dateiendung muss '.wav'
 lauten. Der ganze Dateiname muss in Kleinbuchstaben geschrieben werden.
 
-## Konfiguration der Ein- und Ausgängen
+## Konfiguration der Anschlüsse
 
 Die Anschlüsse *IO-A* bis *IO-K* können entweder als Eingang oder als Ausgang verwendet werden.
 In der Datei `io.txt` auf der SD-Karte wird festgelegt, in welchem Modus jeder Anschluss betrieben
@@ -80,7 +107,7 @@ io-c o
 
 ## Konfiguration von Aktionen
 
-Aktionen werden in der Datei `actions.txt` auf der SD-Karte muss festgelegt.
+Aktionen werden in der Datei `action.txt` auf der SD-Karte definiert.
 
 ## Anwendungsbeispiele
 
@@ -102,14 +129,14 @@ Eingang *IO-B* und schliesslich der andere Kontakt des dritten Targets mit dem E
 Wenn nun ein Target getroffen wird, so wird der Stromkreis geschlossen und am entsprechenden
 Eingang liegt eine Spannung von 0 Volt an und das Ausgabemodul erkennt den Eingang als "aktiv".
 
-**Konfiguration:** In der Konfigurationsdatei `config.txt` auf der SD-Karte muss festgelegt werden,
+**Konfiguration:** In der Konfigurationsdatei `action.txt` auf der SD-Karte muss festgelegt werden,
 dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind. Ausserdem wird die zu
 zählende Punktzahl pro Eingang festgelegt:
 
 ```
-io-a:in s+50
-io-b:in s+100
-io-c:in s+1000
+io-a s+50
+io-b s+100
+io-c s+1000
 ```
 
 Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte
@@ -132,12 +159,12 @@ Ausgabemodus verbunden. Der andere Kontakt des Ballverlust-Kontakts wird mit ein
 
 ![](example-game-over.png)
 
-**Konfiguration:** In der Konfigurationsdatei `config.txt` auf der SD-Karte wird festgelegt, dass
+**Konfiguration:** In der Konfigurationsdatei `action.txt` auf der SD-Karte wird festgelegt, dass
 der Anschluss *IO-A* als Eingang zu behandeln sind und dass bei dessen Aktivierung die Anzahl Kugeln
 um eins zu reduzieren ist:
 
 ```
-io-a:in z-1
+io-a z-1
 ```
 
 ### Zeitschaltung
