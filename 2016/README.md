@@ -1,4 +1,4 @@
-# Ausgabemodul für Flipperautomaten 2016
+# Mikrocontroller-Modul für Flipperautomaten 2016
 
 ## Anschlüsse
 
@@ -23,7 +23,8 @@
 
 ## Preis
 
-| Komponente            | Einzelpreis | Anzahl | Totel |
+| Komponente            | Einzelpreis | Anzahl | Total |
+| --------------------- | ----------- | ------ | ----- |
 | Siebensegmentanzeige  |  2.90       | 5      | 14.50 |
 | Schieberegister       |  0.50       | 5      |  2.50 |
 | Klinkensteckverbinder |  1.25       | 1      |  1.25 |
@@ -33,8 +34,10 @@
 | SD-Karte              |  8.95       | 1      |  8.95 |
 | Arduino               | 20.00       | 1      | 20.00 |
 | Platine               |  5.00       | 1      |  5.00 |
+| USB-Ladegerät         |  9.95       | 1      |  9.95 |
+| Lautsprecherboxen     | 13.95       | 1      | 13.95 |
 | Verbrauchsmaterial    |  2.60       |        |  2.60 |
-| **Total**             |             |        | 60.00 |
+| **Total**             |             |        | 81.30 |
 
 ## Komponenten
 
@@ -45,25 +48,31 @@
 - SD-Karte: [2 GB Transcend](https://www.conrad.ch/ce/de/product/992826/)
 - SD-Kartensockel: [Attend 104H-TDA0-R01 1](http://www.conrad.ch/ce/de/product/1308325/)
 - Puffer-Treiber: [Texas Instruments CD74HC4050E PDIP-16](https://www.conrad.ch/ce/de/product/164895/)
+- USB-Ladegerät: [Goobay 42663](http://www.conrad.ch/ce/de/product/393438/)
+- Lautsprecherboxen: [Logitech Z120 2.0](http://www.conrad.ch/ce/de/product/917126/)
 
 ## Ereignisse
 
-| Name   | Beschreibung                                 |
-| ------ | -------------------------------------------- |
-| `init` | Der Mikrocontroller ist zurückgesetzt worden |
-| `io-a` | Anschluss IO-A ist aktiviert worden          |
-| `io-b` | Anschluss IO-B ist aktiviert worden          |
-| `io-c` | Anschluss IO-C ist aktiviert worden          |
-| `io-d` | Anschluss IO-D ist aktiviert worden          |
-| `io-e` | Anschluss IO-E ist aktiviert worden          |
-| `io-f` | Anschluss IO-F ist aktiviert worden          |
-| `io-g` | Anschluss IO-G ist aktiviert worden          |
-| `io-h` | Anschluss IO-H ist aktiviert worden          |
-| `io-i` | Anschluss IO-I ist aktiviert worden          |
-| `io-j` | Anschluss IO-J ist aktiviert worden          |
-| `io-k` | Anschluss IO-K ist aktiviert worden          |
-| `high` | Ein neuer Punkterekord ist erreicht worden   |
-| `over` | Der letzte Ball ist verloren gegangen        |
+| Name | Beschreibung                                                    |
+| ---- | --------------------------------------------------------------- |
+| `on` | Der Mikrocontroller ist eingeschaltet oder zurückgesetzt worden |
+| `ia` | Anschluss IO-A ist aktiviert worden                             |
+| `ib` | Anschluss IO-B ist aktiviert worden                             |
+| `ic` | Anschluss IO-C ist aktiviert worden                             |
+| `id` | Anschluss IO-D ist aktiviert worden                             |
+| `ie` | Anschluss IO-E ist aktiviert worden                             |
+| `if` | Anschluss IO-F ist aktiviert worden                             |
+| `ig` | Anschluss IO-G ist aktiviert worden                             |
+| `ih` | Anschluss IO-H ist aktiviert worden                             |
+| `ii` | Anschluss IO-I ist aktiviert worden                             |
+| `ij` | Anschluss IO-J ist aktiviert worden                             |
+| `ik` | Anschluss IO-K ist aktiviert worden                             |
+| `hi` | Ein neuer Punkterekord ist erreicht worden                      |
+| `go` | Der letzte Ball ist verloren gegangen                           |
+| `c1` | Countdown 1 hat bis Null gezählt                                |
+| `c2` | Countdown 2 hat bis Null gezählt                                |
+| `c3` | Countdown 3 hat bis Null gezählt                                |
+| `c4` | Countdown 4 hat bis Null gezählt                                |
 
 ## Konfiguration von Audioeffekten
 
@@ -100,9 +109,9 @@ Die Textdatei enthält auf jeder Zeile den Namen eines Anschlusses in Kleinbuchs
 einem Leerzeichen und dem Buchstaben `i` (für *input*) oder `o` (für *output*):
 
 ```
-io-a i
-io-b i
-io-c o
+ia i
+ib i
+ic o
 ```
 
 ## Konfiguration von Aktionen
@@ -134,15 +143,13 @@ dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind. 
 zählende Punktzahl pro Eingang festgelegt:
 
 ```
-io-a s+50
-io-b s+100
-io-c s+1000
+ia s+50
+ib s+100
+ic s+1000
 ```
 
 Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte
-Format konvertiert und untern dem Namen `io-a.wav` auf der SD-Karte gespeichert werden.
-
-### Spielfeld mit drei Targets
+Format konvertiert und untern dem Namen `ia.wav` auf der SD-Karte gespeichert werden.
 
 ### Kugelverlust und Game Over
 
@@ -164,7 +171,7 @@ der Anschluss *IO-A* als Eingang zu behandeln sind und dass bei dessen Aktivieru
 um eins zu reduzieren ist:
 
 ```
-io-a z-1
+ia z-1
 ```
 
 ### Zeitschaltung
