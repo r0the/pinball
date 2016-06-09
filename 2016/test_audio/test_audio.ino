@@ -7,21 +7,41 @@
  */
 
 #include <Arduino.h>
-#include "audiodata.h"
+#include <SD.h>
 
-volatile uint16_t sample = 0;
-
-ISR(TIMER2_CAPT_vect) {
-    OCR1B = 10;
-    ++sample;
-}
-
-uint8_t wgm = 8;
+uint8_t wgm = 1;
 uint8_t cs = 1;
-uint16_t top = 0x00FF;
+volatile uint16_t index = 0;
+volatile uint8_t divisor = 0;
+
+#define BUFFER_SIZE 256
+
+uint8_t buffer[2][BUFFER_SIZE];
+volatile uint8_t activeBuffer = 0;
+volatile uint8_t loadBuffer = 1;
+volatile uint16_t bufferPos = 0;
+File file;
+
+ISR(TIMER1_OVF_vect) {
+    if (divisor < 1) {
+        ++divisor;
+    }
+    else {
+        divisor = 0;
+        OCR1BL = buffer[activeBuffer][bufferPos];
+        ++bufferPos;
+        if (bufferPos >= BUFFER_SIZE) {
+            activeBuffer = (activeBuffer + 1) % 2;
+            bufferPos = 0;
+        }
+    }
+}
 
 void setup() {
     cli();
+    SD.begin(1);
+    file = SD.open("test.wav", FILE_READ);
+
     pinMode(10, OUTPUT);
     // Setup timer 1
 
@@ -56,9 +76,9 @@ void setup() {
     // | 5     | ICIE1          | 1     | enable timer 1 interrupt      |
     // | 4/3   | -              | 00    | -                             |
     // | 2/1   | OCIE1B/OCIE1A  | 00    | irrelevant                    |
-    // | 0     | TOIE1          | 0     | irrelevant                    |
+    // | 0     | TOIE1          | 1     | enable interrupt on top       |
 
-    TIMSK1 = B00100000;
+    TIMSK1 = B00100001;
 
     // ICR1H/ICR1L - Input Capture Register 1
     //
@@ -66,13 +86,22 @@ void setup() {
     // 
     ICR1H = 0x0000;
     ICR1L = 0x00FF;
+    OCR1BH = 0;
+    OCR1BL = 250;
+    checkBuffer();
+    sei();
+}
+
+void checkBuffer() {
+    cli();
+    if (activeBuffer != loadBuffer) {
+        loadBuffer = (loadBuffer + 1) % 2;
+        uint16_t size = file.read(reinterpret_cast<uint8_t*>(buffer[loadBuffer]), BUFFER_SIZE);
+    }
     sei();
 }
 
 void loop() {
-//    digitalWrite(10, HIGH);
-//    delay(50);
-//    digitalWrite(10, LOW);
-//    delay(50);    
+    checkBuffer();
 }
 
