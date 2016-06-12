@@ -1,57 +1,66 @@
 
 #include "display.h"
-#include "sdcard.h"
 #include "audio.h"
+#include "iopins.h"
+#include "logic.h"
+
+#define MODE_CHECK 1
+#define MODE_INIT 20;
 
 Display display;
-SdCard sdcard;
 Audio audio;
+IoPins pins;
+Logic logic;
+uint8_t mode;
+
+const char* TEST_WAV = "test.wav";
 
 void setup() {
+    pins.setup();
     display.setup();
     audio.setup();
-    sdcard.setup();
-}
+//    logic.setup();
 
-void loop() {
-    display.showText("HELLO");
-    delay(3000);
-//    display.showNumber(88888);
-//    delay(3000);
-    if (sdcard.status() == SD_NOT_PRESENT) {
-        display.showText("INSRT");
+    if (!SD.begin(PIN_SD_CHIP_SELECT)) {
+        display.show(TEXT_HELLO);
         delay(3000);
-        display.showText("CARD");
+        while (!SD.begin(PIN_SD_CHIP_SELECT)) {
+            display.show(TEXT_INSRT);
+            delay(1000);
+            display.show(TEXT_SDCRD);
+            delay(1000);
+        }
+    }
+
+    if (SD.exists(TEST_WAV)) {
+        display.show(TEXT_SDRDY);
+        delay(1000);
+        display.showNumber(88888);
         delay(3000);
     }
     else {
-//        audio.play("test.wav");
-        pinMode(10, OUTPUT);
-        display.showText("SD RDY");
-        File file = SD.open("test.wav", FILE_READ);
-        if (!file) {
-            display.showText("READ");
-            delay(3000);
+        mode = MODE_INIT;
+    }
+}
+
+void loopCheck() {
+    for (int i = 0; i < IO_PIN_COUNT; ++i) {
+        if (pins.hasEvent(i)) {
+            display.showPin(i);
         }
+    }    
+}
 
-        unsigned char data; // Declares a variable to store data from the file.
+void loopReady() {
+}
 
-        TCCR1B = (TCCR1B & 0b11111000) | 0x01;
-        //TCCR0B = 0x01; // Sets the PWM frequency to 64KHz in pins 5 and 6.
-
-        for(int count=0; count<129; count++) { // Jumps the header of the .wav file to access the data (after 129 readings). This number may also change for each file.
-            data = file.read(); // Reads byte-by-byte until the end of the header.
-        }
-
-        while (file.available()) { // If the read data is greater or equal 0 (not null),
-            data = file.read(); // Reads 1 byte of the file e stores it in "data"
-            analogWrite(10, data);
-            delayMicroseconds(40); // Waits for certain interval (in microseconds) for the next sample (according to the sample of the .wav file)
-        }
-    
-        // This time waiting makes the samples being nearer the 8KHz frequency of the file.
-    
-        file.close(); // Closes the file.
+void loop() {
+    pins.loop();
+    if (MODE_CHECK) {
+        loopCheck();
+    }
+    else {
+//        loopReady();
     }
 }
 

@@ -32,10 +32,10 @@
  * | Bit | Description                |
  * | --- | -------------------------- |
  * |   7 | playback is running        |
- * |   6 | -                          |
- * |   5 | -                          |
- * |   4 | -                          |
- * |   3 | -                          |
+ * |   6 |
+ * |   5 |
+ * |   4 |
+ * |   3 |
  * |   2 | buffer 1 ready to play     |
  * |   1 | buffer 0 ready to play     |
  * |   0 | playback buffer select     |
@@ -78,6 +78,7 @@ ISR(TIMER1_OVF_vect) {
     }
 
     if (counter < 1) {
+//        checkBuffer();
         ++counter;
     }
     else {
@@ -116,7 +117,7 @@ Audio::~Audio() {
     stop();
 }
 
-void Audio::setup() {
+void Audio::begin() {
     cli();
     pinMode(PIN_PWM, OUTPUT);
 

@@ -3,7 +3,6 @@
 ## SD-Karte
 
 
-
 ## Audioausgabe
 
 ### Puls-Code-Modulation

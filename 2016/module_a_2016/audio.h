@@ -18,16 +18,21 @@
 #ifndef AUDIO_H
 #define AUDIO_H
 
-#include "_TMRpcm.h"
 #include <Arduino.h>
 
 class Audio {
 public:
+    Audio();
+    ~Audio();
     void setup();
-    void play(const char* name);
+    bool play(const char* filename);
+    bool playing() const;
+    void stop();
+    void loop();
 private:
-    char* _filename;
-    TMRpcm _tmrpcm;
+    // disable copying
+    Audio(const Audio&);
+    Audio& operator=(const Audio&);
 };
 
 #endif

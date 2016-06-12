@@ -16,54 +16,74 @@
  */
 
 #include <Arduino.h>
+#include <SD.h>
 #include "iopins.h"
 
-#define EVENT_IA 0
-#define EVENT_IB 1
-#define EVENT_IC 2
-#define EVENT_ID 3
-#define EVENT_IE 4
-#define EVENT_IF 5
-#define EVENT_IG 6
-#define EVENT_IH 7
-#define EVENT_II 8
-#define EVENT_IJ 9
-#define EVENT_IK 10
-#define EVENT_ON 11
-#define EVENT_HI 12
-#define EVENT_COUNT (EVENT_HI + 1)
+#define EVENT_IN_A 0
+#define EVENT_IN_B 1
+#define EVENT_IN_C 2
+#define EVENT_IN_D 3
+#define EVENT_IN_E 4
+#define EVENT_IN_F 5
+#define EVENT_IN_G 6
+#define EVENT_IN_H 7
+#define EVENT_IN_I 8
+#define EVENT_IN_J 9
+#define EVENT_IN_K 10
+#define EVENT_RESET 11
+#define EVENT_HIGH_SCORE 12
+#define EVENT_TIMER_T 13
+#define EVENT_TIMER_U 14
+#define EVENT_TIMER_V 15
+#define EVENT_TIMER_W 16
+#define EVENT_TIMER_X 17
+#define EVENT_TIMER_Y 18
+#define EVENT_GAME_OVER 19
+#define EVENT_COUNT (EVENT_GAME_OVER + 1)
 
-#define CMD_ADD_SCORE     0
-#define CMD_SET_SCORE     1
-#define CMD_SUB_SCORE     2
-#define CMD_ADD_BALL      3
-#define CMD_SET_BALLS     4
-#define CMD_SUB_BALL      5
-#define CMD_COUNTDOWN_1   6
-#define CMD_OUTPUT_LOW    7
-#define CMD_OUTPUT_HIGH   8
+#define ACTION_SET_HIGH 0
+#define ACTION_SET_LOW
 
-class Action {
-public:
-    Action(uint8_t command, uint32_t argument);
-    inline uint32_t argument() const { return _argument; }
-    inline uint8_t command() const { return _command; }
-    Action* next() const { return _next; }
-private:
-    uint8_t _command;
-    uint32_t _argument;
-    Action* _next;
-};
+#define MAX_ACTIONS 100
 
-typedef Action* ActionPtr;
+/*
+ * Actions are internally encoded as a 32-bit unsigned integer.
+ *
+ * | Bit   | Count | Meaning           |
+ * | ----- | ----- | ----------------- |
+ * | 31-29 | 3     | Operation         |
+ * | 28-24 | 5     | Variable          |
+ * | 23-0  | 24    | Argument (Number) |
+ *
+ */
+
+#define OP_ASSIGN      0
+#define OP_ADD         1
+#define OP_SUBTRACT    2
+#define OP_IF_EQUALS   3
+#define OP_IF_SMALLER  4
+#define OP_IF_GREATER  5
+
+// ----------------------------------------------------------------------------
+// class Logic
+// ----------------------------------------------------------------------------
 
 class Logic {
 public:
     Logic();
+    void setup();
     void handleEvent(uint8_t eventId);
 private:
-    void executeAction(Action* action);
-    ActionPtr* _events;
+    Logic(const Logic&);
+    Logic& operator=(const Logic&);
+    void executeAction(uint32_t action);
+    void executeEvent(uint8_t event);
+    void setBalls(uint8_t balls);
+    void setScore(uint32_t score);
+    uint8_t _events[EVENT_COUNT];
+    uint32_t _timers[6];
+    uint32_t _vars[6];
+    uint32_t _actions[MAX_ACTIONS];
     uint8_t _balls;
     uint32_t _score;
     IoPins _pins;

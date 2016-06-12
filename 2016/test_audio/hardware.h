@@ -15,23 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
-
-#define TEXT_HELLO 0x1E6DB517
-#define TEXT_INSRT 0x23862758
-#define TEXT_SDCRD 0x138524E2
-#define TEXT_SDRDY 0x284E14E2
-
 #include <Arduino.h>
 
-class Display {
-public:
-    void setup();
-    void show(uint32_t message);
-    void showNumber(uint32_t number);
-    void showPin(uint8_t pin);
-};
+#define PIN_SD_CHIP_SELECT 1
+#define PIN_PWM 10
 
-#endif
+#define PIN_DISPLAY_LATCH_CLOCK 7
+#define PIN_DISPLAY_DATA 8
+#define PIN_DISPLAY_SHIFT_CLOCK 9
+
+#define IO_PIN_COUNT 11
+const uint8_t IO_PINS[IO_PIN_COUNT] = {
+    2, 3, 4, 5, 6, A5, A4, A3, A2, A1, A0
+};
 

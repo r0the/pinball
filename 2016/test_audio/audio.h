@@ -15,22 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DISPLAY_H
-#define DISPLAY_H
-
-#define TEXT_HELLO 0x1E6DB517
-#define TEXT_INSRT 0x23862758
-#define TEXT_SDCRD 0x138524E2
-#define TEXT_SDRDY 0x284E14E2
+#ifndef AUDIO_H
+#define AUDIO_H
 
 #include <Arduino.h>
 
-class Display {
+class Audio {
 public:
-    void setup();
-    void show(uint32_t message);
-    void showNumber(uint32_t number);
-    void showPin(uint8_t pin);
+    Audio();
+    ~Audio();
+    void begin();
+    bool play(const char* filename);
+    bool playing() const;
+    void stop();
+    void loop();
+private:
+    // disable copying
+    Audio(const Audio&);
+    Audio& operator=(const Audio&);
 };
 
 #endif

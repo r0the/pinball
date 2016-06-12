@@ -72,7 +72,7 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 Beim Zusammenbau ist es sehr wichtig, auf die korrekte Reihenfolge zu achten. Zuerst werden die
 Komponenten auf der Rückseite der Platine wie folgt gelötet:
 
-![](assembly.png)
+![](images/assembly.png)
 
 1. IC-Sockel für Puffer-Treiber löten
 2. *nur mit Siebensegmentanzeige:* IC-Sockel für Anzeige löten ()
@@ -86,64 +86,137 @@ Anschliessend werden die Siebensegmentanzeigen auf der Vorderseite der Platine a
 
 ## Anschlüsse
 
-| Nr. | Bezeichnung | Arduino |
-| --- | ----------- | ------- |
-|  1  | PWM         | D10     |
-|  2  | IO-A        | D2      |
-|  3  | IO-B        | D3      |
-|  4  | IO-C        | D4      |
-|  5  | IO-D        | D5      |
-|  6  | IO-E        | D6      |
-|  7  | IO-F        | A5      |
-|  8  | IO-G        | A4      |
-|  9  | IO-H        | A3      |
-| 10  | IO-I        | A2      |
-| 11  | IO-J        | A1      |
-| 12  | IO-K        | A0      |
-| 13  | VIN         | VIN     |
-| 14  | GND         | GND     |
-| 15  | 5V          | 5V      |
-| 16  | RESET       | RESET   |
+Das Modul stellt mit den grünen Schraubklemmblöcken 16 Anschlüsse zu Verfügung, mit welchen das
+Modul mit dem Automaten verbunden werden kann. Die folgende Tabelle zeigt die Anschlüsse:
 
+| Nr. | Bezeichnung | Arduino | Bedeutung                       |
+| --- | ----------- | ------- | ------------------------------- |
+|  1  | PWM         | D10     | Audioausgabe                    |
+|  2  | IO-A        | D2      | Digitale Ein-/Ausgang A         |
+|  3  | IO-B        | D3      | Digitale Ein-/Ausgang B         |
+|  4  | IO-C        | D4      | Digitale Ein-/Ausgang C         |
+|  5  | IO-D        | D5      | Digitale Ein-/Ausgang D         |
+|  6  | IO-E        | D6      | Digitale Ein-/Ausgang E         |
+|  7  | IO-F        | A5      | Digitale Ein-/Ausgang F         |
+|  8  | IO-G        | A4      | Digitale Ein-/Ausgang G         |
+|  9  | IO-H        | A3      | Digitale Ein-/Ausgang H         |
+| 10  | IO-I        | A2      | Digitale Ein-/Ausgang I         |
+| 11  | IO-J        | A1      | Digitale Ein-/Ausgang J         |
+| 12  | IO-K        | A0      | Digitale Ein-/Ausgang K         |
+| 13  | VIN         | VIN     | Speisespannung (nicht benutzen) |
+| 14  | GND         | GND     | Masse (0 Volt)                  |
+| 15  | 5V          | 5V      | 5 Volt                          |
+| 16  | RESET       | RESET   | Anschluss für Reset-Taste       |
 
-## Ereignisse
+### Konfiguration der Anschlüsse
 
-| Name | Beschreibung                                                    |
-| ---- | --------------------------------------------------------------- |
-| `on` | Der Mikrocontroller ist eingeschaltet oder zurückgesetzt worden |
-| `ia` | Anschluss IO-A ist aktiviert worden                             |
-| `ib` | Anschluss IO-B ist aktiviert worden                             |
-| `ic` | Anschluss IO-C ist aktiviert worden                             |
-| `id` | Anschluss IO-D ist aktiviert worden                             |
-| `ie` | Anschluss IO-E ist aktiviert worden                             |
-| `if` | Anschluss IO-F ist aktiviert worden                             |
-| `ig` | Anschluss IO-G ist aktiviert worden                             |
-| `ih` | Anschluss IO-H ist aktiviert worden                             |
-| `ii` | Anschluss IO-I ist aktiviert worden                             |
-| `ij` | Anschluss IO-J ist aktiviert worden                             |
-| `ik` | Anschluss IO-K ist aktiviert worden                             |
-| `hi` | Ein neuer Punkterekord ist erreicht worden                      |
-| `go` | Der letzte Ball ist verloren gegangen                           |
-| `c1` | Countdown 1 hat bis Null gezählt                                |
-| `c2` | Countdown 2 hat bis Null gezählt                                |
-| `c3` | Countdown 3 hat bis Null gezählt                                |
-| `c4` | Countdown 4 hat bis Null gezählt                                |
+Die Anschlüsse *IO-A* bis *IO-K* können entweder als Eingang oder als Ausgang verwendet werden.
+In der Datei `config.txt` auf der SD-Karte wird festgelegt, in welchem Modus jeder Anschluss
+betrieben werden soll.
 
+Die Textdatei enthält auf jeder Zeile die Bezeichnung des Anschlusses als Kleinbuchstaben `a` bis
+`k`, gefolgt von einem Leerzeichen und dem Buchstaben `i` (für *input*) oder `o` (für *output*):
 
-## Befehle
+```
+a i
+b i
+c o
+```
 
-| Name | Beschreibung                                                    |
-| ---- | --------------------------------------------------------------- |
-| `s+` | Erhöhe den Punktestand  |
-| `s=` | Setze den Punktestand |
-| `s-` | Subtrahiere vom Punktestand
-| `z+` | Erhöhe die Anzahl Bälle um eins
-| `y=` | Setze die Anzahl Bälle
-| `z-` | Setze die Anzahl Bälle um eins herunter |
-| `c1` | Starte den Countdown 1 |
-| `c2` | Starte den Countdown 2 |
-| `c3` | Starte den Countdown 3 |
-| `c4` | Starte den Countdown 4 |
+Die Reihenfolge der Anschlüsse spielt keine Rolle. Wir für einen Anschluss die Verwendung nicht
+in der Datei festegelegt, so wird der Anschluss als Eingang konfiguriert.
+
+## Ereignisse und Aktionen
+
+## Aktionen
+
+Die Aktionen des Moduls können über die Datei `actions.txt` auf der SD-Karte konfiguriert werden.
+Sämtliche Aktionen werden konfiguriert, indem Variablen abgefragt oder geändert werden.
+
+```
+#
+@a s+1000 m:3 t:2000
+@t m>0 m-1 m=0 b:1
+```
+
+### Ereignisse
+
+| Name | Beschreibung                                                   |
+| ---- | -------------------------------------------------------------- |
+| `@a` | Anschluss IO-A ist aktiviert worden                            |
+| `@b` | Anschluss IO-B ist aktiviert worden                            |
+| `@c` | Anschluss IO-C ist aktiviert worden                            |
+| `@d` | Anschluss IO-D ist aktiviert worden                            |
+| `@e` | Anschluss IO-E ist aktiviert worden                            |
+| `@f` | Anschluss IO-F ist aktiviert worden                            |
+| `@g` | Anschluss IO-G ist aktiviert worden                            |
+| `@h` | Anschluss IO-H ist aktiviert worden                            |
+| `@i` | Anschluss IO-I ist aktiviert worden                            |
+| `@j` | Anschluss IO-J ist aktiviert worden                            |
+| `@k` | Anschluss IO-K ist aktiviert worden                            |
+| `@r` | Der Mikrocontroller ist zurückgesetzt worden (*reset*)         |
+| `@s` | Ein neuer Punkterekord ist erreicht worden (*high score*)      |
+| `@t` | Countdown t ist abgelaufen                                     |
+| `@u` | Countdown u ist abgelaufen                                     |
+| `@v` | Countdown v ist abgelaufen                                     |
+| `@w` | Countdown w ist abgelaufen                                     |
+| `@x` | Countdown x ist abgelaufen                                     |
+| `@y` | Countdown y ist abgelaufen                                     |
+| `@z` | Der letzte Ball ist verloren gegangen (*game over*)            |
+
+### Zahlenbereiche
+
+16777216
+
+### Befehle
+
+Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen* und einer *Zahl*.
+Beispiele für Befehle sind:
+
+`m>20`, `s+1000`, `a:1`
+
+### Variablen
+
+| Name | Beschreibung             | Maximaler Wert | mögliche Operationen |
+| ---- | ------------------------ | -------------- | -------------------- |
+| `a`  | Anschluss IO-A           |              1 | `:`, `=`             |
+| `b`  | Anschluss IO-B           |              1 |
+| `c`  | Anschluss IO-C           |              1 |
+| `d`  | Anschluss IO-D           |              1 |
+| `e`  | Anschluss IO-E           |              1 |
+| `f`  | Anschluss IO-F           |              1 |
+| `g`  | Anschluss IO-G           |              1 |
+| `h`  | Anschluss IO-H           |              1 |
+| `i`  | Anschluss IO-I           |              1 |
+| `j`  | Anschluss IO-J           |              1 |
+| `k`  | Anschluss IO-K           |              1 |
+| `l`  | frei benutzbare Variable |       16777215 |
+| `m`  | frei benutzbare Variable |       16777215 |
+| `n`  | frei benutzbare Variable |       16777215 |
+| `o`  | frei benutzbare Variable |       16777215 |
+| `p`  | frei benutzbare Variable |       16777215 |
+| `q`  | frei benutzbare Variable |       16777215 |
+| `r`  | Reset                    |              1 |
+| `s`  | aktueller Punktestand    |          99999 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `t`  | Countdown                |       16777215 | `:`
+| `u`  | Countdown                |       16777215 | `:`
+| `v`  | Countdown                |       16777215 | `:`
+| `w`  | Countdown                |       16777215 | `:`
+| `x`  | Countdown                |       16777215 | `:`
+| `y`  | Countdown                |       16777215 | `:`
+| `z`  | Anzahl Bälle             |            255 | `+`, `-`, `:`, `<`, `=`, `>` |
+
+### Operationszeichen
+
+| Name | Beschreibung                                                             |
+| ---- | ------------------------------------------------------------------------ |
+| `:`  | Setze die Variable auf die Zahl
+| `+`  | Erhöhe die Variable um die Zahl
+| `-`  | Subtrahiere die Zahl von der Variable
+| `>`  | Nächste Aktion nur, wenn der Wert der Variable grösser als die Zahl ist  |
+| `=`  | Nächste Aktion nur, wenn der Wert der Variable gleich die Zahl ist       |
+| `<`  | Nächste Aktion nur, wenn der Wert der Variable kleiner als die Zahl ist  |
+
 
 ## Konfiguration von Audioeffekten
 
@@ -170,26 +243,6 @@ Format umgewandelt werden:
 Der Dateiname muss mit dem Namen eines *Ereignisses* übereinstimmen. Die Dateiendung muss '.wav'
 lauten. Der ganze Dateiname muss in Kleinbuchstaben geschrieben werden.
 
-## Konfiguration
-
-In der Datei `config.txt` auf der SD-Karte wird die Konfiguration des Moduls festegelegt. Über die
-Konfiguration wird bestimmt, welche Anschlüsse als Ein- bzw. Ausgänge verwendet werden und welche
-Anzeige angeschlossen ist.
-
-### Konfiguration der Anschlüsse
-
-Die Anschlüsse *IO-A* bis *IO-K* können entweder als Eingang oder als Ausgang verwendet werden.
-In der Datei `config.txt` auf der SD-Karte wird festgelegt, in welchem Modus jeder Anschluss betrieben
-werden soll.
-
-Die Textdatei enthält auf jeder Zeile den Namen eines Anschlusses in Kleinbuchstaben, gefolgt von
-einem Leerzeichen und dem Buchstaben `i` (für *input*) oder `o` (für *output*):
-
-```
-a i
-b i
-c o
-```
 
 ### Konfiguration der Anzeige
 
@@ -214,7 +267,7 @@ mit der Masse des Ausgabemoduls verbunden. Nun wird der andere Kontakt des erste
 Eingang *IO-A* des Moduls verbunden, anschliessend der andere Kontakt des zweiten Targets mit dem
 Eingang *IO-B* und schliesslich der andere Kontakt des dritten Targets mit dem Eingang *IO-C*.
 
-![](example-target.png)
+![](images/example-target.png)
 
 Wenn nun ein Target getroffen wird, so wird der Stromkreis geschlossen und am entsprechenden
 Eingang liegt eine Spannung von 0 Volt an und das Ausgabemodul erkennt den Eingang als "aktiv".
@@ -224,13 +277,13 @@ dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind. 
 zählende Punktzahl pro Eingang festgelegt:
 
 ```
-ia s+50
-ib s+100
-ic s+1000
+A s+50
+B s+100
+C s+1000
 ```
 
 Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte
-Format konvertiert und untern dem Namen `ia.wav` auf der SD-Karte gespeichert werden.
+Format konvertiert und untern dem Namen `a.wav` auf der SD-Karte gespeichert werden.
 
 ### Kugelverlust und Game Over
 
@@ -245,14 +298,23 @@ Taster am Automaten angebracht werden.
 Ausgabemodus verbunden. Der andere Kontakt des Ballverlust-Kontakts wird mit einem Eingang, z.B.
 *IO-A* verbunden. Der andere Kontakt des Tasters wird mit dem *RESET*-Eingang des Moduls verbunden.
 
-![](example-game-over.png)
+![](images/example-game-over.png)
 
 **Konfiguration:** In der Konfigurationsdatei `actions.txt` auf der SD-Karte wird festgelegt, dass
 der Anschluss *IO-A* als Eingang zu behandeln sind und dass bei dessen Aktivierung die Anzahl Kugeln
 um eins zu reduzieren ist:
 
 ```
-ia z-1
+A z-1
+```
+
+### Erst zählen, wenn zwei Targets aktiviert sind
+
+```
+@r: n=3
+@a: n~1
+@b: n~2
+@n: s+200
 ```
 
 ### Zeitschaltung
@@ -260,6 +322,14 @@ ia z-1
 
 ### Steuerung eines LED-Streifens
 
-tbd.
+bd.
 
 ### Zurücksetzen mechanischer Zählräder
+
+```
+A b=1 t=300
+T b=0
+a: b=200, t=300, n=8
+t: b=200, n-1
+n: t=0
+```

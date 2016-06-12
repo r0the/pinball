@@ -19,19 +19,26 @@
 #define IO_PINS_H
 
 #include <Arduino.h>
+#include "hardware.h"
 
 class IoPins {
 public:
     IoPins();
-
+    void setup();
     void loop();
-    boolean hasEvent(uint8_t pin) const;
-    void setLow(uint8_t pin);
+    bool hasEvent(uint8_t pin) const;
     void setHigh(uint8_t pin);
+    void setLow(uint8_t pin);
+    void setOutput(uint8_t pin);
 private:
-    uint8_t* _config;
-    uint32_t* _inputLock;
-    uint8_t* _inputStates;
+    IoPins(const IoPins&);
+    IoPins& operator=(const IoPins&);
+    uint8_t lookupPin(uint8_t pin) const;
+
+    uint32_t _config;
+    uint32_t _inputLock[IO_PIN_COUNT];
+    uint8_t _inputStates[IO_PIN_COUNT];
 };
 
 #endif
+

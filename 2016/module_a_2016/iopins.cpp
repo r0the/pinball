@@ -16,39 +16,33 @@
  */
  
 #include "iopins.h"
-#include "hardware.h"
-
-
-#define CONFIG_INPUT  0x01
-#define CONFIG_OUTPUT 0x02
 
 #define STATE_OPEN 0
 #define STATE_CLOSED 20
 
 #define INPUT_DELAY 200
 
-IoPins::IoPins() :
-    _config(new uint8_t[IO_PIN_COUNT]),
-    _inputLock(new uint32_t[IO_PIN_COUNT]),
-    _inputStates(new uint8_t[IO_PIN_COUNT]) {
+IoPins::IoPins() {
+}
+
+void IoPins::setup() {
     for (int pin = 0; pin < IO_PIN_COUNT; ++pin) {
-        _config[pin] = CONFIG_INPUT;
         _inputLock[pin] = 0;
         _inputStates[pin] = STATE_OPEN;
-        pinMode(IO_PINS[pin], INPUT_PULLUP);
+        pinMode(lookupPin(pin), INPUT_PULLUP);
     }
 }
 
 void IoPins::loop() {
     unsigned long now = millis();
     for (int pin = 0; pin < IO_PIN_COUNT; ++pin) {
-        if (_config[pin] & CONFIG_INPUT) {
+        if (!(_config & (1 << pin))) {
             if (_inputStates[pin] == STATE_CLOSED) {
                 _inputStates[pin] = STATE_OPEN;
                 _inputLock[pin] = now + INPUT_DELAY;
             }
             if (_inputLock[pin] < now) {
-                int state = digitalRead(IO_PINS[pin]);
+                int state = digitalRead(lookupPin(pin));
                 if (state == LOW && _inputStates[pin] < STATE_CLOSED) {
                     ++_inputStates[pin];
                 }
@@ -60,7 +54,7 @@ void IoPins::loop() {
     }
 }
 
-boolean IoPins::hasEvent(uint8_t pin) const {
+bool IoPins::hasEvent(uint8_t pin) const {
     if (pin < IO_PIN_COUNT) {
         return _inputStates[pin] == STATE_CLOSED;
     }
@@ -70,16 +64,30 @@ boolean IoPins::hasEvent(uint8_t pin) const {
 }
 
 void IoPins::setHigh(uint8_t pin) {
-    if (pin < IO_PIN_COUNT && (_config[pin] & CONFIG_OUTPUT)) {
-        pinMode(IO_PINS[pin], OUTPUT);
-        digitalWrite(IO_PINS[pin], HIGH);
+    if (pin < IO_PIN_COUNT && !(_config & (1 << pin))) {
+        pin = lookupPin(pin);
+        pinMode(pin, OUTPUT);
+        digitalWrite(pin, HIGH);
     }
 }
 
 void IoPins::setLow(uint8_t pin) {
-    if (pin < IO_PIN_COUNT && (_config[pin] & CONFIG_OUTPUT)) {
-        pinMode(IO_PINS[pin], OUTPUT);
-        digitalWrite(IO_PINS[pin], LOW);
+    if (pin < IO_PIN_COUNT && !(_config & (1 << pin))) {
+        pin = lookupPin(pin);
+        pinMode(pin, OUTPUT);
+        digitalWrite(pin, LOW);
     }
+}
+
+void IoPins::setOutput(uint8_t pin) {
+    if (pin < IO_PIN_COUNT) {
+        _config |= 1 << pin;
+        pin = lookupPin(pin);
+        pinMode(pin, OUTPUT);
+    }
+}
+
+uint8_t IoPins::lookupPin(uint8_t pin) const {
+    return IO_PINS[pin];
 }
 

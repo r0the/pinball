@@ -18,19 +18,13 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#define TEXT_HELLO 0x1E6DB517
-#define TEXT_INSRT 0x23862758
-#define TEXT_SDCRD 0x138524E2
-#define TEXT_SDRDY 0x284E14E2
-
 #include <Arduino.h>
 
 class Display {
 public:
-    void setup();
-    void show(uint32_t message);
-    void showNumber(uint32_t number);
-    void showPin(uint8_t pin);
+    void begin();
+    void showNumber(unsigned long number);
+    void showText(const char* text);
 };
 
 #endif
