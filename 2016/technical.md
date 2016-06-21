@@ -1,3 +1,11 @@
+---
+title: Mikrocontroller-Modul für Flipperautomaten 2016
+subtitle: Technische Hintergründe
+author: ros
+date: 12.01.2016
+department: Fachschaft IN
+---
+
 # Technische Hintergründe
 
 ## SD-Karte
@@ -13,7 +21,8 @@ Die Puls-Code-Modulation (PCM) macht genau das. Mit einem konstanten zeitlichen 
 
 In folgendem Beispiel wird eine Sinuswelle durch die Zahlen 0 bis 15, also mit 4 Bit codiert:
 
-![](images/pcm.png)
+![](images/pcm.png){ width=50% }
+
 
 Das codierte Signal sieht also folgendermassen aus:
 
@@ -27,7 +36,7 @@ Die Frequenz, mit welcher das Signal gemessen wird, heisst *Abtastrate*. Sie mus
 
 Da die Musikwahrnehmbarkeit beim Menschen bis ca. 8 kHz reicht, beträgt die minimale Abstastrate 16 kHz:
 
-![](images/hoerflaeche.png)
+![](images/hoerflaeche.png){ width=50% }
 
 #### Abwägungen
 
@@ -38,7 +47,10 @@ Heute werden Audiodaten mit Hilfe von komplexen Algorithmen (z.B. MP3) komprimie
 
 ### Pulsweitenmodulation
 
-Tbd.
+Pulsweitenmodulation ist
+
+![](images/pwm-sample.png){ width=50% }
+
 
 ### PWM mit ATmega328
 
@@ -113,3 +125,18 @@ Mit dem Wellenform-Modus kann das Zähl- und Impulsverhalten der Zeitmessers fes
 |    15 |     1 |     1 |     1 |     1 | Fast PWM, OCR1A                         |
 
 Tbd.
+
+#### Konfiguration der Interrupts des Zeitmessers/Zählers 1
+
+Mit dem Register TIMSK1 (*Timer/Counter1 Interrupt Mask Register*) wird festgelegt, in welchen Fällen ein Interrupt ausgelöst werden soll. Die Bits des TIMSK1-Registers  werden in der folgenden Tabelle dargestellt:
+
+| TIMSK1 Bit | Name   | Bedeutung                                     |
+| ---------- | ------ | --------------------------------------------- |
+|          7 | -      | wird nicht verwendet                          |
+|          6 | -      | wird nicht verwendet                          |
+|          5 | ICIE1  | *Input Capture Interrupt Enable*              |
+|          4 | -      | wird nicht verwendet                          |
+|          3 | -      | wird nicht verwendet                          |
+|          2 | OCIE1B | *Output Compare B Match Interrupt Enable*     |
+|          1 | OCIE1A | *Output Compare A Match Interrupt Enable*     |
+|          0 | TOIE1  | *Timer Overflow Interrupt Enable*             |

@@ -1,3 +1,10 @@
+---
+title: Mikrocontroller-Modul für Flipperautomaten 2016
+subtitle: Anleitung
+author: ros
+date: 12.01.2016
+department: Fachschaft IN
+---
 # Mikrocontroller-Modul für Flipperautomaten 2016
 
 ## Einleitung
@@ -8,9 +15,7 @@ Durch das Mikrocontroller-Modul kann der Flipperautomat mit folgenden Funktionen
 - Display: Anzeige von Punktestand und Lauftext sowie weiteren Informationen
 - Spiellogik: Zählen von Punkten, Spielende nach definierbarer Anzahl Bällen, permanente Speicherung des Punkterekords (*Highscore*)
 
-Das Abspielen von Audiodateien und die Aktionen der Spiellogik werden durch das Schliessen von
-Kontakten ausgelöst. Die konkreten Aktionen können für jeden Kontakt ohne Programmierkenntnisse
-konfiguriert werden.
+Das Abspielen von Audiodateien und die Aktionen der Spiellogik werden durch das Schliessen von Kontakten ausgelöst. Die konkreten Aktionen können für jeden Kontakt ohne Programmierkenntnisse konfiguriert werden.
 
 Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Karte gespeichert.
 
@@ -69,10 +74,9 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 
 ## Zusammenbau
 
-Beim Zusammenbau ist es sehr wichtig, auf die korrekte Reihenfolge zu achten. Zuerst werden die
-Komponenten auf der Rückseite der Platine wie folgt gelötet:
+Beim Zusammenbau ist es sehr wichtig, auf die korrekte Reihenfolge zu achten. Zuerst werden die Komponenten auf der Rückseite der Platine wie folgt gelötet:
 
-![](images/assembly.png)
+![](images/assembly.png){ width=100% }
 
 1. IC-Sockel für Puffer-Treiber löten
 2. *nur mit Siebensegmentanzeige:* IC-Sockel für Anzeige löten ()
@@ -86,8 +90,7 @@ Anschliessend werden die Siebensegmentanzeigen auf der Vorderseite der Platine a
 
 ## Anschlüsse
 
-Das Modul stellt mit den grünen Schraubklemmblöcken 16 Anschlüsse zu Verfügung, mit welchen das
-Modul mit dem Automaten verbunden werden kann. Die folgende Tabelle zeigt die Anschlüsse:
+Das Modul stellt mit den grünen Schraubklemmblöcken 16 Anschlüsse zu Verfügung, mit welchen das Modul mit dem Automaten verbunden werden kann. Die folgende Tabelle zeigt die Anschlüsse:
 
 | Nr. | Bezeichnung | Arduino | Bedeutung                       |
 | --- | ----------- | ------- | ------------------------------- |
@@ -110,12 +113,9 @@ Modul mit dem Automaten verbunden werden kann. Die folgende Tabelle zeigt die An
 
 ### Konfiguration der Anschlüsse
 
-Die Anschlüsse *IO-A* bis *IO-K* können entweder als Eingang oder als Ausgang verwendet werden.
-In der Datei `config.txt` auf der SD-Karte wird festgelegt, in welchem Modus jeder Anschluss
-betrieben werden soll.
+Die Anschlüsse *IO-A* bis *IO-K* können entweder als Eingang oder als Ausgang verwendet werden. In der Datei `config.txt` auf der SD-Karte wird festgelegt, in welchem Modus jeder Anschluss betrieben werden soll.
 
-Die Textdatei enthält auf jeder Zeile die Bezeichnung des Anschlusses als Kleinbuchstaben `a` bis
-`k`, gefolgt von einem Leerzeichen und dem Buchstaben `i` (für *input*) oder `o` (für *output*):
+Die Textdatei enthält auf jeder Zeile die Bezeichnung des Anschlusses als Kleinbuchstaben `a` bis `k`, gefolgt von einem Leerzeichen und dem Buchstaben `i` (für *input*) oder `o` (für *output*):
 
 ```
 a i
@@ -123,18 +123,15 @@ b i
 c o
 ```
 
-Die Reihenfolge der Anschlüsse spielt keine Rolle. Wir für einen Anschluss die Verwendung nicht
-in der Datei festegelegt, so wird der Anschluss als Eingang konfiguriert.
+Die Reihenfolge der Anschlüsse spielt keine Rolle. Wir für einen Anschluss die Verwendung nicht in der Datei festegelegt, so wird der Anschluss als Eingang konfiguriert.
 
 ## Ereignisse und Aktionen
 
 ## Aktionen
 
-Die Aktionen des Moduls können über die Datei `actions.txt` auf der SD-Karte konfiguriert werden.
-Sämtliche Aktionen werden konfiguriert, indem Variablen abgefragt oder geändert werden.
+Die Aktionen des Moduls können über die Datei `actions.txt` auf der SD-Karte konfiguriert werden. Sämtliche Aktionen werden konfiguriert, indem Variablen abgefragt oder geändert werden.
 
 ```
-#
 @a s+1000 m:3 t:2000
 @t m>0 m-1 m=0 b:1
 ```
@@ -170,8 +167,7 @@ Sämtliche Aktionen werden konfiguriert, indem Variablen abgefragt oder geänder
 
 ### Befehle
 
-Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen* und einer *Zahl*.
-Beispiele für Befehle sind:
+Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen* und einer *Zahl*. Beispiele für Befehle sind:
 
 `m>20`, `s+1000`, `a:1`
 
@@ -210,9 +206,9 @@ Beispiele für Befehle sind:
 
 | Name | Beschreibung                                                             |
 | ---- | ------------------------------------------------------------------------ |
-| `:`  | Setze die Variable auf die Zahl
-| `+`  | Erhöhe die Variable um die Zahl
-| `-`  | Subtrahiere die Zahl von der Variable
+| `:`  | Setze die Variable auf die Zahl                                          |
+| `+`  | Erhöhe die Variable um die Zahl                                          |
+| `-`  | Subtrahiere die Zahl von der Variable                                    |
 | `>`  | Nächste Aktion nur, wenn der Wert der Variable grösser als die Zahl ist  |
 | `=`  | Nächste Aktion nur, wenn der Wert der Variable gleich die Zahl ist       |
 | `<`  | Nächste Aktion nur, wenn der Wert der Variable kleiner als die Zahl ist  |
@@ -222,12 +218,9 @@ Beispiele für Befehle sind:
 
 ### Dateiformat
 
-Das Steuerungsmodul kann nur PCM-Audiodaten (*Puls-Code-Modulation*) abspielen. Die Dateien müssen
-im WAV-Dateiformat (*Waveform Audio File Format*) mit einem Kanal (Mono), einer Bit-Tiefe von 8
-und einer Abtastfrequenz von 16000 Hz vorliegen.
+Das Steuerungsmodul kann nur PCM-Audiodaten (*Puls-Code-Modulation*) abspielen. Die Dateien müssen im WAV-Dateiformat (*Waveform Audio File Format*) mit einem Kanal (Mono), einer Bit-Tiefe von 8 und einer Abtastfrequenz von 16000 Hz vorliegen.
 
-Mit dem frei verfügbaren Programm Audacity kann jede Audiodatei mit kleinem Aufwand in das geeignete
-Format umgewandelt werden:
+Mit dem frei verfügbaren Programm Audacity kann jede Audiodatei mit kleinem Aufwand in das geeignete Format umgewandelt werden:
 
 1. Audiodatei öffnen.
 2. Spur auswählen.
@@ -240,8 +233,7 @@ Format umgewandelt werden:
 
 ### Dateiname
 
-Der Dateiname muss mit dem Namen eines *Ereignisses* übereinstimmen. Die Dateiendung muss '.wav'
-lauten. Der ganze Dateiname muss in Kleinbuchstaben geschrieben werden.
+Der Dateiname muss mit dem Namen eines *Ereignisses* übereinstimmen. Die Dateiendung muss `.wav` lauten. Der ganze Dateiname muss in Kleinbuchstaben geschrieben werden.
 
 
 ### Konfiguration der Anzeige
@@ -256,16 +248,9 @@ Aktionen werden in der Datei `action.txt` auf der SD-Karte definiert.
 
 ### Spielfeld mit drei Targets
 
-Auf einem Spielfeld sind drei Targets vorhanden. Das erste Target hat einen Wert von 50 Punkten,
-das zweite 100 Punkte und für einen Treffer des dritten Targets erhält man 1000 Punkte. Bei einem
-Treffer des dritten Targets soll ausserdem ein Audioeffekt ausgegeben werden.
+Auf einem Spielfeld sind drei Targets vorhanden. Das erste Target hat einen Wert von 50 Punkten, das zweite 100 Punkte und für einen Treffer des dritten Targets erhält man 1000 Punkte. Bei einem Treffer des dritten Targets soll ausserdem ein Audioeffekt ausgegeben werden.
 
-**Verdrahtung:** Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des
-ersten Targets gezogen. Anschliessend wird von diesem Kontakt in Kabel weiter zum einen Kontakt des
-zweiten und schliesslich zur dritten Target weitergezogen. Nun ist der eine Kontakt jedes Targets
-mit der Masse des Ausgabemoduls verbunden. Nun wird der andere Kontakt des ersten Targets mit dem
-Eingang *IO-A* des Moduls verbunden, anschliessend der andere Kontakt des zweiten Targets mit dem
-Eingang *IO-B* und schliesslich der andere Kontakt des dritten Targets mit dem Eingang *IO-C*.
+**Verdrahtung:** Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des ersten Targets gezogen. Anschliessend wird von diesem Kontakt in Kabel weiter zum einen Kontakt des zweiten und schliesslich zur dritten Target weitergezogen. Nun ist der eine Kontakt jedes Targets mit der Masse des Ausgabemoduls verbunden. Nun wird der andere Kontakt des ersten Targets mit dem Eingang *IO-A* des Moduls verbunden, anschliessend der andere Kontakt des zweiten Targets mit dem Eingang *IO-B* und schliesslich der andere Kontakt des dritten Targets mit dem Eingang *IO-C*.
 
 ![](images/example-target.png)
 
@@ -277,44 +262,38 @@ dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind. 
 zählende Punktzahl pro Eingang festgelegt:
 
 ```
-A s+50
-B s+100
-C s+1000
+@A s+50
+@B s+100
+@C s+1000
 ```
 
-Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte
-Format konvertiert und untern dem Namen `a.wav` auf der SD-Karte gespeichert werden.
+Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte Format konvertiert und untern dem Namen `a.wav` auf der SD-Karte gespeichert werden.
 
 ### Kugelverlust und Game Over
 
-Bei einem Flipperautomaten soll maximal mit drei Kugeln gespielt werden können. Anschliessend muss
-ein neues Spiel gestartet werden.
+Bei einem Flipperautomaten soll maximal mit drei Kugeln gespielt werden können. Anschliessend muss ein neues Spiel gestartet werden.
 
-Damit ein Kugelverlust festgestellt werden kann, muss ein Kontakt angebracht werden, der durch
-jeden möglichen Kugelverlust ausgelöst wird. Um ein neue Spiel zu starten, muss zusätzlich ein
-Taster am Automaten angebracht werden.
+Damit ein Kugelverlust festgestellt werden kann, muss ein Kontakt angebracht werden, der durch jeden möglichen Kugelverlust ausgelöst wird. Um ein neue Spiel zu starten, muss zusätzlich ein Taster am Automaten angebracht werden.
 
-**Verdrahtung:** Der eine Kontakt des Tasters und der Ballverlust-Kontakt wird mit der Masse des
-Ausgabemodus verbunden. Der andere Kontakt des Ballverlust-Kontakts wird mit einem Eingang, z.B.
-*IO-A* verbunden. Der andere Kontakt des Tasters wird mit dem *RESET*-Eingang des Moduls verbunden.
+**Verdrahtung:** Der eine Kontakt des Tasters und der Ballverlust-Kontakt wird mit der Masse des Ausgabemodus verbunden. Der andere Kontakt des Ballverlust-Kontakts wird mit einem Eingang, z.B. *IO-A* verbunden. Der andere Kontakt des Tasters wird mit dem *RESET*-Eingang des Moduls verbunden.
 
 ![](images/example-game-over.png)
 
-**Konfiguration:** In der Konfigurationsdatei `actions.txt` auf der SD-Karte wird festgelegt, dass
-der Anschluss *IO-A* als Eingang zu behandeln sind und dass bei dessen Aktivierung die Anzahl Kugeln
-um eins zu reduzieren ist:
+**Konfiguration:** In der Konfigurationsdatei `actions.txt` auf der SD-Karte wird festgelegt, dass der Anschluss *IO-A* als Eingang zu behandeln sind und dass bei dessen Aktivierung die Anzahl Kugeln um eins zu reduzieren ist:
 
 ```
-A z-1
+@A z-1
 ```
 
 ### Erst zählen, wenn zwei Targets aktiviert sind
 
+oidhadf
+
 ```
-@r: n=3
-@a: n~1
-@b: n~2
-@n: s+200
+@r n=3
+@a n=1
+@b n=2
+@n s+200
 ```
 
 ### Zeitschaltung
@@ -327,9 +306,9 @@ bd.
 ### Zurücksetzen mechanischer Zählräder
 
 ```
-A b=1 t=300
-T b=0
-a: b=200, t=300, n=8
-t: b=200, n-1
-n: t=0
+@A b=1 t=300
+@T b=0
+@a b=200, t=300, n=8
+@t b=200, n-1
+@n t=0
 ```
