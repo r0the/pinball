@@ -24,11 +24,10 @@ class Audio {
 public:
     Audio();
     ~Audio();
-    void setup();
+    void begin();
     bool play(const char* filename);
     bool playing() const;
     void stop();
-    void loop();
 private:
     // disable copying
     Audio(const Audio&);

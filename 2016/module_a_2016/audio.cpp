@@ -29,16 +29,16 @@
 /*
  * audio state
  * 
- * | Bit | Description                |
- * | --- | -------------------------- |
- * |   7 | playback is running        |
- * |   6 | -                          |
- * |   5 | -                          |
- * |   4 | -                          |
- * |   3 | -                          |
- * |   2 | buffer 1 ready to play     |
- * |   1 | buffer 0 ready to play     |
- * |   0 | playback buffer select     |
+ * | Bit | Description            |
+ * | --- | ---------------------- |
+ * |   7 | playback is running    |
+ * |   6 | -                      |
+ * |   5 | -                      |
+ * |   4 | -                      |
+ * |   3 | -                      |
+ * |   2 | buffer 1 ready to play |
+ * |   1 | buffer 0 ready to play |
+ * |   0 | playback buffer select |
  */
 static volatile uint8_t audioState = 0;
 static uint8_t buffer[2][BUFFER_SIZE];
@@ -78,6 +78,7 @@ ISR(TIMER1_OVF_vect) {
     }
 
     if (counter < 1) {
+        checkBuffer();
         ++counter;
     }
     else {
@@ -116,7 +117,7 @@ Audio::~Audio() {
     stop();
 }
 
-void Audio::setup() {
+void Audio::begin() {
     cli();
     pinMode(PIN_PWM, OUTPUT);
 
@@ -128,11 +129,11 @@ void Audio::setup() {
      * |   7 | ICNC1 | 0         | irrelevant               |
      * |   6 | ICES1 | 0         | irrelevant               |
      * |   5 | -     | 0         | -                        |
-     * |   4 | WGM13 | WGM bit 3 | Waveform generation mode |
-     * |   3 | WGM12 | WGM bit 2 | Waveform generation mode |
-     * |   2 | CS12  | CS bit 2  | Clock select             |
-     * |   1 | CS11  | CS bit 1  | Clock select             |
-     * |   0 | CS10  | CS bit 0  | Clock select             |
+     * |   4 | WGM13 | WGM bit 3 | waveform generation mode |
+     * |   3 | WGM12 | WGM bit 2 | waveform generation mode |
+     * |   2 | CS12  | CS bit 2  | clock select             |
+     * |   1 | CS11  | CS bit 1  | clock select             |
+     * |   0 | CS10  | CS bit 0  | clock select             |
      */
     TCCR1B = ((WGM & 0x0C) << 1) | (CS & 0x07);
 
@@ -147,26 +148,27 @@ void Audio::setup() {
      * |   4 | COM1B0 | 0         | OC1B (Pin 10) clear on match  |
      * |   3 | -      | 0         | -                             |
      * |   2 | -      | 0         | -                             |
-     * |   1 | WGM11  | WGM bit 1 | Waveform generation mode      |
-     * |   0 | WGM10  | WGM bit 0 | Waveform generation mode      |
+     * |   1 | WGM11  | WGM bit 1 | waveform generation mode      |
+     * |   0 | WGM10  | WGM bit 0 | waveform generation mode      |
      */
-    TCCR1A = B00100000 | (WGM & 0x03);
+    TCCR1A = _BV(COM1B1) | (WGM & 0x03);
 
     /* 
-     *  
      * TIMSK1 - Timer/Counter1 Interrupt Mask Register
      * 
-     * | Bits  | Name           | Value | Meaning                       |
-     * | ----- | -------------- | ----- | ----------------------------- |
-     * | 7/6   | -              | 00    | -                             |
-     * | 5     | ICIE1          | 1     | enable timer 1 interrupt      |
-     * | 4/3   | -              | 00    | -                             |
-     * | 2/1   | OCIE1B/OCIE1A  | 00    | irrelevant                    |
-     * | 0     | TOIE1          | 1     | enable interrupt on top       |
+     * | Bit  | Name   | Value | Meaning                                 |
+     * | ---- | ------ | ----- | --------------------------------------- |
+     * |    7 | -      | 0     | -                                       |
+     * |    6 | -      | 0     | -                                       |
+     * |    5 | ICIE1  | 0     | input capture interrupt enable          |
+     * |    4 | -      | 0     | -                                       |
+     * |    3 | -      | 0     | -                                       |
+     * |    2 | OCIE1B | 0     | output compare B match interrupt enable |
+     * |    1 | OCIE1A | 0     | output compare A match interrupt enable |
+     * |    0 | TOIE1  | 1     | timer 1 overflow interrupt enable       |
      * 
      */
     TIMSK1 = 0;
-    //TIMSK1 = B00100001;
 
     // ICR1H/ICR1L - Input Capture Register 1
     //
@@ -175,7 +177,7 @@ void Audio::setup() {
 //    ICR1H = 0x0000;
 //    ICR1L = 0x007F;
     OCR1BH = 0;
-    OCR1BL = 250;
+    OCR1BL = 0;
     sei();
 }
 
@@ -240,7 +242,7 @@ bool Audio::play(const char* filename) {
     loadBuffer(0);
     loadBuffer(1);
     playbackPos = 0;
-    TIMSK1 = B00100001;
+    TIMSK1 = _BV(TOIE1);
     return true;
 }
 
@@ -253,9 +255,5 @@ void Audio::stop() {
         file.close();
         audioState &= ~AUDIO_PLAYING;
     }
-}
-
-void Audio::loop() {
-    checkBuffer();
 }
 

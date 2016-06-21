@@ -19,7 +19,7 @@
 
 const char* const EVENT_NAMES PROGMEM = "abcdefghijkrstuvwxyz";
 
-const char* ACTIONS_TXT = "../pinball/actions.txt";
+const char* ACTIONS_TXT = "actions.txt";
 
 // ----------------------------------------------------------------------------
 // class ActionParser

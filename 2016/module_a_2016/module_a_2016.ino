@@ -16,9 +16,10 @@ uint8_t mode;
 const char* TEST_WAV = "test.wav";
 
 void setup() {
+    audio.begin();
     pins.setup();
     display.setup();
-    audio.setup();
+    
 //    logic.setup();
 
     if (!SD.begin(PIN_SD_CHIP_SELECT)) {
@@ -33,6 +34,7 @@ void setup() {
     }
 
     if (SD.exists(TEST_WAV)) {
+        audio.play(TEST_WAV);
         display.show(TEXT_SDRDY);
         delay(1000);
         display.showNumber(88888);
@@ -56,8 +58,9 @@ void loopReady() {
 
 void loop() {
     pins.loop();
+    loopCheck();
     if (MODE_CHECK) {
-        loopCheck();
+        
     }
     else {
 //        loopReady();
