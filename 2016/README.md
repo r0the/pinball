@@ -125,11 +125,19 @@ c o
 
 Die Reihenfolge der Anschlüsse spielt keine Rolle. Wir für einen Anschluss die Verwendung nicht in der Datei festegelegt, so wird der Anschluss als Eingang konfiguriert.
 
-## Ereignisse und Aktionen
+## Programmierung
 
-## Aktionen
+Das Modul kann programmiert werden, indem Befehle definiert werden, welche beim Auftreten eines bestimmten
+Ereignisses ausgeführt werden sollen. Beispiele für Ereignisse sind:
+- Der Anschluss IO-A ist aktiviert worden.
+- Ein neuer Punkterekord ist erreicht worden.
+- Ein interner Countdown ist abglaufen.
 
-Die Aktionen des Moduls können über die Datei `actions.txt` auf der SD-Karte konfiguriert werden. Sämtliche Aktionen werden konfiguriert, indem Variablen abgefragt oder geändert werden.
+Beispiele für Befehle sind:
+- Erhöhe den Punktestand um 5.
+- Starte einen internen Countdown von 5000 Millisekunden.
+
+Die Programmierung findet über die Datei `p.txt` auf der SD-Karte statt.
 
 ```
 @a s+1000 m:3 t:2000
@@ -137,6 +145,9 @@ Die Aktionen des Moduls können über die Datei `actions.txt` auf der SD-Karte k
 ```
 
 ### Ereignisse
+
+Ein Ereignis wird durch das `@`-Zeichen, gefolgt von einem kleinen Buchstaben gekennzeichnet.
+Die folgende Tabelle gibt einen Überblick über alle möglichen Ereignisse:
 
 | Name | Beschreibung                                                   |
 | ---- | -------------------------------------------------------------- |
@@ -161,10 +172,6 @@ Die Aktionen des Moduls können über die Datei `actions.txt` auf der SD-Karte k
 | `@y` | Countdown y ist abgelaufen                                     |
 | `@z` | Der letzte Ball ist verloren gegangen (*game over*)            |
 
-### Zahlenbereiche
-
-16777216
-
 ### Befehle
 
 Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen* und einer *Zahl*. Beispiele für Befehle sind:
@@ -173,33 +180,33 @@ Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen*
 
 ### Variablen
 
-| Name | Beschreibung             | Maximaler Wert | mögliche Operationen |
-| ---- | ------------------------ | -------------- | -------------------- |
-| `a`  | Anschluss IO-A           |              1 | `:`, `=`             |
-| `b`  | Anschluss IO-B           |              1 |
-| `c`  | Anschluss IO-C           |              1 |
-| `d`  | Anschluss IO-D           |              1 |
-| `e`  | Anschluss IO-E           |              1 |
-| `f`  | Anschluss IO-F           |              1 |
-| `g`  | Anschluss IO-G           |              1 |
-| `h`  | Anschluss IO-H           |              1 |
-| `i`  | Anschluss IO-I           |              1 |
-| `j`  | Anschluss IO-J           |              1 |
-| `k`  | Anschluss IO-K           |              1 |
-| `l`  | frei benutzbare Variable |       16777215 |
-| `m`  | frei benutzbare Variable |       16777215 |
-| `n`  | frei benutzbare Variable |       16777215 |
-| `o`  | frei benutzbare Variable |       16777215 |
-| `p`  | frei benutzbare Variable |       16777215 |
-| `q`  | frei benutzbare Variable |       16777215 |
-| `r`  | Reset                    |              1 |
+| Name | Beschreibung             | Maximaler Wert | mögliche Operationen         |
+| ---- | ------------------------ | -------------- | ---------------------------- |
+| `a`  | Anschluss IO-A           |              1 | `:`, `=`                     |
+| `b`  | Anschluss IO-B           |              1 | `:`, `=`                     |
+| `c`  | Anschluss IO-C           |              1 | `:`, `=`                     |
+| `d`  | Anschluss IO-D           |              1 | `:`, `=`                     |
+| `e`  | Anschluss IO-E           |              1 | `:`, `=`                     |
+| `f`  | Anschluss IO-F           |              1 | `:`, `=`                     |
+| `g`  | Anschluss IO-G           |              1 | `:`, `=`                     |
+| `h`  | Anschluss IO-H           |              1 | `:`, `=`                     |
+| `i`  | Anschluss IO-I           |              1 | `:`, `=`                     |
+| `j`  | Anschluss IO-J           |              1 | `:`, `=`                     |
+| `k`  | Anschluss IO-K           |              1 | `:`, `=`                     |
+| `l`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `m`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `n`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `o`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `p`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `q`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `r`  | Reset                    |              1 | `:`                          |
 | `s`  | aktueller Punktestand    |          99999 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `t`  | Countdown                |       16777215 | `:`
-| `u`  | Countdown                |       16777215 | `:`
-| `v`  | Countdown                |       16777215 | `:`
-| `w`  | Countdown                |       16777215 | `:`
-| `x`  | Countdown                |       16777215 | `:`
-| `y`  | Countdown                |       16777215 | `:`
+| `t`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `u`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `v`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `w`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `x`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
+| `y`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
 | `z`  | Anzahl Bälle             |            255 | `+`, `-`, `:`, `<`, `=`, `>` |
 
 ### Operationszeichen
@@ -212,7 +219,6 @@ Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen*
 | `>`  | Nächste Aktion nur, wenn der Wert der Variable grösser als die Zahl ist  |
 | `=`  | Nächste Aktion nur, wenn der Wert der Variable gleich die Zahl ist       |
 | `<`  | Nächste Aktion nur, wenn der Wert der Variable kleiner als die Zahl ist  |
-
 
 ## Konfiguration von Audioeffekten
 
@@ -235,15 +241,6 @@ Mit dem frei verfügbaren Programm Audacity kann jede Audiodatei mit kleinem Auf
 
 Der Dateiname muss mit dem Namen eines *Ereignisses* übereinstimmen. Die Dateiendung muss `.wav` lauten. Der ganze Dateiname muss in Kleinbuchstaben geschrieben werden.
 
-
-### Konfiguration der Anzeige
-
-
-
-## Konfiguration von Aktionen
-
-Aktionen werden in der Datei `action.txt` auf der SD-Karte definiert.
-
 ## Anwendungsbeispiele
 
 ### Spielfeld mit drei Targets
@@ -257,14 +254,20 @@ Auf einem Spielfeld sind drei Targets vorhanden. Das erste Target hat einen Wert
 Wenn nun ein Target getroffen wird, so wird der Stromkreis geschlossen und am entsprechenden
 Eingang liegt eine Spannung von 0 Volt an und das Ausgabemodul erkennt den Eingang als "aktiv".
 
-**Konfiguration:** In der Konfigurationsdatei `actions.txt` auf der SD-Karte muss festgelegt werden,
-dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind. Ausserdem wird die zu
-zählende Punktzahl pro Eingang festgelegt:
+**Konfiguration:** In der Konfigurationsdatei `io.txt` auf der SD-Karte muss festgelegt werden, dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind:
 
 ```
-@A s+50
-@B s+100
-@C s+1000
+a i
+b i
+c i
+```
+
+**Programmierung:** In der Programmdatei `p.txt` wird die zu zählende Punktzahl pro Eingang festgelegt:
+
+```
+@a s+50
+@b s+100
+@c s+1000
 ```
 
 Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte Format konvertiert und untern dem Namen `a.wav` auf der SD-Karte gespeichert werden.
@@ -279,15 +282,20 @@ Damit ein Kugelverlust festgestellt werden kann, muss ein Kontakt angebracht wer
 
 ![](images/example-game-over.png)
 
-**Konfiguration:** In der Konfigurationsdatei `actions.txt` auf der SD-Karte wird festgelegt, dass der Anschluss *IO-A* als Eingang zu behandeln sind und dass bei dessen Aktivierung die Anzahl Kugeln um eins zu reduzieren ist:
+**Konfiguration:** In der Konfigurationsdatei `io.txt` auf der SD-Karte wird festgelegt, dass der Anschluss *IO-A* als Eingang zu behandeln ist.
 
 ```
-@A z-1
+a i
+```
+
+**Programmierung:** In der Programmdatei `p.txt` wird festgelegt, dass bei der Aktivierung von Eingang IO-A (Ereignis `@a`) die Anzahl Kugeln um eins zu reduzieren ist:
+
+```
+@a z-1
 ```
 
 ### Erst zählen, wenn zwei Targets aktiviert sind
 
-oidhadf
 
 ```
 @r n=3

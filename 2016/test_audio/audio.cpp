@@ -78,7 +78,7 @@ ISR(TIMER1_OVF_vect) {
     }
 
     if (counter < 1) {
-//        checkBuffer();
+        checkBuffer();
         ++counter;
     }
     else {
@@ -176,7 +176,7 @@ void Audio::begin() {
 //    ICR1H = 0x0000;
 //    ICR1L = 0x007F;
     OCR1BH = 0;
-    OCR1BL = 250;
+    OCR1BL = 0;
     sei();
 }
 
@@ -257,6 +257,6 @@ void Audio::stop() {
 }
 
 void Audio::loop() {
-    checkBuffer();
+    
 }
 

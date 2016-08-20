@@ -23,6 +23,7 @@
 #define PIN_DISPLAY_SHIFT_CLOCK 9
 
 #define IO_PIN_COUNT 11
+
 const uint8_t IO_PINS[IO_PIN_COUNT] = {
     2, 3, 4, 5, 6, A5, A4, A3, A2, A1, A0
 };

@@ -186,7 +186,25 @@ private:
 // ----------------------------------------------------------------------------
 
 inline void printAction(uint8_t index, uint32_t action) {
+    uint8_t op = (action >> OP_SHIFT) & OP_MASK;
+    char var = 'a' + ((action >> VAR_SHIFT) & VAR_MASK);
+    uint32_t number = (action & NUMBER_MASK);
+    char opChar = '*';
+    switch (op) {
+        case OP_SET: opChar = ':'; break;
+        case OP_ADD: opChar = '+'; break;
+        case OP_SUBTRACT: opChar = '-'; break;
+        case OP_IF_EQUALS: opChar = '='; break;
+        case OP_IF_SMALLER: opChar = '<'; break;
+        case OP_IF_GREATER: opChar = '>'; break;
+    }
 
+    if (opChar == '*') {
+        qDebug() << "action[" << index << "] null";
+    }
+    else {
+        qDebug() << "action[" << index << "]" << var << opChar << number;
+    }
 }
 
 
@@ -199,11 +217,6 @@ void Logic::setup() {
     parser.parse();
     if (parser.error()) {
         // TODO
-    }
-
-
-    for (uint8_t i = 0; i < 10; ++i) {
-        printAction(i, _actions[i]);
     }
 }
 
@@ -289,7 +302,28 @@ bool Logic::opGreaterThan(char var, uint32_t number) const {
 }
 
 void Logic::opSet(char var, uint32_t number) {
-
+    if (var == 's') {
+        if (number > MAX_SCORE) {
+            _score = MAX_SCORE;
+        }
+        else {
+            _score = number;
+        }
+    }
+    else if (var == 'z') {
+        if (number > MAX_BALLS) {
+            _balls = MAX_BALLS;
+        }
+        else {
+            _balls = number;
+        }
+    }
+    else if ('l' <= var && var <= 'q') {
+        _vars[var - 'l'] = number;
+    }
+    else if ('t' <= var && var <= 'y') {
+        _timers[var - 't'] = number;
+    }
 }
 
 bool Logic::opSmallerThan(char var, uint32_t number) const {
@@ -320,5 +354,3 @@ void Logic::opSubtract(char var, uint32_t number) {
         _timers[var - 't'] -= number;
     }
 }
-
-

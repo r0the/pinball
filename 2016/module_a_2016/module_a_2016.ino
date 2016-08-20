@@ -5,7 +5,7 @@
 #include "logic.h"
 
 #define MODE_CHECK 1
-#define MODE_INIT 20;
+#define MODE_INIT 20
 
 Display display;
 Audio audio;

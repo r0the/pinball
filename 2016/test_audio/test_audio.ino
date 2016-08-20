@@ -9,17 +9,23 @@
 #include <Arduino.h>
 #include <SD.h>
 #include "audio.h"
+#include "display.h"
+
 
 Audio audio;
+Display display;
+
 
 void setup() {
     SD.begin(1);
-    
+    pinMode(9, OUTPUT);
     audio.begin();
+//    display.setup();
+//    display.showNumber(12345);
     audio.play("test.wav");
 }
 
 void loop() {
-    audio.loop();
+    
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 - 2016 by Stefan Rothe
+ * Copyright (C) 2016 by Stefan Rothe
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,32 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#ifndef IO_PINS_H
-#define IO_PINS_H
 
-#include <Arduino.h>
-#include "hardware.h"
+#define PIN_SD_CHIP_SELECT 1
+#define PIN_PWM 10
 
-class IoPins {
-public:
-    IoPins();
-    void setup();
-    void loop();
-    bool hasEvent(uint8_t pin) const;
-    void setHigh(uint8_t pin);
-    void setLow(uint8_t pin);
-    void setOutput(uint8_t pin);
-private:
-    IoPins(const IoPins&);
-    IoPins& operator=(const IoPins&);
-    uint8_t lookupPin(uint8_t pin) const;
+#define PIN_DISPLAY_LATCH_CLOCK 7
+#define PIN_DISPLAY_DATA 8
+#define PIN_DISPLAY_SHIFT_CLOCK 9
 
-    uint32_t _config;
-    uint8_t _inputLock[IO_PIN_COUNT];
-    uint8_t _inputStates[IO_PIN_COUNT];
-    uint32_t _lastTime;
+#define IO_PIN_COUNT 11
+const uint8_t IO_PINS[IO_PIN_COUNT] = {
+    2, 3, 4, 5, 6, A5, A4, A3, A2, A1, A0
 };
-
-#endif
-

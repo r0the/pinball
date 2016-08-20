@@ -1,0 +1,4 @@
+This is an example configuration file
+
+@a s+1000 m:3 t:2000
+@t m>0 m-1 m=0 b:1

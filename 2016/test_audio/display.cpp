@@ -18,23 +18,25 @@
 #include "display.h"
 #include "hardware.h"
 
-static const uint8_t DIGIT[] PROGMEM = {
-//    gfedcba
-    B00111111, // 0
-    B00000110, // 1
-    B01011011, // 2
-    B01001111, // 3
-    B01100110, // 4
-    B01101101, // 5
-    B01111101, // 6
-    B00000111, // 7
-    B01111111, // 8
-    B01101111  // 9
-};
-
-static const uint8_t LETTER[] PROGMEM = {
+static const uint8_t FONT[] PROGMEM = {
 //   .gfedcba
-    B01110111, // A
+    B00111111, //  0
+    B00000110, //  1
+    B01011011, //  2
+    B01001111, //  3
+    B01100110, //  4
+    B01101101, //  5
+    B01111101, //  6
+    B00000111, //  7
+    B01111111, //  8
+    B01101111, //  9
+    B00000000, // 10: Space
+    B01000000, // 11: -
+    B00000000, // 12: (reserved)
+    B00000000, // 13: (reserved)
+    B00000000, // 14: (reserved)
+    B00000000, // 15: (reserved)
+    B01110111, // 16: A
     B01111100, // B (small)
     B00111001, // C
     B01011110, // D (small)
@@ -44,7 +46,7 @@ static const uint8_t LETTER[] PROGMEM = {
     B01110110, // H
     B00110000, // I
     B00001110, // J
-    B00000000, // K (empty)
+    B01111010, // K
     B00111000, // L
     B00000000, // M (empty)
     B01010100, // N (small)
@@ -59,52 +61,100 @@ static const uint8_t LETTER[] PROGMEM = {
     B00000000, // W (empty)
     B00000000, // X (empty)
     B01110010, // Y (empty)
-    B01011011, // Z (empty)
+    B01011011  // Z (empty)
 };
+
+#define CHAR_SPACE 10
+#define CHAR_MINUS 11
+#define CHAR_A     16
+#define CHAR_B     17
+#define CHAR_C     18
+#define CHAR_D     19
+#define CHAR_E     20
+#define CHAR_F     21
+#define CHAR_G     22
+#define CHAR_H     23
+#define CHAR_I     24
+#define CHAR_J     25
+#define CHAR_K     26
+#define CHAR_L     27
+#define CHAR_M     28
+#define CHAR_N     29
+#define CHAR_O     30
+#define CHAR_P     31
+#define CHAR_Q     32
+#define CHAR_R     33
+#define CHAR_S     34
+#define CHAR_T     35
+#define CHAR_U     36
+#define CHAR_V     37
+#define CHAR_W     38
+#define CHAR_X     39
+#define CHAR_Y     40
+#define CHAR_Z     41
 
 #define DISPLAY_CHAR_COUNT 5
 
-static uint8_t lookupChar(char ch) {
-    if (ch == ' ' || ch == '\0') {
-        return 0;
+static void shiftOutCode(uint8_t code) {
+//    pinMode(PIN_DISPLAY_DATA, OUTPUT);
+//    pinMode(PIN_DISPLAY_SHIFT_CLOCK, OUTPUT);
+    shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_SHIFT_CLOCK, MSBFIRST, 
+            pgm_read_byte_near(FONT + code));
+//    pinMode(PIN_DISPLAY_DATA, INPUT_PULLUP);
+//    pinMode(PIN_DISPLAY_SHIFT_CLOCK, INPUT_PULLUP);
+    
+}
+
+static uint8_t convertChar(char ch) {
+    if (ch == '-') {
+        return CHAR_MINUS;
     }
     else if ('0' <= ch && ch <= '9') {
-        return pgm_read_byte_near(DIGIT + ch - '0');
+        return ch - '0';
     }
     else if ('A' <= ch && ch <= 'Z') {
-        return pgm_read_byte_near(LETTER + ch - 'A');
+        return CHAR_A + ch - 'A';
+    }
+    else {
+        return CHAR_SPACE;
     }
 }
 
-void Display::begin() {
+void Display::setup() {
     pinMode(PIN_DISPLAY_LATCH_CLOCK, OUTPUT);
     pinMode(PIN_DISPLAY_DATA, OUTPUT);
     pinMode(PIN_DISPLAY_SHIFT_CLOCK, OUTPUT);
 }
 
-void Display::showNumber(unsigned long number) {
+void Display::show(uint32_t message) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
-    unsigned long d = 10000;
+    uint8_t ch = 0;
+    for (uint8_t i = 0; i < DISPLAY_CHAR_COUNT; ++i) {
+        shiftOutCode(message & 0x3F);
+        message >>= 6;
+    }
+
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);    
+}
+
+void Display::showNumber(uint32_t number) {
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
+    uint32_t d = 10000;
     for (int i = 0; i < DISPLAY_CHAR_COUNT; ++i) {
-        shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_SHIFT_CLOCK, MSBFIRST,
-            pgm_read_byte_near(DIGIT + (number / d) % 10));
+        shiftOutCode((number / d) % 10);
         d /= 10;
     }
 
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
-void Display::showText(const char* text) {
+void Display::showPin(uint8_t pin) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
-    const char* pos = text;
-    for (int i = 0; i < DISPLAY_CHAR_COUNT; ++i) {
-        shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_SHIFT_CLOCK, MSBFIRST,
-            lookupChar(*pos));
-        if (*pos != '\0') {
-            ++pos;
-        }
-    }
-
+    shiftOutCode(CHAR_I);
+    shiftOutCode(CHAR_O);
+    shiftOutCode(CHAR_MINUS);
+    shiftOutCode(CHAR_A + pin);
+    shiftOutCode(CHAR_SPACE);
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
