@@ -272,6 +272,21 @@ c i
 
 Um den einen Audioeffekt abzuspielen, muss ausserdem die gewünschte Audiodatei in das korrekte Format konvertiert und untern dem Namen `a.wav` auf der SD-Karte gespeichert werden.
 
+### Varierende Punktzahl
+
+Auf dem Spielfeld ist ein Target vorhanden. Ein Treffer soll 10 Punkte zählen, jeder dritte Treffer jedoch 50 Punkte.
+
+**Verdrahtung:**: Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des Targets gezogen.
+Der andere Kontakt des Targets wird mit dem Eingang *IO-A* verbunden.
+
+**Programmierung:** Die Variable `n` wird verwendet, um die Anzahl Treffer zu zählen. Bei der Aktivierung des Eingangs *IO-A* (Ereignis `@a`) wird der Wert von `n` um eins erhöht. Anschliessend wird überprüft, ob `n` gleich drei ist. In dem Fall wird der Punktestand um 50 erhöht. Wenn `n` kleiner als drei ist, werden nur 10 Punkte vergeben. Schliesslich wird `n` wieder auf Null gesetzt, falls es drei ist.
+
+```
+@a n+1 n=3 s+50 n<3 n=3 n:0
+```
+
+
+
 ### Kugelverlust und Game Over
 
 Bei einem Flipperautomaten soll maximal mit drei Kugeln gespielt werden können. Anschliessend muss ein neues Spiel gestartet werden.

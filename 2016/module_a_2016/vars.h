@@ -15,20 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef VARS_H
+#define VARS_H
 
-#define PIN_SD_CHIP_SELECT 1
-#define PIN_PWM 10
+#include <Arduino.h>
 
-#define PIN_DISPLAY_LATCH_CLOCK 7
-#define PIN_DISPLAY_DATA 8
-#define PIN_DISPLAY_SHIFT_CLOCK 9
+#define COUNTER_COUNT 6
+#define VAR_COUNT 6
 
-#define IO_PIN_COUNT 11
+class IoPins;
 
-const uint8_t IO_PINS[IO_PIN_COUNT] = {
-    2, 3, 4, 5, 6, A5, A4, A3, A2, A1, A0
+class Vars {
+public:    
+    Vars(IoPins& pins);
+    void add(char var, uint32_t value);
+    uint32_t score() const;
+    void set(char var, uint32_t value);
+    void subtract(char var, uint32_t value);
+    uint32_t value(char var) const;
+private:
+    uint8_t _balls;
+    uint32_t _counters[COUNTER_COUNT];
+    IoPins& _pins;
+    uint32_t _score;
+    uint32_t _vars[VAR_COUNT];
 };
 
 #endif

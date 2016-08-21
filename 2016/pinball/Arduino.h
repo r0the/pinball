@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <QFile>
 #include <QDebug>
+#include <iostream>
 
 typedef quint8 uint8_t;
 typedef quint16 uint16_t;
@@ -55,7 +56,6 @@ public:
     char read() {
         char result;
         _handle->getChar(&result);
-        qDebug() << "Reading " << result;
         return result;
     }
 

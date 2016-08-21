@@ -15,9 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef LOGIC_H
+#define LOGIC_H
+
 #include <Arduino.h>
 #include <SD.h>
-#include "iopins.h"
 
 #define EVENT_IN_A 0
 #define EVENT_IN_B 1
@@ -66,30 +68,30 @@
 #define OP_IF_GREATER  6 // 110
                          // 111
 
+class Display;
+class Vars;
+
 // ----------------------------------------------------------------------------
 // class Logic
 // ----------------------------------------------------------------------------
 
 class Logic {
 public:
-    Logic();
+    Logic(Display& display, Vars& vars);
     void setup();
+    void loop();
+    uint32_t score() const;
     void handleEvent(uint8_t eventId);
 private:
     Logic(const Logic&);
     Logic& operator=(const Logic&);
     void executeAction(uint32_t action);
-    void opAdd(char var, uint32_t number);
-    bool opEquals(char var, uint32_t number) const;
-    bool opGreaterThan(char var, uint32_t number) const;
-    void opSet(char var, uint32_t number);
-    bool opSmallerThan(char var, uint32_t number) const;
-    void opSubtract(char var, uint32_t number);
-    uint8_t _events[EVENT_COUNT];
-    uint32_t _timers[6];
-    uint32_t _vars[6];
     uint32_t _actions[MAX_ACTIONS];
-    uint8_t _balls;
-    uint32_t _score;
+    Display& _display;
+    uint8_t _events[EVENT_COUNT];
+    uint32_t _highscore;
+    Vars& _vars;
 };
+
+#endif
 

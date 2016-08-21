@@ -1,0 +1,3 @@
+This is an example configuration file
+
+@a n+1 n=3 s+50 n<3 s+10 n=3 n:0

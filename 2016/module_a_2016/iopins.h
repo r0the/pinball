@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#ifndef IO_PINS_H
-#define IO_PINS_H
+#ifndef IOPINS_H
+#define IOPINS_H
 
 #include <Arduino.h>
 #include "hardware.h"
@@ -27,13 +27,13 @@ public:
     void setup();
     void loop();
     bool hasEvent(uint8_t pin) const;
+    bool high(uint8_t pin) const;
     void setHigh(uint8_t pin);
     void setLow(uint8_t pin);
     void setOutput(uint8_t pin);
 private:
     IoPins(const IoPins&);
     IoPins& operator=(const IoPins&);
-    uint8_t lookupPin(uint8_t pin) const;
 
     uint32_t _config;
     uint8_t _inputLock[IO_PIN_COUNT];

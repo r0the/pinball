@@ -29,7 +29,7 @@ void IoPins::setup() {
     for (int pin = 0; pin < IO_PIN_COUNT; ++pin) {
         _inputLock[pin] = 0;
         _inputStates[pin] = STATE_OPEN;
-        pinMode(lookupPin(pin), INPUT_PULLUP);
+        pinMode(IO_PINS[pin], INPUT_PULLUP);
     }
 
     _lastTime = millis();
@@ -55,10 +55,11 @@ void IoPins::loop() {
             }
 
             if (_inputLock[pin] == 0) {
-                int state = digitalRead(lookupPin(pin));
+                int state = digitalRead(IO_PINS[pin]);
                 if (state == LOW && _inputStates[pin] < STATE_CLOSED) {
                     ++_inputStates[pin];
                 }
+
                 if (state == HIGH) {
                     _inputStates[pin] = STATE_OPEN;
                 }
@@ -76,9 +77,12 @@ bool IoPins::hasEvent(uint8_t pin) const {
     }
 }
 
+bool IoPins::high(uint8_t pin) const {
+}
+
 void IoPins::setHigh(uint8_t pin) {
     if (pin < IO_PIN_COUNT && !(_config & (1 << pin))) {
-        pin = lookupPin(pin);
+        pin = IO_PINS[pin];
         pinMode(pin, OUTPUT);
         digitalWrite(pin, HIGH);
     }
@@ -86,7 +90,7 @@ void IoPins::setHigh(uint8_t pin) {
 
 void IoPins::setLow(uint8_t pin) {
     if (pin < IO_PIN_COUNT && !(_config & (1 << pin))) {
-        pin = lookupPin(pin);
+        pin = IO_PINS[pin];
         pinMode(pin, OUTPUT);
         digitalWrite(pin, LOW);
     }
@@ -95,12 +99,7 @@ void IoPins::setLow(uint8_t pin) {
 void IoPins::setOutput(uint8_t pin) {
     if (pin < IO_PIN_COUNT) {
         _config |= 1 << pin;
-        pin = lookupPin(pin);
-        pinMode(pin, OUTPUT);
+        pinMode(IO_PINS[pin], OUTPUT);
     }
-}
-
-uint8_t IoPins::lookupPin(uint8_t pin) const {
-    return IO_PINS[pin];
 }
 

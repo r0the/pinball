@@ -16,16 +16,20 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     iopins.cpp \
     logic.cpp \
-    Arduino.cpp
+    Arduino.cpp \
+    display.cpp \
+    vars.cpp
 
 HEADERS  += mainwindow.h \
     hardware.h \
     iopins.h \
     logic.h \
     Arduino.h \
-    SD.h
+    SD.h \
+    display.h \
+    vars.h
 
 FORMS    += mainwindow.ui
 
 OTHER_FILES += \
-    actions.txt
+    p.txt

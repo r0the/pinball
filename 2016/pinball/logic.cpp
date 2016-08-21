@@ -16,6 +16,8 @@
  */
 
 #include "logic.h"
+#include "display.h"
+#include "vars.h"
 
 #define OP_SHIFT 29
 #define OP_MASK 7
@@ -28,7 +30,7 @@
 
 const char* const EVENT_NAMES PROGMEM = "abcdefghijkrstuvwxyz";
 
-const char* ACTIONS_TXT = "../pinball/actions.txt";
+const char* P_TXT = "../pinball/p.txt";
 
 // ----------------------------------------------------------------------------
 // class ActionParser
@@ -44,6 +46,10 @@ public:
         _line(1),
         _nextActionIndex(0)
     {
+        for (uint8_t i = 0; i < MAX_ACTIONS; ++i) {
+            _actions[i] = 0;
+        }
+
         for (uint8_t i = 0; i < EVENT_COUNT; ++i) {
             _events[i] = 255;
         }
@@ -140,7 +146,7 @@ private:
             nextChar();
         }
 
-        return (static_cast<uint32_t>(op) << OP_SHIFT) | (var << VAR_SHIFT) | (number & NUMBER_MASK);
+        return (static_cast<uint32_t>(op) << OP_SHIFT) | (static_cast<uint32_t>(var) << VAR_SHIFT) | (number & NUMBER_MASK);
     }
 
     void nextChar() {
@@ -185,39 +191,32 @@ private:
 // class Logic
 // ----------------------------------------------------------------------------
 
-inline void printAction(uint8_t index, uint32_t action) {
-    uint8_t op = (action >> OP_SHIFT) & OP_MASK;
-    char var = 'a' + ((action >> VAR_SHIFT) & VAR_MASK);
-    uint32_t number = (action & NUMBER_MASK);
-    char opChar = '*';
-    switch (op) {
-        case OP_SET: opChar = ':'; break;
-        case OP_ADD: opChar = '+'; break;
-        case OP_SUBTRACT: opChar = '-'; break;
-        case OP_IF_EQUALS: opChar = '='; break;
-        case OP_IF_SMALLER: opChar = '<'; break;
-        case OP_IF_GREATER: opChar = '>'; break;
-    }
-
-    if (opChar == '*') {
-        qDebug() << "action[" << index << "] null";
-    }
-    else {
-        qDebug() << "action[" << index << "]" << var << opChar << number;
-    }
-}
-
-
-Logic::Logic() :
-    _events() {
+Logic::Logic(Display& display, Vars& vars) :
+    _actions(),
+    _events(),
+    _display(display),
+    _highscore(0),
+    _vars(vars) {
 }
 
 void Logic::setup() {
-    ActionParser parser(ACTIONS_TXT, _events, _actions);
+    ActionParser parser(P_TXT, _events, _actions);
     parser.parse();
     if (parser.error()) {
-        // TODO
+        _display.showError(ERROR_PARSE);
     }
+
+    handleEvent(EVENT_RESET);
+}
+
+void Logic::loop() {
+//    _vars.add('s', 1);
+    // check for new highscore
+    // check for game over
+}
+
+uint32_t Logic::score() const {
+    return _vars.score();
 }
 
 void Logic::handleEvent(uint8_t eventId) {
@@ -229,32 +228,32 @@ void Logic::handleEvent(uint8_t eventId) {
     bool loop = true;
     while (loop) {
         uint8_t op = (_actions[actionIndex] >> OP_SHIFT) & OP_MASK;
-        char var = 'a' + (_actions[actionIndex] >> VAR_SHIFT) & VAR_MASK;
+        char var = 'a' + ((_actions[actionIndex] >> VAR_SHIFT) & VAR_MASK);
         uint32_t number = (_actions[actionIndex] & NUMBER_MASK);
         switch (op) {
             case OP_SET:
-                opSet(var, number);
+                _vars.set(var, number);
                 break;
             case OP_ADD:
-                opAdd(var, number);
+                _vars.add(var, number);
                 break;
             case OP_SUBTRACT:
-                opSubtract(var, number);
+                _vars.subtract(var, number);
                 break;
             case OP_IF_EQUALS:
-                if (!opEquals(var, number)) {
+                if (_vars.value(var) != number) {
                     ++actionIndex;
                 }
 
                 break;
             case OP_IF_SMALLER:
-                if (!opSmallerThan(var, number)) {
+                if (_vars.value(var) >= number) {
                     ++actionIndex;
                 }
 
                 break;
             case OP_IF_GREATER:
-                if (!opGreaterThan(var, number)) {
+                if (_vars.value(var) <= number) {
                     ++actionIndex;
                 }
 
@@ -266,91 +265,7 @@ void Logic::handleEvent(uint8_t eventId) {
 
         ++actionIndex;
     }
+
+    _display.showNumber(_vars.score());
 }
 
-void Logic::opAdd(char var, uint32_t number) {
-    if (var == 's') {
-        if (_score + number > MAX_SCORE) {
-            _score = MAX_SCORE;
-        }
-        else {
-            _score += number;
-        }
-    }
-    else if (var == 'z') {
-        if (_balls + number > MAX_BALLS) {
-            _balls = MAX_BALLS;
-        }
-        else {
-            _balls += number;
-        }
-    }
-    else if ('l' <= var && var <= 'q') {
-        _vars[var - 'l'] += number;
-    }
-    else if ('t' <= var && var <= 'y') {
-        _timers[var - 't'] += number;
-    }
-}
-
-bool Logic::opEquals(char var, uint32_t number) const {
-
-}
-
-bool Logic::opGreaterThan(char var, uint32_t number) const {
-
-}
-
-void Logic::opSet(char var, uint32_t number) {
-    if (var == 's') {
-        if (number > MAX_SCORE) {
-            _score = MAX_SCORE;
-        }
-        else {
-            _score = number;
-        }
-    }
-    else if (var == 'z') {
-        if (number > MAX_BALLS) {
-            _balls = MAX_BALLS;
-        }
-        else {
-            _balls = number;
-        }
-    }
-    else if ('l' <= var && var <= 'q') {
-        _vars[var - 'l'] = number;
-    }
-    else if ('t' <= var && var <= 'y') {
-        _timers[var - 't'] = number;
-    }
-}
-
-bool Logic::opSmallerThan(char var, uint32_t number) const {
-
-}
-
-void Logic::opSubtract(char var, uint32_t number) {
-    if (var == 's') {
-        if (_score < number) {
-            _score = 0;
-        }
-        else {
-            _score -= number;
-        }
-    }
-    else if (var == 'z') {
-        if (_balls < number) {
-            _balls = 0;
-        }
-        else {
-            _balls -= number;
-        }
-    }
-    else if ('l' <= var && var <= 'q') {
-        _vars[var - 'l'] -= number;
-    }
-    else if ('t' <= var && var <= 'y') {
-        _timers[var - 't'] -= number;
-    }
-}

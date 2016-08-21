@@ -15,6 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef HARDWARE_H
+#define HARDWARE_H
+
 #define PIN_SD_CHIP_SELECT 1
 #define PIN_PWM 10
 
@@ -23,6 +26,10 @@
 #define PIN_DISPLAY_SHIFT_CLOCK 9
 
 #define IO_PIN_COUNT 11
+
 const uint8_t IO_PINS[IO_PIN_COUNT] = {
     2, 3, 4, 5, 6, A5, A4, A3, A2, A1, A0
 };
+
+#endif
+
