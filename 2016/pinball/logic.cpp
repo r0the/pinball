@@ -219,10 +219,10 @@ void LogicClass::handleEvent(uint8_t eventId) {
                 Vars.set(var, number);
                 break;
             case OP_ADD:
-                Vars.add(var, number);
+                Vars.set(var, Vars.value(var) + number);
                 break;
             case OP_SUBTRACT:
-                Vars.subtract(var, number);
+                Vars.set(var, Vars.value(var) - number);
                 break;
             case OP_IF_EQUALS:
                 if (Vars.value(var) != number) {

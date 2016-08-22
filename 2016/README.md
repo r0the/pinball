@@ -111,15 +111,27 @@ Das Modul stellt mit den grünen Schraubklemmblöcken 16 Anschlüsse zu Verfügu
 | 15  | 5V          | 5V      | 5 Volt                          |
 | 16  | RESET       | RESET   | Anschluss für Reset-Taste       |
 
+## Inbetriebnahme
+
+Das Modul wird in Betrieb genommen, indem es über den USB-Anschluss mit einer 5 Volt-Spannungsquelle verbunden wird. Das Verhalten beim Einschalten hängt wesentlich von der SD-Karte ab. Ist keine Karte im Sockel vorhanden, so wird erst eine Sekunde lang der Text `HELLO`, dann drei Sekunden lang die Softwareversion, beispielsweise `r 01`, angezeigt. Anschliessend fordert ein Text zum Einlegen einer SD-Karte auf.
+
+Ist auf der eingelegten SD-Karte die Datei `test.wav` vorhanden, so wird der Testmodus aktiviert. In diesem Modus kann die Funktionstüchtigkeit der Hardware überprüft werden:
+
+- Die Datei `test.wav` abgespielt.
+- Die Zahl `88888` wird drei Sekunden lang angezeigt.
+- Anschliessend wird auf der Anzeigt der zuletzt aktivierte Pin angezeigt, beispielweise `IO-A`.
+
 ## Programmierung
 
 Das Modul kann programmiert werden, indem Befehle definiert werden, welche beim Auftreten eines bestimmten
 Ereignisses ausgeführt werden sollen. Beispiele für Ereignisse sind:
+
 - Der Anschluss IO-A ist aktiviert worden.
 - Ein neuer Punkterekord ist erreicht worden.
 - Ein interner Countdown ist abglaufen.
 
 Beispiele für Befehle sind:
+
 - Erhöhe den Punktestand um 5.
 - Starte einen internen Countdown von 5000 Millisekunden.
 
@@ -150,12 +162,12 @@ Die folgende Tabelle gibt einen Überblick über alle möglichen Ereignisse:
 | `@k` | Anschluss IO-K ist aktiviert worden                            |
 | `@r` | Der Mikrocontroller ist zurückgesetzt worden (*reset*)         |
 | `@s` | Ein neuer Punkterekord ist erreicht worden (*high score*)      |
-| `@t` | Countdown t ist abgelaufen                                     |
-| `@u` | Countdown u ist abgelaufen                                     |
-| `@v` | Countdown v ist abgelaufen                                     |
-| `@w` | Countdown w ist abgelaufen                                     |
-| `@x` | Countdown x ist abgelaufen                                     |
-| `@y` | Countdown y ist abgelaufen                                     |
+| `@t` | Zähler t hat Null erreicht                                     |
+| `@u` | Zähler u hat Null erreicht                                     |
+| `@v` | Zähler v hat Null erreicht                                     |
+| `@w` | Zähler q hat Null erreicht                                     |
+| `@x` | Zähler x hat Null erreicht                                     |
+| `@y` | Zähler y hat Null erreicht                                     |
 | `@z` | Der letzte Ball ist verloren gegangen (*game over*)            |
 
 ### Befehle
@@ -164,38 +176,50 @@ Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen*
 
 `m>20`, `s+1000`, `a:1`
 
+Zwischen den einzelnen Teilen eines Befehls dürfen keine Leerzeichen vorkommen.
+
 ### Variablen
 
-| Name | Beschreibung             | Maximaler Wert | mögliche Operationen         |
-| ---- | ------------------------ | -------------- | ---------------------------- |
-| `a`  | Anschluss IO-A           |              1 | `:`, `=`                     |
-| `b`  | Anschluss IO-B           |              1 | `:`, `=`                     |
-| `c`  | Anschluss IO-C           |              1 | `:`, `=`                     |
-| `d`  | Anschluss IO-D           |              1 | `:`, `=`                     |
-| `e`  | Anschluss IO-E           |              1 | `:`, `=`                     |
-| `f`  | Anschluss IO-F           |              1 | `:`, `=`                     |
-| `g`  | Anschluss IO-G           |              1 | `:`, `=`                     |
-| `h`  | Anschluss IO-H           |              1 | `:`, `=`                     |
-| `i`  | Anschluss IO-I           |              1 | `:`, `=`                     |
-| `j`  | Anschluss IO-J           |              1 | `:`, `=`                     |
-| `k`  | Anschluss IO-K           |              1 | `:`, `=`                     |
-| `l`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `m`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `n`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `o`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `p`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `q`  | frei benutzbare Variable |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `r`  | Reset                    |              1 | `:`                          |
-| `s`  | aktueller Punktestand    |          99999 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `t`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `u`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `v`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `w`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `x`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `y`  | Countdown                |       16777215 | `:`, `+`, `-`, `<`, `=`, `>` |
-| `z`  | Anzahl Bälle             |            255 | `+`, `-`, `:`, `<`, `=`, `>` |
+Alle Kleinbuchstaben von `a` bis `z` sind Variablen.
+
+Die Variablen `a` bis `k` repräsentieren die entsprechenden Pins *IO-A* bis *IO-K*. Sie enthalten den Wert `1`, falls der Pin aktiviert ist, ansonsten den Wert `0`. Indem die Variable auf `1` oder `0` gesetzt wird, kann die Ausgabespannung des Pins auf 5 Volt bzw. 0 Volt geändert werden.
+
+Die Variablen `l` bis `q` sind frei benutzbar. Sie können Werte zwischen `0` und `65535` annehmen. Die Variablen `t` bis `y` sind Zählvariablen. Dass heisst, ihr Wert wird im Schnitt jede Millisekunde um eins vermindert. Erreicht eine Zählvariable den Wert Null, so wird das entsprechende Ereignis ausgelöst. Wird beispielsweise die Variable `t` auf 5000 gesetzt, so erreicht sie nach fünf Sekunde den Wert Null und löst das Ereignis `@t` aus.
+
+In der Variable `s` ist der aktuelle Punktestand gespeichert, in der Variable `z` die aktuelle Anzahl Bälle.
+
+| Name | Beschreibung             | Maximaler Wert |
+| ---- | ------------------------ | -------------- |
+| `a`  | Anschluss IO-A           |              1 |
+| `b`  | Anschluss IO-B           |              1 |
+| `c`  | Anschluss IO-C           |              1 |
+| `d`  | Anschluss IO-D           |              1 |
+| `e`  | Anschluss IO-E           |              1 |
+| `f`  | Anschluss IO-F           |              1 |
+| `g`  | Anschluss IO-G           |              1 |
+| `h`  | Anschluss IO-H           |              1 |
+| `i`  | Anschluss IO-I           |              1 |
+| `j`  | Anschluss IO-J           |              1 |
+| `k`  | Anschluss IO-K           |              1 |
+| `l`  | frei benutzbare Variable |          65535 |
+| `m`  | frei benutzbare Variable |          65535 |
+| `n`  | frei benutzbare Variable |          65535 |
+| `o`  | frei benutzbare Variable |          65535 |
+| `p`  | frei benutzbare Variable |          65535 |
+| `q`  | frei benutzbare Variable |          65535 |
+| `r`  | (nicht benutzbar)        |                |
+| `s`  | aktueller Punktestand    |          99999 |
+| `t`  | Zähler                   |          65535 |
+| `u`  | Zähler                   |          65535 |
+| `v`  | Zähler                   |          65535 |
+| `w`  | Zähler                   |          65535 |
+| `x`  | Zähler                   |          65535 |
+| `y`  | Zähler                   |          65535 |
+| `z`  | Anzahl Bälle             |            255 |
 
 ### Operationszeichen
+
+Es gibt sechs Operationszeichen, die in der folgenden Tabelle beschrieben werden:
 
 | Name | Beschreibung                                                             |
 | ---- | ------------------------------------------------------------------------ |
@@ -206,7 +230,11 @@ Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen*
 | `=`  | Nächste Aktion nur, wenn der Wert der Variable gleich die Zahl ist       |
 | `<`  | Nächste Aktion nur, wenn der Wert der Variable kleiner als die Zahl ist  |
 
-### Grundfunktionalität
+### Zahlen
+
+Zahlen in einem Befehl bestehen ausschliesslich aus den Ziffern `0` bis `9`. Negative Zahlen sind nicht erlaubt. Die erste Ziffer darf keine `0` sein, ausgenommen bei der Zahl `0`. Die Zahl muss kleiner als 100000 sein.
+
+## Grundfunktionalität
 
 Die folgenden grundlegenden Funktionen sind fest vorgegeben:
 

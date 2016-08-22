@@ -27,16 +27,14 @@ class VarsClass {
 public:
     void setup();
     void loop(uint32_t dMillis);
-    void add(char var, uint32_t value);
     uint32_t score() const;
     void set(char var, uint32_t value);
-    void subtract(char var, uint32_t value);
     uint32_t value(char var) const;
 private:
     uint8_t _balls;
-    uint32_t _counters[COUNTER_COUNT];
+    uint16_t _counters[COUNTER_COUNT];
     uint32_t _score;
-    uint32_t _vars[VAR_COUNT];
+    uint16_t _vars[VAR_COUNT];
 };
 
 extern VarsClass Vars;

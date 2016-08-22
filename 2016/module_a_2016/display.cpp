@@ -164,5 +164,15 @@ void DisplayClass::showPin(uint8_t pin) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
+void DisplayClass::showVersion(uint8_t version) {
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
+    shiftOutCode(CHAR_R);
+    shiftOutCode(CHAR_SPACE);
+    shiftOutCode(CHAR_SPACE);
+    shiftOutCode((version / 10) % 10);
+    shiftOutCode(version % 10);
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
+}
+
 DisplayClass Display;
 

@@ -63,6 +63,7 @@ public:
     void showError(uint8_t error);
     void showNumber(uint32_t number);
     void showPin(uint8_t pin);
+    void showVersion(uint8_t version);
 };
 
 extern DisplayClass Display;

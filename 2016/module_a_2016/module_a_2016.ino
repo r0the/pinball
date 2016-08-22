@@ -21,6 +21,8 @@
 #include "logic.h"
 #include "vars.h"
 
+#define VERSION 1
+
 #define MODE_TEST 1
 #define MODE_GAME 2
 
@@ -36,6 +38,8 @@ void setup() {
 
     if (!SD.begin(PIN_SD_CHIP_SELECT)) {
         Display.show(TEXT_HELLO);
+        delay(1000);
+        Display.showVersion(VERSION);
         delay(3000);
         while (!SD.begin(PIN_SD_CHIP_SELECT)) {
             Display.show(TEXT_INSRT);

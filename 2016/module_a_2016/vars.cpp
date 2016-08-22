@@ -20,6 +20,7 @@
 
 #define MAX_BALLS 255
 #define MAX_SCORE 99999
+#define MAX_VAR 65535
 
 #define VAR_FIRST_PIN 'a'
 #define VAR_LAST_PIN 'k'
@@ -53,31 +54,6 @@ void VarsClass::loop(uint32_t dMillis) {
     }
 }
 
-void VarsClass::add(char var, uint32_t value) {
-    if (var == VAR_SCORE) {
-        if (_score + value > MAX_SCORE) {
-            _score = MAX_SCORE;
-        }
-        else {
-            _score += value;
-        }
-    }
-    else if (var == VAR_BALLS) {
-        if (_balls + value > MAX_BALLS) {
-            _balls = MAX_BALLS;
-        }
-        else {
-            _balls += value;
-        }
-    }
-    else if (VAR_FIRST_VAR <= var && var <= VAR_LAST_VAR) {
-        _vars[var - VAR_FIRST_VAR] += value;
-    }
-    else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
-        _counters[var - VAR_FIRST_COUNTER] += value;
-    }
-}
-
 uint32_t VarsClass::score() const {
     return _score;
 }
@@ -100,10 +76,20 @@ void VarsClass::set(char var, uint32_t value) {
         }
     }
     else if (VAR_FIRST_VAR <= var && var <= VAR_LAST_VAR) {
-        _vars[var - VAR_FIRST_VAR] = value;
+        if (value > MAX_VAR) {
+            _vars[var - VAR_FIRST_VAR] = MAX_VAR;
+        }
+        else {
+            _vars[var - VAR_FIRST_VAR] = value;
+        }
     }
     else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
-        _counters[var - VAR_FIRST_COUNTER] = value;
+        if (value > MAX_VAR) {
+            _counters[var - VAR_FIRST_COUNTER] = MAX_VAR;
+        }
+        else {
+            _counters[var - VAR_FIRST_COUNTER] = value;
+        }
     }
     else if (VAR_FIRST_PIN <= var && var <= VAR_LAST_PIN) {
         if (value == 0) {
@@ -112,31 +98,6 @@ void VarsClass::set(char var, uint32_t value) {
         else {
             IoPins.setHigh(var - VAR_FIRST_PIN);
         }
-    }
-}
-
-void VarsClass::subtract(char var, uint32_t value) {
-    if (var == VAR_SCORE) {
-        if (_score < value) {
-            _score = 0;
-        }
-        else {
-            _score -= value;
-        }
-    }
-    else if (var == VAR_BALLS) {
-        if (_balls < value) {
-            _balls = 0;
-        }
-        else {
-            _balls -= value;
-        }
-    }
-    else if (VAR_FIRST_VAR <= var && var <= VAR_LAST_VAR) {
-        _vars[var - VAR_FIRST_VAR] -= value;
-    }
-    else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
-        _counters[var - VAR_FIRST_COUNTER] -= value;
     }
 }
 

@@ -55,7 +55,8 @@
  * | ----- | ----- | ----------------- |
  * | 31-29 | 3     | Operation         |
  * | 28-24 | 5     | Variable          |
- * | 23-0  | 24    | Argument (Number) |
+ * | 20-23 | 4     | Reserved          |
+ * | 19-0  | 20    | Argument (Number) |
  *
  */
 
