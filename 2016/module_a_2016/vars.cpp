@@ -30,12 +30,9 @@
 #define VAR_LAST_COUNTER 'y'
 #define VAR_BALLS 'z'
 
-Vars::Vars(IoPins& pins) :
-    _balls(0),
-    _counters(),
-    _pins(pins),
-    _score(0),
-    _vars() {
+void VarsClass::setup() {
+    _balls = 0;
+    _score = 0;
     for (uint8_t i = 0; i < COUNTER_COUNT; ++i) {
         _counters[i] = 0;
     }
@@ -45,7 +42,18 @@ Vars::Vars(IoPins& pins) :
     }
 }
 
-void Vars::add(char var, uint32_t value) {
+void VarsClass::loop(uint32_t dMillis) {
+    for (uint8_t i = 0; i < COUNTER_COUNT; ++i) {
+        if (_counters[i] > dMillis) {
+            _counters[i] -= dMillis;
+        }
+        else {
+            _counters[i] = 0;
+        }
+    }
+}
+
+void VarsClass::add(char var, uint32_t value) {
     if (var == VAR_SCORE) {
         if (_score + value > MAX_SCORE) {
             _score = MAX_SCORE;
@@ -70,11 +78,11 @@ void Vars::add(char var, uint32_t value) {
     }
 }
 
-uint32_t Vars::score() const {
+uint32_t VarsClass::score() const {
     return _score;
 }
 
-void Vars::set(char var, uint32_t value) {
+void VarsClass::set(char var, uint32_t value) {
     if (var == VAR_SCORE) {
         if (value > MAX_SCORE) {
             _score = MAX_SCORE;
@@ -97,9 +105,17 @@ void Vars::set(char var, uint32_t value) {
     else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
         _counters[var - VAR_FIRST_COUNTER] = value;
     }
+    else if (VAR_FIRST_PIN <= var && var <= VAR_LAST_PIN) {
+        if (value == 0) {
+            IoPins.setLow(var - VAR_FIRST_PIN);
+        }
+        else {
+            IoPins.setHigh(var - VAR_FIRST_PIN);
+        }
+    }
 }
 
-void Vars::subtract(char var, uint32_t value) {
+void VarsClass::subtract(char var, uint32_t value) {
     if (var == VAR_SCORE) {
         if (_score < value) {
             _score = 0;
@@ -124,20 +140,12 @@ void Vars::subtract(char var, uint32_t value) {
     }
 }
 
-uint32_t Vars::value(char var) const {
+uint32_t VarsClass::value(char var) const {
     if (var == VAR_SCORE) {
         return _score;
     }
     else if (var == VAR_BALLS) {
         return _balls;
-    }
-    else if (VAR_FIRST_PIN <= var && var <= VAR_LAST_PIN) {
-        if (_pins.high(var - VAR_FIRST_PIN)) {
-            return 1;
-        }
-        else {
-            return 0;
-        }
     }
     else if (VAR_FIRST_VAR <= var && var <= VAR_LAST_VAR) {
         return _vars[var - VAR_FIRST_VAR];
@@ -145,8 +153,18 @@ uint32_t Vars::value(char var) const {
     else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
         return _counters[var - VAR_FIRST_COUNTER];
     }
+    else if (VAR_FIRST_PIN <= var && var <= VAR_LAST_PIN) {
+        if (IoPins.high(var - VAR_FIRST_PIN)) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
     else {
         return 0;
     }
 }
+
+VarsClass Vars;
 

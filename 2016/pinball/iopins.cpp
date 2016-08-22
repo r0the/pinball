@@ -22,22 +22,18 @@
 
 #define INPUT_DELAY 200
 
-IoPins::IoPins() {
+IoPinsClass::IoPinsClass() {
 }
 
-void IoPins::setup() {
+void IoPinsClass::setup() {
     for (int pin = 0; pin < IO_PIN_COUNT; ++pin) {
         _inputLock[pin] = 0;
         _inputStates[pin] = STATE_OPEN;
         pinMode(IO_PINS[pin], INPUT_PULLUP);
     }
-
-    _lastTime = millis();
 }
 
-void IoPins::loop() {
-    unsigned long delta = millis() - _lastTime;
-    _lastTime = _lastTime + delta; 
+void IoPinsClass::loop(uint32_t dMillis) {
     for (int pin = 0; pin < IO_PIN_COUNT; ++pin) {
         // only check pins configured for input
         if (!(_config & (1 << pin))) {
@@ -46,11 +42,11 @@ void IoPins::loop() {
                 _inputLock[pin] = INPUT_DELAY;
             }
             else {
-                if (_inputLock[pin] < delta) {
+                if (_inputLock[pin] < dMillis) {
                     _inputLock[pin] = 0;
                 }
                 else {
-                   _inputLock[pin] = _inputLock[pin] - delta; 
+                   _inputLock[pin] = _inputLock[pin] - dMillis; 
                 }
             }
 
@@ -68,7 +64,7 @@ void IoPins::loop() {
     }
 }
 
-bool IoPins::hasEvent(uint8_t pin) const {
+bool IoPinsClass::hasEvent(uint8_t pin) const {
     if (pin < IO_PIN_COUNT) {
         return _inputStates[pin] == STATE_CLOSED;
     }
@@ -77,10 +73,10 @@ bool IoPins::hasEvent(uint8_t pin) const {
     }
 }
 
-bool IoPins::high(uint8_t pin) const {
+bool IoPinsClass::high(uint8_t pin) const {
 }
 
-void IoPins::setHigh(uint8_t pin) {
+void IoPinsClass::setHigh(uint8_t pin) {
     if (pin < IO_PIN_COUNT && !(_config & (1 << pin))) {
         pin = IO_PINS[pin];
         pinMode(pin, OUTPUT);
@@ -88,7 +84,7 @@ void IoPins::setHigh(uint8_t pin) {
     }
 }
 
-void IoPins::setLow(uint8_t pin) {
+void IoPinsClass::setLow(uint8_t pin) {
     if (pin < IO_PIN_COUNT && !(_config & (1 << pin))) {
         pin = IO_PINS[pin];
         pinMode(pin, OUTPUT);
@@ -96,9 +92,12 @@ void IoPins::setLow(uint8_t pin) {
     }
 }
 
-void IoPins::setOutput(uint8_t pin) {
+void IoPinsClass::setOutput(uint8_t pin) {
     if (pin < IO_PIN_COUNT) {
         _config |= 1 << pin;
         pinMode(IO_PINS[pin], OUTPUT);
     }
 }
+
+IoPinsClass IoPins;
+

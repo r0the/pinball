@@ -76,12 +76,12 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 
 Beim Zusammenbau ist es sehr wichtig, auf die korrekte Reihenfolge zu achten. Zuerst werden die Komponenten auf der Rückseite der Platine wie folgt gelötet:
 
-![](images/assembly.png){ width=100% }
+![](images/assembly.png)
 
 1. IC-Sockel für Puffer-Treiber löten
-2. *nur mit Siebensegmentanzeige:* IC-Sockel für Anzeige löten ()
+2. *nur mit Siebensegmentanzeige:* IC-Sockel für Anzeige löten
 3. Kondensator 0.1 µF löten
-4. *nur mit Audioausgabe:* Widerstand 470 Ohm und Kondensator 1 nF löten ()
+4. *nur mit Audioausgabe:* Widerstand 470 Ohm und Kondensator 1 nF löten
 5. *nur mit Audioausgabe:* Klinkensteckverbinder löten
 6. Schraubklemmblöcke löten
 7. Stiftleisten Arduino löten
@@ -110,20 +110,6 @@ Das Modul stellt mit den grünen Schraubklemmblöcken 16 Anschlüsse zu Verfügu
 | 14  | GND         | GND     | Masse (0 Volt)                  |
 | 15  | 5V          | 5V      | 5 Volt                          |
 | 16  | RESET       | RESET   | Anschluss für Reset-Taste       |
-
-### Konfiguration der Anschlüsse
-
-Die Anschlüsse *IO-A* bis *IO-K* können entweder als Eingang oder als Ausgang verwendet werden. In der Datei `config.txt` auf der SD-Karte wird festgelegt, in welchem Modus jeder Anschluss betrieben werden soll.
-
-Die Textdatei enthält auf jeder Zeile die Bezeichnung des Anschlusses als Kleinbuchstaben `a` bis `k`, gefolgt von einem Leerzeichen und dem Buchstaben `i` (für *input*) oder `o` (für *output*):
-
-```
-a i
-b i
-c o
-```
-
-Die Reihenfolge der Anschlüsse spielt keine Rolle. Wir für einen Anschluss die Verwendung nicht in der Datei festegelegt, so wird der Anschluss als Eingang konfiguriert.
 
 ## Programmierung
 
@@ -220,6 +206,14 @@ Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen*
 | `=`  | Nächste Aktion nur, wenn der Wert der Variable gleich die Zahl ist       |
 | `<`  | Nächste Aktion nur, wenn der Wert der Variable kleiner als die Zahl ist  |
 
+### Grundfunktionalität
+
+Die folgenden grundlegenden Funktionen sind fest vorgegeben:
+
+- Grundsätzlich wird der aktuelle Punktestand angezeigt.
+- Wird die Anzahl Bälle verändert, wird eine Sekunde lang die neue Anzahl Bälle angezeigt.
+- Ist die neue Anzahl Bälle gleich Null, so wird *GAME OVER* abwechselnd mit dem Punktestand angezeigt. Danach kann der Punktestand nicht mehr verändert werden, erst nach einem Reset kann ein neues Spiel gestartet werden.
+
 ## Konfiguration von Audioeffekten
 
 ### Dateiformat
@@ -254,14 +248,6 @@ Auf einem Spielfeld sind drei Targets vorhanden. Das erste Target hat einen Wert
 Wenn nun ein Target getroffen wird, so wird der Stromkreis geschlossen und am entsprechenden
 Eingang liegt eine Spannung von 0 Volt an und das Ausgabemodul erkennt den Eingang als "aktiv".
 
-**Konfiguration:** In der Konfigurationsdatei `io.txt` auf der SD-Karte muss festgelegt werden, dass die Anschlüsse *IO-A*, *IO-B* und *IO-C* als Eingänge zu behandeln sind:
-
-```
-a i
-b i
-c i
-```
-
 **Programmierung:** In der Programmdatei `p.txt` wird die zu zählende Punktzahl pro Eingang festgelegt:
 
 ```
@@ -279,13 +265,20 @@ Auf dem Spielfeld ist ein Target vorhanden. Ein Treffer soll 10 Punkte zählen, 
 **Verdrahtung:**: Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des Targets gezogen.
 Der andere Kontakt des Targets wird mit dem Eingang *IO-A* verbunden.
 
-**Programmierung:** Die Variable `n` wird verwendet, um die Anzahl Treffer zu zählen. Bei der Aktivierung des Eingangs *IO-A* (Ereignis `@a`) wird der Wert von `n` um eins erhöht. Anschliessend wird überprüft, ob `n` gleich drei ist. In dem Fall wird der Punktestand um 50 erhöht. Wenn `n` kleiner als drei ist, werden nur 10 Punkte vergeben. Schliesslich wird `n` wieder auf Null gesetzt, falls es drei ist.
+**Programmierung:** Die Variable `n` wird verwendet, um die Anzahl Treffer zu zählen. Bei der Aktivierung des Eingangs *IO-A* (Ereignis `@a`) wird der Wert von `n` um eins erhöht. Wenn nun `n` gleich drei ist, wird der Punktestand um 50 erhöht, ansonsten nur um 10. Wenn `n` den Wert drei erreicht, wird `n` wieder auf Null gesetzt.
 
 ```
-@a n+1 n=3 s+50 n<3 n=3 n:0
+@a n+1 n=3 s+50 n<3 s+10 n=3 n:0
 ```
+Das Programm liest sich so:
 
-
+| Befehl     | Bedeutung                                                                |
+| ---------- | ------------------------------------------------------------------------ |
+| `@a`       | Wenn Eingang *IO-A* aktiviert wird, führe die folgenden Anweisungen aus: |
+| `n+1`      | erhöhe den Wert `n` um eins.                                             |
+| `n=3 s+50` | wenn `n` gleich drei ist, erhöhe den Punktestand um 50.                  |
+| `n<3 s+10` | wenn `n` kleiner als drei ist, erhöhe den Punktestand um 10.             |
+| `n=3 n:0`  | wenn `n` gleich drei ist, dann setze `n` auf Null.                       |
 
 ### Kugelverlust und Game Over
 
@@ -297,20 +290,13 @@ Damit ein Kugelverlust festgestellt werden kann, muss ein Kontakt angebracht wer
 
 ![](images/example-game-over.png)
 
-**Konfiguration:** In der Konfigurationsdatei `io.txt` auf der SD-Karte wird festgelegt, dass der Anschluss *IO-A* als Eingang zu behandeln ist.
-
-```
-a i
-```
-
-**Programmierung:** In der Programmdatei `p.txt` wird festgelegt, dass bei der Aktivierung von Eingang IO-A (Ereignis `@a`) die Anzahl Kugeln um eins zu reduzieren ist:
+**Programmierung:** In der Programmdatei `p.txt` wird festgelegt, dass bei der Aktivierung von Eingang *IO-A* (Ereignis `@a`) die Anzahl Kugeln um eins zu reduzieren ist:
 
 ```
 @a z-1
 ```
 
 ### Erst zählen, wenn zwei Targets aktiviert sind
-
 
 ```
 @r n=3

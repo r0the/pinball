@@ -23,11 +23,10 @@
 #define COUNTER_COUNT 6
 #define VAR_COUNT 6
 
-class IoPins;
-
-class Vars {
-public:    
-    Vars(IoPins& pins);
+class VarsClass {
+public:
+    void setup();
+    void loop(uint32_t dMillis);
     void add(char var, uint32_t value);
     uint32_t score() const;
     void set(char var, uint32_t value);
@@ -36,10 +35,11 @@ public:
 private:
     uint8_t _balls;
     uint32_t _counters[COUNTER_COUNT];
-    IoPins& _pins;
     uint32_t _score;
     uint32_t _vars[VAR_COUNT];
 };
+
+extern VarsClass Vars;
 
 #endif
 

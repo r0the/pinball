@@ -20,19 +20,15 @@
 
 #include <Arduino.h>
 
-class Audio {
+class AudioClass {
 public:
-    Audio();
-    ~Audio();
-    void begin();
+    void setup();
     bool play(const char* filename);
     bool playing() const;
     void stop();
-private:
-    // disable copying
-    Audio(const Audio&);
-    Audio& operator=(const Audio&);
 };
+
+extern AudioClass Audio;
 
 #endif
 

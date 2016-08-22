@@ -116,13 +116,13 @@ static uint8_t convertChar(char ch) {
     }
 }
 
-void Display::setup() {
+void DisplayClass::setup() {
     pinMode(PIN_DISPLAY_LATCH_CLOCK, OUTPUT);
     pinMode(PIN_DISPLAY_DATA, OUTPUT);
     pinMode(PIN_DISPLAY_SHIFT_CLOCK, OUTPUT);
 }
 
-void Display::show(uint32_t message) {
+void DisplayClass::show(uint32_t message) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
     uint8_t ch = 0;
     for (uint8_t i = 0; i < DISPLAY_CHAR_COUNT; ++i) {
@@ -133,7 +133,7 @@ void Display::show(uint32_t message) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
-void Display::showError(uint8_t error) {
+void DisplayClass::showError(uint8_t error) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
     shiftOutCode(CHAR_E);
     shiftOutCode(CHAR_R);
@@ -143,7 +143,7 @@ void Display::showError(uint8_t error) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
-void Display::showNumber(uint32_t number) {
+void DisplayClass::showNumber(uint32_t number) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
     uint32_t d = 10000;
     for (int i = 0; i < DISPLAY_CHAR_COUNT; ++i) {
@@ -154,7 +154,7 @@ void Display::showNumber(uint32_t number) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
-void Display::showPin(uint8_t pin) {
+void DisplayClass::showPin(uint8_t pin) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
     shiftOutCode(CHAR_I);
     shiftOutCode(CHAR_O);
@@ -163,4 +163,6 @@ void Display::showPin(uint8_t pin) {
     shiftOutCode(CHAR_SPACE);
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
+
+DisplayClass Display;
 

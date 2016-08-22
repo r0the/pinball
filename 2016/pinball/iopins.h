@@ -21,25 +21,26 @@
 #include <Arduino.h>
 #include "hardware.h"
 
-class IoPins {
+class IoPinsClass {
 public:
-    IoPins();
+    IoPinsClass();
     void setup();
-    void loop();
+    void loop(uint32_t dMillis);
     bool hasEvent(uint8_t pin) const;
     bool high(uint8_t pin) const;
     void setHigh(uint8_t pin);
     void setLow(uint8_t pin);
     void setOutput(uint8_t pin);
 private:
-    IoPins(const IoPins&);
-    IoPins& operator=(const IoPins&);
+    IoPinsClass(const IoPinsClass&);
+    IoPinsClass& operator=(const IoPinsClass&);
 
     uint32_t _config;
     uint8_t _inputLock[IO_PIN_COUNT];
     uint8_t _inputStates[IO_PIN_COUNT];
-    uint32_t _lastTime;
 };
+
+extern IoPinsClass IoPins;
 
 #endif
 

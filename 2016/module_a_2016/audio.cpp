@@ -110,14 +110,7 @@ ISR(TIMER1_OVF_vect) {
     }
 }
 
-Audio::Audio() {
-}
-
-Audio::~Audio() {
-    stop();
-}
-
-void Audio::begin() {
+void AudioClass::setup() {
     cli();
     pinMode(PIN_PWM, OUTPUT);
 
@@ -181,7 +174,7 @@ void Audio::begin() {
     sei();
 }
 
-bool Audio::play(const char* filename) {
+bool AudioClass::play(const char* filename) {
     stop();
     char tmp[4];
     file = SD.open(filename, FILE_READ);
@@ -246,14 +239,16 @@ bool Audio::play(const char* filename) {
     return true;
 }
 
-bool Audio::playing() const {
+bool AudioClass::playing() const {
     return audioState & AUDIO_PLAYING;
 }
 
-void Audio::stop() {
+void AudioClass::stop() {
     if (audioState & AUDIO_PLAYING) {
         file.close();
         audioState &= ~AUDIO_PLAYING;
     }
 }
+
+AudioClass Audio;
 

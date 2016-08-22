@@ -25,9 +25,6 @@
 #define VAR_MASK 31
 #define NUMBER_MASK 0x0FFF
 
-#define MAX_BALLS 255
-#define MAX_SCORE 99999
-
 const char* const EVENT_NAMES PROGMEM = "abcdefghijkrstuvwxyz";
 
 const char* P_TXT = "../pinball/p.txt";
@@ -191,35 +188,22 @@ private:
 // class Logic
 // ----------------------------------------------------------------------------
 
-Logic::Logic(Display& display, Vars& vars) :
-    _actions(),
-    _events(),
-    _display(display),
-    _highscore(0),
-    _vars(vars) {
-}
-
-void Logic::setup() {
+void LogicClass::setup() {
     ActionParser parser(P_TXT, _events, _actions);
     parser.parse();
     if (parser.error()) {
-        _display.showError(ERROR_PARSE);
+        Display.showError(ERROR_PARSE);
     }
 
     handleEvent(EVENT_RESET);
 }
 
-void Logic::loop() {
-//    _vars.add('s', 1);
+void LogicClass::loop() {
     // check for new highscore
     // check for game over
 }
 
-uint32_t Logic::score() const {
-    return _vars.score();
-}
-
-void Logic::handleEvent(uint8_t eventId) {
+void LogicClass::handleEvent(uint8_t eventId) {
     if (eventId >= EVENT_COUNT) {
         return;
     }
@@ -232,28 +216,28 @@ void Logic::handleEvent(uint8_t eventId) {
         uint32_t number = (_actions[actionIndex] & NUMBER_MASK);
         switch (op) {
             case OP_SET:
-                _vars.set(var, number);
+                Vars.set(var, number);
                 break;
             case OP_ADD:
-                _vars.add(var, number);
+                Vars.add(var, number);
                 break;
             case OP_SUBTRACT:
-                _vars.subtract(var, number);
+                Vars.subtract(var, number);
                 break;
             case OP_IF_EQUALS:
-                if (_vars.value(var) != number) {
+                if (Vars.value(var) != number) {
                     ++actionIndex;
                 }
 
                 break;
             case OP_IF_SMALLER:
-                if (_vars.value(var) >= number) {
+                if (Vars.value(var) >= number) {
                     ++actionIndex;
                 }
 
                 break;
             case OP_IF_GREATER:
-                if (_vars.value(var) <= number) {
+                if (Vars.value(var) <= number) {
                     ++actionIndex;
                 }
 
@@ -266,6 +250,8 @@ void Logic::handleEvent(uint8_t eventId) {
         ++actionIndex;
     }
 
-    _display.showNumber(_vars.score());
+    Display.showNumber(Vars.score());
 }
+
+LogicClass Logic;
 

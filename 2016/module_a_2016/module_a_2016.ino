@@ -24,64 +24,66 @@
 #define MODE_TEST 1
 #define MODE_GAME 2
 
-Display display;
-Audio audio;
-IoPins pins;
-Vars vars(pins);
-Logic logic(display, vars);
 uint8_t mode;
+uint32_t lastTime;
 
 const char* TEST_WAV = "test.wav";
 
 void setup() {
-    audio.begin();
-    pins.setup();
-    display.setup();
+    Audio.setup();
+    Display.setup();
+    IoPins.setup();
 
     if (!SD.begin(PIN_SD_CHIP_SELECT)) {
-        display.show(TEXT_HELLO);
+        Display.show(TEXT_HELLO);
         delay(3000);
         while (!SD.begin(PIN_SD_CHIP_SELECT)) {
-            display.show(TEXT_INSRT);
+            Display.show(TEXT_INSRT);
             delay(1000);
-            display.show(TEXT_SDCRD);
+            Display.show(TEXT_SDCRD);
             delay(1000);
         }
     }
 
     if (SD.exists(TEST_WAV)) {
-        audio.play(TEST_WAV);
-        display.show(TEXT_SDRDY);
+        Audio.play(TEST_WAV);
+        Display.show(TEXT_SDRDY);
         delay(1000);
-        display.showNumber(88888);
+        Display.showNumber(88888);
         delay(3000);
         mode = MODE_TEST;
     }
     else {
-        logic.setup();
+        Logic.setup();
         mode = MODE_GAME;
     }
+
+    lastTime = millis();
 }
 
 void loopTest() {
     for (int i = 0; i < IO_PIN_COUNT; ++i) {
-        if (pins.hasEvent(i)) {
-            display.showPin(i);
+        if (IoPins.hasEvent(i)) {
+            Display.showPin(i);
         }
     }    
 }
 
 void loopGame() {
-    logic.loop();
+    Logic.loop();
     for (int i = 0; i < IO_PIN_COUNT; ++i) {
-        if (pins.hasEvent(i)) {
-            logic.handleEvent(i);
+        if (IoPins.hasEvent(i)) {
+            Logic.handleEvent(i);
         }
     }
 }
 
 void loop() {
-    pins.loop();
+    uint32_t now = millis();
+    uint32_t dMillis = now - lastTime;
+    lastTime = now;
+    IoPins.loop(dMillis);
+    Vars.loop(dMillis);
     switch (mode) {
         case MODE_GAME:
             loopGame();

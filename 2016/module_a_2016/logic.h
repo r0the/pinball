@@ -68,30 +68,23 @@
 #define OP_IF_GREATER  6 // 110
                          // 111
 
-class Display;
-class Vars;
-
 // ----------------------------------------------------------------------------
 // class Logic
 // ----------------------------------------------------------------------------
 
-class Logic {
+class LogicClass {
 public:
-    Logic(Display& display, Vars& vars);
     void setup();
     void loop();
-    uint32_t score() const;
     void handleEvent(uint8_t eventId);
 private:
-    Logic(const Logic&);
-    Logic& operator=(const Logic&);
     void executeAction(uint32_t action);
     uint32_t _actions[MAX_ACTIONS];
-    Display& _display;
     uint8_t _events[EVENT_COUNT];
     uint32_t _highscore;
-    Vars& _vars;
 };
+
+extern LogicClass Logic;
 
 #endif
 

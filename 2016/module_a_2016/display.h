@@ -56,7 +56,7 @@
 
 #include <Arduino.h>
 
-class Display {
+class DisplayClass {
 public:
     void setup();
     void show(uint32_t message);
@@ -65,4 +65,7 @@ public:
     void showPin(uint8_t pin);
 };
 
+extern DisplayClass Display;
+
 #endif
+
