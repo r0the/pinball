@@ -12,24 +12,30 @@ TARGET = pinball
 TEMPLATE = app
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    iopins.cpp \
-    logic.cpp \
+SOURCES += \
     Arduino.cpp \
+    audio.cpp \
     display.cpp \
-    vars.cpp
+    logic.cpp \
+    main.cpp\
+    mainwindow.cpp \
+    parser.cpp \
+    vars.cpp \
 
-HEADERS  += mainwindow.h \
-    hardware.h \
-    iopins.h \
-    logic.h \
+HEADERS += \
     Arduino.h \
+    audio.h \
     SD.h \
+    consts.h \
     display.h \
-    vars.h
+    hardware.h \
+    logic.h \
+    mainwindow.h \
+    parser.h \
+    vars.h \
 
-FORMS    += mainwindow.ui
+FORMS += \
+    mainwindow.ui \
 
 OTHER_FILES += \
     p.txt

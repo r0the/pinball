@@ -19,20 +19,29 @@
 #define VARS_H
 
 #include <Arduino.h>
+#include "consts.h"
 
-#define COUNTER_COUNT 6
+#define COUNTDOWN_COUNT 6
 #define VAR_COUNT 6
 
 class VarsClass {
 public:
     void setup();
-    void loop(uint32_t dMillis);
+    void loop();
+    bool hasEvent(uint8_t eventId) const;
     uint32_t score() const;
-    void set(char var, uint32_t value);
-    uint32_t value(char var) const;
+    void set(uint8_t varId, uint32_t value);
+    void setPinInputMode(uint8_t varId);
+    uint32_t value(uint8_t varId) const;
 private:
     uint8_t _balls;
-    uint16_t _counters[COUNTER_COUNT];
+    uint16_t _countdowns[COUNTDOWN_COUNT];
+    uint16_t _events;
+    uint32_t _lastTime;
+    uint8_t _pinInputLocks[IO_PIN_COUNT];
+    uint16_t _pinInputMode;
+    uint8_t _pinInputStates[IO_PIN_COUNT];
+    uint16_t _pinState;
     uint32_t _score;
     uint16_t _vars[VAR_COUNT];
 };

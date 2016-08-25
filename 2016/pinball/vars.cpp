@@ -16,50 +16,143 @@
  */
 
 #include "vars.h"
-#include "iopins.h"
 
 #define MAX_BALLS 255
 #define MAX_SCORE 99999
 #define MAX_VAR 65535
 
-#define VAR_FIRST_PIN 'a'
-#define VAR_LAST_PIN 'k'
-#define VAR_FIRST_VAR 'l'
-#define VAR_LAST_VAR 'q'
-#define VAR_SCORE 's'
-#define VAR_FIRST_COUNTER 't'
-#define VAR_LAST_COUNTER 'y'
-#define VAR_BALLS 'z'
+#define VAR_FIRST_PIN 0 // 'a'
+#define VAR_LAST_PIN 10 // 'k'
+#define VAR_FIRST_COUNTDOWN 11 // 'l'
+#define VAR_LAST_COUNTDOWN 16 // 'q'
+#define VAR_SCORE 18 // 's'
+#define VAR_BALLS 19 // 't'
+#define VAR_FIRST_VAR 20 // 'u'
+#define VAR_LAST_VAR 25 // 'z'
+
+#define STATE_OPEN 0
+#define STATE_CLOSED 20
+
+#define INPUT_DELAY 200
 
 void VarsClass::setup() {
-    _balls = 0;
-    _score = 0;
-    for (uint8_t i = 0; i < COUNTER_COUNT; ++i) {
-        _counters[i] = 0;
+    // 1) initialize i/o pins
+    _pinInputMode = 0;
+    _pinState = 0;
+    for (int i = 0; i < IO_PIN_COUNT; ++i) {
+        _pinInputLocks[i] = 0;
+        _pinInputStates[i] = STATE_OPEN;
+        pinMode(IO_PINS[i], INPUT_PULLUP);
     }
 
+    // 2) set all countdowns to zero
+    for (uint8_t i = 0; i < COUNTDOWN_COUNT; ++i) {
+        _countdowns[i] = 0;
+    }
+
+    // 4) set score to zero
+    _score = 0;
+
+    // 5) set number of balls to three
+    _balls = 0;
+
+    // 6) set all standard variables to zero
     for (uint8_t i = 0; i < VAR_COUNT; ++i) {
         _vars[i] = 0;
     }
+
+    _lastTime = millis();
 }
 
-void VarsClass::loop(uint32_t dMillis) {
-    for (uint8_t i = 0; i < COUNTER_COUNT; ++i) {
-        if (_counters[i] > dMillis) {
-            _counters[i] -= dMillis;
-        }
-        else {
-            _counters[i] = 0;
+void VarsClass::loop() {
+    uint32_t now = millis();
+    uint32_t dMillis = now - _lastTime;
+    _lastTime = now;
+    _events = 0;
+
+    // 1) handle i/o pins configured for input
+    for (uint8_t pin = 0; pin < IO_PIN_COUNT; ++pin) {
+        // only check pins configured for input
+        if (_pinInputMode & (1 << pin)) {
+            if (_pinInputStates[pin] == STATE_CLOSED) {
+                _pinInputStates[pin] = STATE_OPEN;
+                _pinInputLocks[pin] = INPUT_DELAY;
+            }
+            else {
+                if (_pinInputLocks[pin] < dMillis) {
+                    _pinInputLocks[pin] = 0;
+                }
+                else {
+                   _pinInputLocks[pin] = _pinInputLocks[pin] - dMillis;
+                }
+            }
+
+            if (_pinInputLocks[pin] == 0) {
+                int state = digitalRead(IO_PINS[pin]);
+                if (state == LOW && _pinInputStates[pin] < STATE_CLOSED) {
+                    ++_pinInputStates[pin];
+                    if (_pinInputStates[pin] == STATE_CLOSED) {
+                        _events |= (1 << pin);
+                    }
+                }
+
+                if (state == HIGH) {
+                    _pinInputStates[pin] = STATE_OPEN;
+                }
+            }
         }
     }
+
+    // 2) handle counters
+    for (uint8_t i = 0; i < COUNTDOWN_COUNT; ++i) {
+        if (_countdowns[i] > 0) {
+            if (_countdowns[i] > dMillis) {
+                _countdowns[i] -= dMillis;
+            }
+            else {
+                _countdowns[i] = 0;
+                _events |= 1 << (VAR_FIRST_COUNTDOWN + i);
+            }
+        }
+    }
+}
+
+bool VarsClass::hasEvent(uint8_t eventId) const {
+    return _events & (1 << eventId);
 }
 
 uint32_t VarsClass::score() const {
     return _score;
 }
 
-void VarsClass::set(char var, uint32_t value) {
-    if (var == VAR_SCORE) {
+void VarsClass::set(uint8_t varId, uint32_t value) {
+    if (VAR_FIRST_PIN <= varId && varId <= VAR_LAST_PIN) {
+        // 1) set i/o pin state
+        uint8_t pin = IO_PINS[varId - VAR_FIRST_PIN];
+        uint16_t pinMask = 1 << (varId - VAR_FIRST_PIN);
+        // only if pin is in output mode
+        if (!(_pinInputMode & pinMask)) {
+            if (value == 0) {
+                digitalWrite(pin, HIGH);
+                _pinState |= pinMask;
+            }
+            else {
+                digitalWrite(pin, LOW);
+                _pinState &= ~pinMask;
+            }
+        }
+    }
+    else if (VAR_FIRST_COUNTDOWN <= varId && varId <= VAR_LAST_COUNTDOWN) {
+        // 2) set counter value
+        if (value > MAX_VAR) {
+            _countdowns[varId - VAR_FIRST_COUNTDOWN] = MAX_VAR;
+        }
+        else {
+            _countdowns[varId - VAR_FIRST_COUNTDOWN] = value;
+        }
+    }
+    else if (varId == VAR_SCORE) {
+        // 4) set score
         if (value > MAX_SCORE) {
             _score = MAX_SCORE;
         }
@@ -67,7 +160,8 @@ void VarsClass::set(char var, uint32_t value) {
             _score = value;
         }
     }
-    else if (var == VAR_BALLS) {
+    else if (varId == VAR_BALLS) {
+        // 5) set number of balls
         if (value > MAX_BALLS) {
             _balls = MAX_BALLS;
         }
@@ -75,52 +169,52 @@ void VarsClass::set(char var, uint32_t value) {
             _balls = value;
         }
     }
-    else if (VAR_FIRST_VAR <= var && var <= VAR_LAST_VAR) {
+    else if (VAR_FIRST_VAR <= varId && varId <= VAR_LAST_VAR) {
+        // 6) set value of standard variable
         if (value > MAX_VAR) {
-            _vars[var - VAR_FIRST_VAR] = MAX_VAR;
+            _vars[varId - VAR_FIRST_VAR] = MAX_VAR;
         }
         else {
-            _vars[var - VAR_FIRST_VAR] = value;
-        }
-    }
-    else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
-        if (value > MAX_VAR) {
-            _counters[var - VAR_FIRST_COUNTER] = MAX_VAR;
-        }
-        else {
-            _counters[var - VAR_FIRST_COUNTER] = value;
-        }
-    }
-    else if (VAR_FIRST_PIN <= var && var <= VAR_LAST_PIN) {
-        if (value == 0) {
-            IoPins.setLow(var - VAR_FIRST_PIN);
-        }
-        else {
-            IoPins.setHigh(var - VAR_FIRST_PIN);
+            _vars[varId - VAR_FIRST_VAR] = value;
         }
     }
 }
 
-uint32_t VarsClass::value(char var) const {
-    if (var == VAR_SCORE) {
-        return _score;
+void VarsClass::setPinInputMode(uint8_t varId) {
+    if (VAR_FIRST_PIN <= varId && varId <= VAR_LAST_PIN) {
+        uint8_t pin = IO_PINS[varId - VAR_FIRST_PIN];
+        uint16_t pinMask = 1 << (varId - VAR_FIRST_PIN);
+        pinMode(pin, INPUT_PULLUP);
+        _pinInputMode |= pinMask;
     }
-    else if (var == VAR_BALLS) {
-        return _balls;
-    }
-    else if (VAR_FIRST_VAR <= var && var <= VAR_LAST_VAR) {
-        return _vars[var - VAR_FIRST_VAR];
-    }
-    else if (VAR_FIRST_COUNTER <= var && var <= VAR_LAST_COUNTER) {
-        return _counters[var - VAR_FIRST_COUNTER];
-    }
-    else if (VAR_FIRST_PIN <= var && var <= VAR_LAST_PIN) {
-        if (IoPins.high(var - VAR_FIRST_PIN)) {
+}
+
+uint32_t VarsClass::value(uint8_t varId) const {
+    if (VAR_FIRST_PIN <= varId && varId <= VAR_LAST_PIN) {
+        // 1) get pin state
+        uint16_t pinMask = 1 << (varId - VAR_FIRST_PIN);
+        if (_pinState & pinMask) {
             return 1;
         }
         else {
             return 0;
         }
+    }
+    else if (VAR_FIRST_COUNTDOWN <= varId && varId <= VAR_LAST_COUNTDOWN) {
+        // 2) get counter value
+        return _countdowns[varId - VAR_FIRST_COUNTDOWN];
+    }
+    else if (varId == VAR_SCORE) {
+        // 4) get score
+        return _score;
+    }
+    else if (varId == VAR_BALLS) {
+        // 5) get number of balls
+        return _balls;
+    }
+    else if (VAR_FIRST_VAR <= varId && varId <= VAR_LAST_VAR) {
+        // 6) get value of normal variable
+        return _vars[varId - VAR_FIRST_VAR];
     }
     else {
         return 0;

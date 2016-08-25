@@ -15,26 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// TODO
+// - Store highscore
+// - Game over
+// - Highscore event
+// - Game over event
+
+#include <SD.h>
 #include "display.h"
 #include "audio.h"
-#include "iopins.h"
 #include "logic.h"
 #include "vars.h"
 
-#define VERSION 1
+#define VERSION 2
 
 #define MODE_TEST 1
 #define MODE_GAME 2
 
 uint8_t mode;
-uint32_t lastTime;
 
 const char* TEST_WAV = "test.wav";
 
 void setup() {
     Audio.setup();
     Display.setup();
-    IoPins.setup();
+    Vars.setup();
 
     if (!SD.begin(PIN_SD_CHIP_SELECT)) {
         Display.show(TEXT_HELLO);
@@ -56,19 +61,21 @@ void setup() {
         Display.showNumber(88888);
         delay(3000);
         mode = MODE_TEST;
+        // set all i/o pins to input mode
+        for (uint8_t eventId = EVENT_IN_A; eventId <= EVENT_IN_K; ++eventId) {
+            Vars.setPinInputMode(eventId);
+        }    
     }
     else {
         Logic.setup();
         mode = MODE_GAME;
     }
-
-    lastTime = millis();
 }
 
 void loopTest() {
-    for (int i = 0; i < IO_PIN_COUNT; ++i) {
-        if (IoPins.hasEvent(i)) {
-            Display.showPin(i);
+    for (uint8_t eventId = EVENT_IN_A; eventId <= EVENT_IN_K; ++eventId) {
+        if (Vars.hasEvent(eventId)) {
+            Display.showPin(eventId);
         }
     }    
 }
@@ -76,18 +83,14 @@ void loopTest() {
 void loopGame() {
     Logic.loop();
     for (int i = 0; i < IO_PIN_COUNT; ++i) {
-        if (IoPins.hasEvent(i)) {
+        if (Vars.hasEvent(i)) {
             Logic.handleEvent(i);
         }
     }
 }
 
 void loop() {
-    uint32_t now = millis();
-    uint32_t dMillis = now - lastTime;
-    lastTime = now;
-    IoPins.loop(dMillis);
-    Vars.loop(dMillis);
+    Vars.loop();
     switch (mode) {
         case MODE_GAME:
             loopGame();

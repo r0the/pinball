@@ -15,21 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef PARSER_H
+#define PARSER_H
 
-#define PIN_SD_CHIP_SELECT 1
-#define PIN_PWM 10
+#include <Arduino.h>
+#include <SD.h>
 
-#define PIN_DISPLAY_LATCH_CLOCK 7
-#define PIN_DISPLAY_DATA 8
-#define PIN_DISPLAY_SHIFT_CLOCK 9
+class ActionParser {
+public:
+    ActionParser(const char* filename, uint8_t* events, uint32_t* actions);
+    bool error() const;
+    void parse();
+private:
+    int parseEventId();
+    uint32_t parseAction();
+    void nextChar();
+    uint8_t parseOperator();
+    bool parseSpace();
 
-#define IO_PIN_COUNT 11
-
-const uint8_t IO_PINS[IO_PIN_COUNT] = {
-    2, 3, 4, 5, 6, A5, A4, A3, A2, A1, A0
+    uint32_t* _actions;
+    char _current;
+    bool _error;
+    uint8_t* _events;
+    File _file;
+    int _line;
+    uint8_t _nextActionIndex;
 };
 
 #endif
-

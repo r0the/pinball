@@ -1,3 +1,6 @@
-This is an example configuration file
+Example 1: Event a count 10, 10, 50, 10, 10, 50, ...
+@a x+1 x=3 s+50 x<3 s+10 x=3 x:0
 
-@a n+1 n=3 s+50 n<3 s+10 n=3 n:0
+Example 2: Count to 100 in one second
+@b y:100 m:10
+@m y-1 s+1 y>0 m:10

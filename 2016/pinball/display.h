@@ -62,7 +62,7 @@ public:
     void show(uint32_t message);
     void showError(uint8_t error);
     void showNumber(uint32_t number);
-    void showPin(uint8_t pin);
+    void showPin(uint8_t pinId);
     void showVersion(uint8_t version);
 };
 

@@ -16,7 +16,7 @@
  */
 
 #include "display.h"
-#include "hardware.h"
+#include "consts.h"
 
 #define DISPLAY_CHAR_COUNT 5
 
@@ -154,12 +154,12 @@ void DisplayClass::showNumber(uint32_t number) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
 
-void DisplayClass::showPin(uint8_t pin) {
+void DisplayClass::showPin(uint8_t pinId) {
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
     shiftOutCode(CHAR_I);
     shiftOutCode(CHAR_O);
     shiftOutCode(CHAR_MINUS);
-    shiftOutCode(CHAR_A + pin);
+    shiftOutCode(CHAR_A + pinId);
     shiftOutCode(CHAR_SPACE);
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }

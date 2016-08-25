@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 - 2016 by Stefan Rothe
+ * Copyright (C) 2016 by Stefan Rothe
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -14,33 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
-#ifndef IOPINS_H
-#define IOPINS_H
+
+#ifndef AUDIO_H
+#define AUDIO_H
 
 #include <Arduino.h>
-#include "hardware.h"
 
-class IoPinsClass {
+class AudioClass {
 public:
-    IoPinsClass();
     void setup();
-    void loop(uint32_t dMillis);
-    bool hasEvent(uint8_t pin) const;
-    bool high(uint8_t pin) const;
-    void setHigh(uint8_t pin);
-    void setLow(uint8_t pin);
-    void setOutput(uint8_t pin);
-private:
-    IoPinsClass(const IoPinsClass&);
-    IoPinsClass& operator=(const IoPinsClass&);
-
-    uint32_t _config;
-    uint8_t _inputLock[IO_PIN_COUNT];
-    uint8_t _inputStates[IO_PIN_COUNT];
+    bool play(const char* filename);
+    bool playing() const;
+    void stop();
 };
 
-extern IoPinsClass IoPins;
+extern AudioClass Audio;
 
 #endif
 

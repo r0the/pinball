@@ -19,55 +19,7 @@
 #define LOGIC_H
 
 #include <Arduino.h>
-#include <SD.h>
-
-#define EVENT_IN_A 0
-#define EVENT_IN_B 1
-#define EVENT_IN_C 2
-#define EVENT_IN_D 3
-#define EVENT_IN_E 4
-#define EVENT_IN_F 5
-#define EVENT_IN_G 6
-#define EVENT_IN_H 7
-#define EVENT_IN_I 8
-#define EVENT_IN_J 9
-#define EVENT_IN_K 10
-#define EVENT_RESET 11
-#define EVENT_HIGH_SCORE 12
-#define EVENT_TIMER_T 13
-#define EVENT_TIMER_U 14
-#define EVENT_TIMER_V 15
-#define EVENT_TIMER_W 16
-#define EVENT_TIMER_X 17
-#define EVENT_TIMER_Y 18
-#define EVENT_GAME_OVER 19
-#define EVENT_COUNT (EVENT_GAME_OVER + 1)
-
-#define ACTION_SET_HIGH 0
-#define ACTION_SET_LOW
-
-#define MAX_ACTIONS 100
-
-/*
- * Actions are internally encoded as a 32-bit unsigned integer.
- *
- * | Bit   | Count | Meaning           |
- * | ----- | ----- | ----------------- |
- * | 31-29 | 3     | Operation         |
- * | 28-24 | 5     | Variable          |
- * | 20-23 | 4     | Reserved          |
- * | 19-0  | 20    | Argument (Number) |
- *
- */
-
-#define OP_NONE        0 // 000
-#define OP_SET         1 // 001
-#define OP_ADD         2 // 010
-#define OP_SUBTRACT    3 // 011
-#define OP_IF_EQUALS   4 // 100
-#define OP_IF_SMALLER  5 // 101
-#define OP_IF_GREATER  6 // 110
-                         // 111
+#include "consts.h"
 
 // ----------------------------------------------------------------------------
 // class Logic
@@ -82,7 +34,9 @@ private:
     void executeAction(uint32_t action);
     uint32_t _actions[MAX_ACTIONS];
     uint8_t _events[EVENT_COUNT];
+    char _filename[5];
     uint32_t _highscore;
+    uint32_t _sounds;
 };
 
 extern LogicClass Logic;

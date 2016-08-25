@@ -6,9 +6,13 @@
 #include <QDebug>
 #include <iostream>
 
+// types
+
 typedef quint8 uint8_t;
 typedef quint16 uint16_t;
 typedef quint32 uint32_t;
+
+// Arduino pin handling
 
 #define A0 1
 #define A1 1
@@ -23,44 +27,38 @@ typedef quint32 uint32_t;
 #define LOW 0
 #define HIGH 1
 
-#define PROGMEM
-
-#define FILE_READ QIODevice::ReadOnly
-
 void pinMode(quint8 pin, quint8 mode);
 
 void digitalWrite(uint8_t pin, uint8_t value);
 
-uint32_t millis();
-
 uint16_t digitalRead(uint8_t pin);
 
-class File {
-public:
-    File(QFile* handle) :
-        _handle(handle) {
-    }
+//
 
-    ~File() {
-        delete _handle;
-    }
+#define PROGMEM
 
-    qint64 available() const {
-        return _handle->bytesAvailable();
-    }
+#define FILE_READ QIODevice::ReadOnly
 
-    void close() {
-        _handle->close();
-    }
+uint32_t millis();
 
-    char read() {
-        char result;
-        _handle->getChar(&result);
-        return result;
-    }
+// Interrupt handling
 
-private:
-    QFile* _handle;
-};
+void cli();
+
+void sei();
+
+#define ISR(X) void isr()
+
+// registers
+
+extern uint32_t OCR1BH;
+extern uint32_t OCR1BL;
+extern uint32_t TCCR1A;
+extern uint32_t TCCR1B;
+extern uint32_t COM1B1;
+extern uint32_t TIMSK1;
+
+#define _BV(X) (1 << X)
+#define TOIE1 1
 
 #endif // ARDUINO_H

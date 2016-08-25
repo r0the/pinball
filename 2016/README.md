@@ -1,8 +1,8 @@
 ---
 title: Mikrocontroller-Modul für Flipperautomaten 2016
-subtitle: Anleitung
+subtitle: Anleitung (r 1)
 author: ros
-date: 12.01.2016
+date: 23.08.2016
 department: Fachschaft IN
 ---
 # Mikrocontroller-Modul für Flipperautomaten 2016
@@ -147,28 +147,28 @@ Die Programmierung findet über die Datei `p.txt` auf der SD-Karte statt.
 Ein Ereignis wird durch das `@`-Zeichen, gefolgt von einem kleinen Buchstaben gekennzeichnet.
 Die folgende Tabelle gibt einen Überblick über alle möglichen Ereignisse:
 
-| Name | Beschreibung                                                   |
-| ---- | -------------------------------------------------------------- |
-| `@a` | Anschluss IO-A ist aktiviert worden                            |
-| `@b` | Anschluss IO-B ist aktiviert worden                            |
-| `@c` | Anschluss IO-C ist aktiviert worden                            |
-| `@d` | Anschluss IO-D ist aktiviert worden                            |
-| `@e` | Anschluss IO-E ist aktiviert worden                            |
-| `@f` | Anschluss IO-F ist aktiviert worden                            |
-| `@g` | Anschluss IO-G ist aktiviert worden                            |
-| `@h` | Anschluss IO-H ist aktiviert worden                            |
-| `@i` | Anschluss IO-I ist aktiviert worden                            |
-| `@j` | Anschluss IO-J ist aktiviert worden                            |
-| `@k` | Anschluss IO-K ist aktiviert worden                            |
-| `@r` | Der Mikrocontroller ist zurückgesetzt worden (*reset*)         |
-| `@s` | Ein neuer Punkterekord ist erreicht worden (*high score*)      |
-| `@t` | Zähler t hat Null erreicht                                     |
-| `@u` | Zähler u hat Null erreicht                                     |
-| `@v` | Zähler v hat Null erreicht                                     |
-| `@w` | Zähler q hat Null erreicht                                     |
-| `@x` | Zähler x hat Null erreicht                                     |
-| `@y` | Zähler y hat Null erreicht                                     |
-| `@z` | Der letzte Ball ist verloren gegangen (*game over*)            |
+| Name | ID | Beschreibung                                                   |
+| ---- | -- | -------------------------------------------------------------- |
+| `@a` |  0 | Anschluss IO-A ist aktiviert worden                            |
+| `@b` |  1 | Anschluss IO-B ist aktiviert worden                            |
+| `@c` |  2 | Anschluss IO-C ist aktiviert worden                            |
+| `@d` |  3 | Anschluss IO-D ist aktiviert worden                            |
+| `@e` |  4 | Anschluss IO-E ist aktiviert worden                            |
+| `@f` |  5 | Anschluss IO-F ist aktiviert worden                            |
+| `@g` |  6 | Anschluss IO-G ist aktiviert worden                            |
+| `@h` |  7 | Anschluss IO-H ist aktiviert worden                            |
+| `@i` |  8 | Anschluss IO-I ist aktiviert worden                            |
+| `@j` |  9 | Anschluss IO-J ist aktiviert worden                            |
+| `@k` | 10 | Anschluss IO-K ist aktiviert worden                            |
+| `@l` | 11 | Countdown l hat Null erreicht                                  |
+| `@m` | 12 | Countdown m hat Null erreicht                                  |
+| `@n` | 13 | Countdown n hat Null erreicht                                  |
+| `@o` | 14 | Countdown o hat Null erreicht                                  |
+| `@p` | 15 | Countdown p hat Null erreicht                                  |
+| `@q` | 16 | Countdown q hat Null erreicht                                  |
+| `@r` | 18 | Der Mikrocontroller ist zurückgesetzt worden (*reset*)         |
+| `@s` | 12 | Ein neuer Punkterekord ist erreicht worden (*high score*)      |
+| `@t` | 17 | Der letzte Ball ist verloren gegangen (*game over*)            |
 
 ### Befehle
 
@@ -188,34 +188,34 @@ Die Variablen `l` bis `q` sind frei benutzbar. Sie können Werte zwischen `0` un
 
 In der Variable `s` ist der aktuelle Punktestand gespeichert, in der Variable `z` die aktuelle Anzahl Bälle.
 
-| Name | Beschreibung             | Maximaler Wert |
-| ---- | ------------------------ | -------------- |
-| `a`  | Anschluss IO-A           |              1 |
-| `b`  | Anschluss IO-B           |              1 |
-| `c`  | Anschluss IO-C           |              1 |
-| `d`  | Anschluss IO-D           |              1 |
-| `e`  | Anschluss IO-E           |              1 |
-| `f`  | Anschluss IO-F           |              1 |
-| `g`  | Anschluss IO-G           |              1 |
-| `h`  | Anschluss IO-H           |              1 |
-| `i`  | Anschluss IO-I           |              1 |
-| `j`  | Anschluss IO-J           |              1 |
-| `k`  | Anschluss IO-K           |              1 |
-| `l`  | frei benutzbare Variable |          65535 |
-| `m`  | frei benutzbare Variable |          65535 |
-| `n`  | frei benutzbare Variable |          65535 |
-| `o`  | frei benutzbare Variable |          65535 |
-| `p`  | frei benutzbare Variable |          65535 |
-| `q`  | frei benutzbare Variable |          65535 |
-| `r`  | (nicht benutzbar)        |                |
-| `s`  | aktueller Punktestand    |          99999 |
-| `t`  | Zähler                   |          65535 |
-| `u`  | Zähler                   |          65535 |
-| `v`  | Zähler                   |          65535 |
-| `w`  | Zähler                   |          65535 |
-| `x`  | Zähler                   |          65535 |
-| `y`  | Zähler                   |          65535 |
-| `z`  | Anzahl Bälle             |            255 |
+| Name | ID | Beschreibung             | Maximaler Wert |
+| ---- | -- | ------------------------ | -------------- |
+| `a`  |  0 | Anschluss IO-A           |              1 |
+| `b`  |  1 | Anschluss IO-B           |              1 |
+| `c`  |  2 | Anschluss IO-C           |              1 |
+| `d`  |  3 | Anschluss IO-D           |              1 |
+| `e`  |  4 | Anschluss IO-E           |              1 |
+| `f`  |  5 | Anschluss IO-F           |              1 |
+| `g`  |  6 | Anschluss IO-G           |              1 |
+| `h`  |  7 | Anschluss IO-H           |              1 |
+| `i`  |  8 | Anschluss IO-I           |              1 |
+| `j`  |  9 | Anschluss IO-J           |              1 |
+| `k`  | 10 | Anschluss IO-K           |              1 |
+| `l`  | 11 | Countdown                |          65535 |
+| `m`  | 12 | Countdown                |          65535 |
+| `n`  | 13 | Countdown                |          65535 |
+| `o`  | 14 | Countdown                |          65535 |
+| `p`  | 15 | Countdown                |          65535 |
+| `q`  | 16 | Countdown                |          65535 |
+| `r`  | 17 | nicht verfügbar          |                |
+| `s`  | 18 | aktueller Punktestand    |          99999 |
+| `t`  | 19 | Anzahl Bälle             |            255 |
+| `u`  | 20 | Variable                 |          65535 |
+| `v`  | 21 | Variable                 |          65535 |
+| `w`  | 22 | Variable                 |          65535 |
+| `x`  | 23 | Variable                 |          65535 |
+| `y`  | 24 | Variable                 |          65535 |
+| `z`  | 25 | Variable                 |          65535 |
 
 ### Operationszeichen
 
@@ -293,20 +293,47 @@ Auf dem Spielfeld ist ein Target vorhanden. Ein Treffer soll 10 Punkte zählen, 
 **Verdrahtung:**: Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des Targets gezogen.
 Der andere Kontakt des Targets wird mit dem Eingang *IO-A* verbunden.
 
-**Programmierung:** Die Variable `n` wird verwendet, um die Anzahl Treffer zu zählen. Bei der Aktivierung des Eingangs *IO-A* (Ereignis `@a`) wird der Wert von `n` um eins erhöht. Wenn nun `n` gleich drei ist, wird der Punktestand um 50 erhöht, ansonsten nur um 10. Wenn `n` den Wert drei erreicht, wird `n` wieder auf Null gesetzt.
+**Programmierung:** Die Variable `x` wird verwendet, um die Anzahl Treffer zu zählen. Bei der Aktivierung des Eingangs *IO-A* (Ereignis `@a`) wird der Wert von `x` um eins erhöht. Wenn nun `x` gleich drei ist, wird der Punktestand um 50 erhöht, ansonsten nur um 10. Wenn `x` den Wert drei erreicht, wird `x` wieder auf Null gesetzt.
 
 ```
-@a n+1 n=3 s+50 n<3 s+10 n=3 n:0
+@a x+1 x=3 s+50 x<3 s+10 x=3 x:0
 ```
 Das Programm liest sich so:
 
 | Befehl     | Bedeutung                                                                |
 | ---------- | ------------------------------------------------------------------------ |
 | `@a`       | Wenn Eingang *IO-A* aktiviert wird, führe die folgenden Anweisungen aus: |
-| `n+1`      | erhöhe den Wert `n` um eins.                                             |
-| `n=3 s+50` | wenn `n` gleich drei ist, erhöhe den Punktestand um 50.                  |
-| `n<3 s+10` | wenn `n` kleiner als drei ist, erhöhe den Punktestand um 10.             |
-| `n=3 n:0`  | wenn `n` gleich drei ist, dann setze `n` auf Null.                       |
+| `x+1`      | Erhöhe den Wert `n` um eins.                                             |
+| `x=3 s+50` | Wenn `x` gleich drei ist, erhöhe den Punktestand um 50.                  |
+| `x<3 s+10` | Wenn `x` kleiner als drei ist, erhöhe den Punktestand um 10.             |
+| `x=3 x:0`  | Wenn `x` gleich drei ist, dann setze `x` auf Null.                       |
+
+### Verzögert Punkte zählen
+
+Auf dem Spielfeld ist ein Target vorhanden. Bei einem Treffer soll der Punktestand langsam innerhalb einer Sekunde um
+100 Punkte erhöht werden.
+
+**Verdrahtung:**: Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des Targets gezogen.
+Der andere Kontakt des Targets wird mit dem Eingang *IO-B* verbunden.
+
+**Programmierung:** In der Variable `y` werden die Punkte, die noch addiert werden müssen, gespeichert. Der Zähler
+`m` wird auf 10 Millisekunden gesetzt. Wenn die Zeit abgelaufen ist, wird die Punktezahl um eins erhöht und der Wert von
+`y` um eins reduziert. Wenn noch zu zählende Punkte übrig sind (`y` grösser als Null), wird der Zähler erneut gestartet.
+
+```
+@b y:100 m:10
+@m y-1 s+1 y>0 m:10
+```
+
+| Befehl     | Bedeutung                                                                |
+| ---------- | ------------------------------------------------------------------------ |
+| `@b`       | Wenn Eingang *IO-B* aktiviert wird, führe die folgenden Anweisungen aus: |
+| `y:100`    | Setze den Wert von `y` auf 100                                           |
+| `m:10`     | Setze den Countdown `m` auf 10 Millisekunden                             |
+| `@m`       | Wenn der Countdown m Null erreicht, führe die folgenden Anweisungen aus: |
+| `y-1`      | Reduziere den Wert von `y` um eins                                       |
+| `s+1`      | Erhöhe den Punktestand um eins                                           |
+| `y>0 m:10` | Wenn `y` grösser als Null ist, setze den Countdown `m` auf 10 ms         |
 
 ### Kugelverlust und Game Over
 

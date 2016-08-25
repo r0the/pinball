@@ -16,189 +16,57 @@
  */
 
 #include "logic.h"
+#include "audio.h"
 #include "display.h"
+#include "parser.h"
 #include "vars.h"
-
-#define OP_SHIFT 29
-#define OP_MASK 7
-#define VAR_SHIFT 24
-#define VAR_MASK 31
-#define NUMBER_MASK 0x0FFF
-
-const char* const EVENT_NAMES PROGMEM = "abcdefghijkrstuvwxyz";
-
-const char* P_TXT = "../pinball/p.txt";
-
-// ----------------------------------------------------------------------------
-// class ActionParser
-// ----------------------------------------------------------------------------
-
-class ActionParser {
-public:
-    ActionParser(const char* filename, uint8_t* events, uint32_t* actions) :
-        _actions(actions),
-        _error(false),
-        _events(events),
-        _file(SD.open(filename, FILE_READ)),
-        _line(1),
-        _nextActionIndex(0)
-    {
-        for (uint8_t i = 0; i < MAX_ACTIONS; ++i) {
-            _actions[i] = 0;
-        }
-
-        for (uint8_t i = 0; i < EVENT_COUNT; ++i) {
-            _events[i] = 255;
-        }
-    }
-
-    inline bool error() const {
-        return _error;
-    }
-
-    inline int line() const {
-        return _line;
-    }
-
-    void parse() {
-        _error = true;
-        nextChar();
-        while (_current != '\0') {
-            // parse a line
-            if (_current == '@') {
-                // parse an event line
-                nextChar();
-                int eventId = parseEventId();
-                if (eventId == -1) {
-                    return;
-                }
-
-                _events[eventId] = _nextActionIndex;
-                uint32_t action = parseAction();
-                while (action != 0) {
-                    _actions[_nextActionIndex] = action;
-                    ++_nextActionIndex;
-                    action = parseAction();
-                }
-
-                _actions[_nextActionIndex] = 0;
-                ++_nextActionIndex;
-            }
-
-            // seek end of line
-            while (_current != '\0' && _current != '\n') {
-                nextChar();
-            }
-
-            nextChar();
-        }
-
-        _error = false;
-        _file.close();
-    }
-
-private:
-    uint32_t* _actions;
-    char _current;
-    bool _error;
-    uint8_t* _events;
-    File _file;
-    int _line;
-    uint8_t _nextActionIndex;
-
-    int parseEventId() {
-        for (int i = 0; i < EVENT_COUNT; ++i) {
-            if (EVENT_NAMES[i] == _current) {
-                nextChar();
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    uint32_t parseAction() {
-        // parse space
-        if (_current != ' ') {
-            return 0;
-        }
-
-        nextChar();
-        // parse variable
-        if (_current < 'a' || _current > 'z') {
-            return 0;
-        }
-
-        uint8_t var = _current - 'a';
-        nextChar();
-        uint8_t op = parseOperator();
-        if (op == OP_NONE) {
-            return 0;
-        }
-
-        nextChar();
-        uint32_t number = 0;
-        while ('0' <= _current && _current <= '9') {
-            number = number * 10 + (_current - '0');
-            nextChar();
-        }
-
-        return (static_cast<uint32_t>(op) << OP_SHIFT) | (static_cast<uint32_t>(var) << VAR_SHIFT) | (number & NUMBER_MASK);
-    }
-
-    void nextChar() {
-        if (_file.available()) {
-            _current = _file.read();
-        }
-        else {
-            _current = '\0';
-        }
-    }
-
-    uint8_t parseOperator() {
-        switch (_current) {
-            case ':':
-                return OP_SET;
-            case '+':
-                return OP_ADD;
-            case '-':
-                return OP_SUBTRACT;
-            case '=':
-                return OP_IF_EQUALS;
-            case '<':
-                return OP_IF_SMALLER;
-            case '>':
-                return OP_IF_GREATER;
-            default:
-                return OP_NONE;
-        }
-    }
-
-    bool parseSpace() {
-        if (_current == ' ') {
-            nextChar();
-            return true;
-        }
-
-        return false;
-    }
-};
+#include <SD.h>
 
 // ----------------------------------------------------------------------------
 // class Logic
 // ----------------------------------------------------------------------------
 
 void LogicClass::setup() {
-    ActionParser parser(P_TXT, _events, _actions);
+    _filename[0] = 'p';
+    _filename[1] = '.';
+    _filename[2] = 't';
+    _filename[3] = 'x';
+    _filename[4] = 't';
+    ActionParser parser(_filename, _events, _actions);
     parser.parse();
     if (parser.error()) {
         Display.showError(ERROR_PARSE);
+    }
+
+    // check for i/o events
+    for (uint8_t eventId = 0; eventId < EVENT_COUNT; ++eventId) {
+        if (_actions[_events[eventId]] != 0) {
+            Vars.setPinInputMode(eventId);
+        }
+    }
+
+    // check for existing sound files
+    _sounds = 0;
+    _filename[2] = 'w';
+    _filename[3] = 'a';
+    _filename[4] = 'v';
+    for (uint8_t eventId = 0; eventId < EVENT_COUNT; ++eventId) {
+        _filename[0] = 'a' + eventId;
+        if (SD.exists(_filename)) {
+            _sounds |= 1 << eventId;
+        }
     }
 
     handleEvent(EVENT_RESET);
 }
 
 void LogicClass::loop() {
+    for (int i = 0; i < EVENT_COUNT; ++i) {
+        if (Vars.hasEvent(i)) {
+            handleEvent(i);
+        }
+    }
+
     // check for new highscore
     // check for game over
 }
@@ -208,42 +76,48 @@ void LogicClass::handleEvent(uint8_t eventId) {
         return;
     }
 
+    if (_sounds & (1 << eventId)) {
+        _filename[0] = 'a' + eventId;
+        Audio.play(_filename);
+    }
+
     uint8_t actionIndex = _events[eventId];
-    bool loop = true;
-    while (loop) {
+    bool continueFlag = true;
+    while (continueFlag) {
+        continueFlag = _actions[actionIndex] & CONTINUE_FLAG;
         uint8_t op = (_actions[actionIndex] >> OP_SHIFT) & OP_MASK;
-        char var = 'a' + ((_actions[actionIndex] >> VAR_SHIFT) & VAR_MASK);
+        uint8_t varId = (_actions[actionIndex] >> VAR_SHIFT) & VAR_MASK;
         uint32_t number = (_actions[actionIndex] & NUMBER_MASK);
         switch (op) {
             case OP_SET:
-                Vars.set(var, number);
+                Vars.set(varId, number);
                 break;
             case OP_ADD:
-                Vars.set(var, Vars.value(var) + number);
+                Vars.set(varId, Vars.value(varId) + number);
                 break;
             case OP_SUBTRACT:
-                Vars.set(var, Vars.value(var) - number);
+                Vars.set(varId, Vars.value(varId) - number);
                 break;
             case OP_IF_EQUALS:
-                if (Vars.value(var) != number) {
+                if (Vars.value(varId) != number) {
                     ++actionIndex;
+                    continueFlag = _actions[actionIndex] & CONTINUE_FLAG;
                 }
 
                 break;
             case OP_IF_SMALLER:
-                if (Vars.value(var) >= number) {
+                if (Vars.value(varId) >= number) {
                     ++actionIndex;
+                    continueFlag = _actions[actionIndex] & CONTINUE_FLAG;
                 }
 
                 break;
             case OP_IF_GREATER:
-                if (Vars.value(var) <= number) {
+                if (Vars.value(varId) <= number) {
                     ++actionIndex;
+                    continueFlag = _actions[actionIndex] & CONTINUE_FLAG;
                 }
 
-                break;
-            case OP_NONE:
-                loop = false;
                 break;
         }
 

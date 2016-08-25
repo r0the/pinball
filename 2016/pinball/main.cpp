@@ -2,7 +2,6 @@
 #include <QApplication>
 #include "logic.h"
 #include "vars.h"
-#include "iopins.h"
 #include "display.h"
 
 #define CHAR_SPACE 10
@@ -65,23 +64,26 @@ uint32_t encode(const char* text) {
 
 int main(int argc, char *argv[])
 {
-    IoPins pins;
-    Vars vars(pins);
-    Display display;
-    Logic logic(display, vars);
-    logic.setup();
+    Vars.setup();
+    Logic.setup();
+//    qDebug() << "IO-A";
+//    Logic.handleEvent(EVENT_IN_A);
+//    qDebug() << "IO-A";
+//    Logic.handleEvent(EVENT_IN_A);
+//    qDebug() << "IO-A";
+//    Logic.handleEvent(EVENT_IN_A);
+//    qDebug() << "IO-A";
+//    Logic.handleEvent(EVENT_IN_A);
+//    qDebug() << "IO-A";
+//    Logic.handleEvent(EVENT_IN_A);
     qDebug() << "IO-A";
-    logic.handleEvent(EVENT_IN_A);
-    qDebug() << "IO-A";
-    logic.handleEvent(EVENT_IN_A);
-    qDebug() << "IO-A";
-    logic.handleEvent(EVENT_IN_A);
-    qDebug() << "IO-A";
-    logic.handleEvent(EVENT_IN_A);
-    qDebug() << "IO-A";
-    logic.handleEvent(EVENT_IN_A);
-    qDebug() << "IO-A";
-    logic.handleEvent(EVENT_IN_A);
+    Logic.handleEvent(EVENT_IN_A);
+    qDebug() << "IO-B";
+    Logic.handleEvent(EVENT_IN_B);
+    while (true) {
+        Vars.loop();
+        Logic.loop();
+    }
 
     QApplication a(argc, argv);
     MainWindow w;
