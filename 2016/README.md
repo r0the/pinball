@@ -1,8 +1,8 @@
 ---
 title: Mikrocontroller-Modul für Flipperautomaten 2016
-subtitle: Anleitung (r 1)
+subtitle: Anleitung (r 2)
 author: ros
-date: 23.08.2016
+date: 28.10.2016
 department: Fachschaft IN
 ---
 # Mikrocontroller-Modul für Flipperautomaten 2016
@@ -58,6 +58,13 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 | Lautsprecherboxen     | 13.95       | 1      | 13.95 |
 | **Total**             |             |        | **15.45** |
 
+### Steuerung
+
+| Komponente            | Einzelpreis | Anzahl | Total |
+| --------------------- | ----------- | ------ | ----- |
+| Relais                | 1.20        |        |       |
+| Transistor            | 0.45        |        |       |
+
 ### Verwendete Komponenten
 
 - Siebensegmentanzeige: [Kingbright SC10-21HWA](http://www.conrad.ch/ce/de/product/160040/)
@@ -70,7 +77,9 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 - USB-Ladegerät: [Goobay 42663](http://www.conrad.ch/ce/de/product/393438/)
 - Lautsprecherboxen: [Logitech Z120 2.0](http://www.conrad.ch/ce/de/product/917126/)
 - Kondensator 1 nF: [Keramik-Kondensator 1 nF](http://www.conrad.ch/ce/de/product/1420284/)
-- Kondensator 0.1 µF: [Keramik-Kondensator 0.1 µF](http://www.conrad.ch/ce/de/product/458211)
+- Kondensator 0.1 µF: [Keramik-Kondensator 0.1 µF](http://www.conrad.ch/ce/de/product/458211/)
+- Relais: [Maluska DIL Miniaturrelais HJR-4102 (E)](http://www.conrad.ch/ce/de/product/629493/)
+- Transistor: [STMicroelectronics TIP120 Darlington](http://www.conrad.ch/ce/de/product/150872/)
 
 ## Zusammenbau
 
@@ -170,11 +179,15 @@ Die folgende Tabelle gibt einen Überblick über alle möglichen Ereignisse:
 | `@s` | 12 | Ein neuer Punkterekord ist erreicht worden (*high score*)      |
 | `@t` | 17 | Der letzte Ball ist verloren gegangen (*game over*)            |
 
+### Ein- und Ausgabe
+
+Ein Anschluss kann nur entweder für die Ein- oder für die Ausgabe verwendet werden. Wenn in der Datei `p.txt` eines der Ereignisse `@a` bis `@k` vorkommt, so wird der entsprechenden Anschluss für die Eingabe konfiguriert. Ansonsten wird der Anschluss für die Ausgabe vorgesehen.
+
 ### Befehle
 
 Ein Befehl besteht aus drei Teilen: einer *Variablen*, einem *Operationszeichen* und einer *Zahl*. Beispiele für Befehle sind:
 
-`m>20`, `s+1000`, `a:1`
+`x>20`, `s+1000`, `a:1`
 
 Zwischen den einzelnen Teilen eines Befehls dürfen keine Leerzeichen vorkommen.
 
@@ -351,28 +364,44 @@ Damit ein Kugelverlust festgestellt werden kann, muss ein Kontakt angebracht wer
 @a z-1
 ```
 
-### Erst zählen, wenn zwei Targets aktiviert sind
+### Target aktivieren
+
+Bei einem Automaten soll ein Target erst Punkte zählen, wenn es aktiviert worden ist. Dies geschieht, indem erst ein anderes Target (der Aktivator) getroffen wird. Mit einer Leuchtdiode wird dem Spieler angezeigt, ob das Target aktiv ist.
+
+**Verdrahtung:** Der eine Kontakt des Targets wird mit dem Eingang *IO-A* verbunden, der eine Kontakt des Aktivators mit dem Eingang *IO-B*. Die anderen Kontakte der beiden Targets werden mit der Masse verbunden. Die Anode der Leuchtdiode wird mit dem Ausgang *IO-C* verbunden, die Kathode über einen Widerstand mit der Masse. Die Grösse des zu verwendenden Widerstands hängt vom Stromverbrauch der Leuchtdiode ab.
+
+![](images/example-target-activation.png)
+
+**Programmierung:** Über den Ausgang *IO-C* wird festgelegt, ob das Target aktiv ist. Wird der Ausgang mit dem Befehlt `c:1` aktiviert, dann leuchtet die Leuchtdiode. Mit `c:0` wird der Ausgang deaktiviert.
+
+In der Programmdatei `p.txt` wird also festgelegt, dass bei der Aktivierung von Eingang *IO-A* (Ereignis `@a`) der Zustand des Ausgangs *IO-C* über die Variable `c` jeweils geändert wird. Wenn der Eingang *IO-B* aktiviert wird, wird die Punktezahl nur erhöht, wenn der Ausgang *IO-C* aktiv ist (d.h. die Variable `c` den Wert `1` hat).
 
 ```
-@r n=3
-@a n=1
-@b n=2
-@n s+200
+@a c=1 c:0 c=0 c:1
+@b c=1 s+1000
 ```
+
+### Steuerung von Spulen
+
+Für das Aktivieren einer Spule, welche häufig zur Steuerung von mechanischen Komponenten verwendet werden, ist eine grössere Spannung nötig als die 5 Volt, welche vom Mikrocontroller-Modul geliefert werden. Um mit einer kleinen Spannung eine grössere Spannung zu schalten, wird ein Relais verwendet.
+
+Das verwendetet Relais (Maluska DIL Miniaturrelais HJR-4102) hat fünf Pins mit folgender Anordnung:
+
+![](images/relais.png)
+
+Das Relais wird geschaltet, indem zwischen Pin 11 und 12 eine Spannung von 5 V angelegt wird. Der Pin 11 muss also mit einem Ausgang (z.B. *IO-A*), der Pin 12 mit der Masse *GND* verbunden werden.
 
 ### Zeitschaltung
 
+Bei einem Flipperautomaten soll nach dem Treffen eines Targets ein Tor für zehn Sekunden geöffnet werden. Nach Ablauf der Zeit soll das Tor wieder geschlossen werden.
 
-### Steuerung eines LED-Streifens
+**Verdrahtung:** Der eine Kontakt des Targets wird mit dem Eingang *IO-A* verbunden, der andere Kontakt mit der Masse. Der Pin 11 des Relais wird mit Dem Ausgang *IO-B* verbunden, der Pin 12 mit der Masse. Die anderen Pins des Relais werden für die Steuerung eines separaten Stromkreises verwendet und dürfen auf keinen Fall mit den Ein-/Ausgängen des Mikrocontroller-Moduls verbunden werden!
 
-bd.
-
-### Zurücksetzen mechanischer Zählräder
+**Programmierung:** In der Programmdatei `p.txt` wird also festgelegt, dass bei der Aktivierung von Eingang *IO-A* (Ereignis `@a`) der Ausgang *IO-B* (Variable `b`) aktiviert wird. Ausserdem wird der Countdown `m` auf 10 Sekunden (10000 Millisekunden) gesetzt. Nach Ablauf dieser Zeit (Ereignis `@m`) wird der Ausgang *IO-B* wieder deaktiviert.
 
 ```
-@A b=1 t=300
-@T b=0
-@a b=200, t=300, n=8
-@t b=200, n-1
-@n t=0
+@a b:1 m:10000
+@m b:0
 ```
+
+![](images/example-timed-relais.png)
