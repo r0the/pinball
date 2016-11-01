@@ -16,9 +16,8 @@
  */
 
 // TODO
-// - Store highscore
+// - Highscore event: TEST
 // - Game over
-// - Highscore event
 // - Game over event
 
 #include <SD.h>

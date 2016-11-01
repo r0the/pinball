@@ -18,6 +18,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+//#define NIXIE
+
 #define CHAR_SPACE 10
 #define CHAR_MINUS 11
 #define CHAR_A     16
@@ -51,6 +53,7 @@
 #define TEXT_INSRT 0x23862758
 #define TEXT_SDCRD 0x138524E2
 #define TEXT_SDRDY 0x284E14E2
+#define TEXT_HISCR 0x214a2617
 
 #define ERROR_PARSE 1
 

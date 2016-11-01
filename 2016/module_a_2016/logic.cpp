@@ -22,16 +22,21 @@
 #include "vars.h"
 #include <SD.h>
 
+#define HIGHSCORE_FLAG 0x01
+#define GAMEOVER_FLAG  0x02
+
 // ----------------------------------------------------------------------------
 // class Logic
 // ----------------------------------------------------------------------------
 
 void LogicClass::setup() {
+    _displayLock = 0;
     _filename[0] = 'p';
     _filename[1] = '.';
     _filename[2] = 't';
     _filename[3] = 'x';
     _filename[4] = 't';
+    _filename[5] = '\0';
     ActionParser parser(_filename, _events, _actions);
     parser.parse();
     if (parser.error()) {
@@ -45,6 +50,19 @@ void LogicClass::setup() {
         }
     }
 
+    // read existing high score
+    _filename[0] = 's';
+    File f = SD.open(_filename, FILE_READ);
+    while (f.available()) {
+        char c = f.read();
+        if ('0' <= c && c <= '9') {
+            _highscore *= 10;
+            _highscore += c - '0';
+        }
+    }
+
+    f.close();
+
     // check for existing sound files
     _sounds = 0;
     _filename[2] = 'w';
@@ -57,17 +75,43 @@ void LogicClass::setup() {
         }
     }
 
+    _flags = 0;
     handleEvent(EVENT_RESET);
 }
 
+uint32_t count = 0;
+
 void LogicClass::loop() {
+    uint32_t now = millis();
     for (int i = 0; i < EVENT_COUNT; ++i) {
         if (Vars.hasEvent(i)) {
             handleEvent(i);
         }
     }
 
-    // check for new highscore
+    if (_flags & HIGHSCORE_FLAG) {
+        // new highscore has been reached, highscore variable now counts down to next auto save
+        if (_highscore < now) {
+            _highscore = now + HIGHSCORE_SAVE_TIMEOUT;
+            saveHighscore();
+        }
+    }
+    else {
+        // no new highscore has been reached yet, check if it's the case now
+        if (Vars.score() > _highscore) {
+            handleEvent(EVENT_HIGHSCORE);
+            Display.show(TEXT_HISCR);
+            _displayLock = now + DISPLAY_TEXT_TIMEOUT;
+            _flags |= HIGHSCORE_FLAG;
+            _highscore = now + HIGHSCORE_SAVE_TIMEOUT;
+            saveHighscore();
+        }
+    }
+
+    if (_displayLock < now) {
+        Display.showNumber(Vars.score());
+    }
+
     // check for game over
 }
 
@@ -123,8 +167,25 @@ void LogicClass::handleEvent(uint8_t eventId) {
 
         ++actionIndex;
     }
+}
 
-    Display.showNumber(Vars.score());
+void LogicClass::saveHighscore() {
+    _filename[0] = 's';
+    _filename[2] = 't';
+    _filename[3] = 'x';
+    _filename[4] = 't';
+    File f = SD.open(_filename, O_READ | O_WRITE | O_CREAT | O_TRUNC);
+    uint32_t score = Vars.score();
+    f.write('0' + (score / 10000) % 10);
+    f.write('0' + (score / 1000) % 10);
+    f.write('0' + (score / 100) % 10);
+    f.write('0' + (score / 10) % 10);
+    f.write('0' + score % 10);
+    f.println("");
+    f.close();
+    _filename[2] = 'w';
+    _filename[3] = 'a';
+    _filename[4] = 'v';
 }
 
 LogicClass Logic;

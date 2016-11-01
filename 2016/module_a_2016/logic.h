@@ -32,9 +32,12 @@ public:
     void handleEvent(uint8_t eventId);
 private:
     void executeAction(uint32_t action);
+    void saveHighscore();
     uint32_t _actions[MAX_ACTIONS];
+    uint16_t _displayLock;
     uint8_t _events[EVENT_COUNT];
-    char _filename[5];
+    char _filename[6];
+    uint8_t _flags;
     uint32_t _highscore;
     uint32_t _sounds;
 };

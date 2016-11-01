@@ -18,6 +18,10 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 
+
+#define DISPLAY_TEXT_TIMEOUT 1500
+#define HIGHSCORE_SAVE_TIMEOUT 5000
+
 // ----------------------------------------------------------------------------
 // pins
 // ----------------------------------------------------------------------------
@@ -61,7 +65,7 @@ const uint8_t IO_PINS[IO_PIN_COUNT] = {
 #define EVENT_COUNTDOWN_P 15
 #define EVENT_COUNTDOWN_Q 16
 #define EVENT_RESET 17
-#define EVENT_HIGH_SCORE 18
+#define EVENT_HIGHSCORE 18
 #define EVENT_GAME_OVER 19
 #define EVENT_COUNT (EVENT_GAME_OVER + 1)
 
@@ -81,7 +85,7 @@ const uint8_t IO_PINS[IO_PIN_COUNT] = {
  *
  */
 
-#define MAX_ACTIONS 100
+#define MAX_ACTIONS 64
 
 #define CONTINUE_FLAG 0x8000
 
