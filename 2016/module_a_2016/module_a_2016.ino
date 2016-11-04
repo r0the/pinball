@@ -79,20 +79,11 @@ void loopTest() {
     }    
 }
 
-void loopGame() {
-    Logic.loop();
-    for (int i = 0; i < IO_PIN_COUNT; ++i) {
-        if (Vars.hasEvent(i)) {
-            Logic.handleEvent(i);
-        }
-    }
-}
-
 void loop() {
     Vars.loop();
     switch (mode) {
         case MODE_GAME:
-            loopGame();
+            Logic.loop();
             break;
         case MODE_TEST:
             loopTest();
