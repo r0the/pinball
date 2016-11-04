@@ -1,6 +1,6 @@
 ---
 title: Mikrocontroller-Modul für Flipperautomaten 2016
-subtitle: Anleitung (r 2)
+subtitle: Anleitung (r 3)
 author: ros
 date: 28.10.2016
 department: Fachschaft IN
@@ -36,8 +36,9 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 | Arduino               | 20.00       | 1      | 20.00 |
 | Platine               |  5.00       | 1      |  5.00 |
 | USB-Ladegerät         |  9.95       | 1      |  9.95 |
+| USB-Kabel 50 cm       |  1.95       | 1      |  1.95 |
 | Verbrauchsmaterial    |  2.60       |        |  2.60 |
-| **Total**             |             |        | **51.25** |
+| **Total**             |             |        | **55.80** |
 
 ### Siebensegmentanzeige
 
@@ -255,6 +256,10 @@ Die folgenden grundlegenden Funktionen sind fest vorgegeben:
 - Wird die Anzahl Bälle verändert, wird eine Sekunde lang die neue Anzahl Bälle angezeigt.
 - Ist die neue Anzahl Bälle gleich Null, so wird *GAME OVER* abwechselnd mit dem Punktestand angezeigt. Danach kann der Punktestand nicht mehr verändert werden, erst nach einem Reset kann ein neues Spiel gestartet werden.
 
+### Punkterekord
+
+Der Punkterekord (*high score*) ist auf der SD-Karte in der Datei `s.txt` gespeichert. Bei der Initialisierung des Mikrocontrollers wird der letzte Rekord aus der Datei gelesen und angezeigt. Wenn der Spieler eine höhere Punktzahl erreicht, wird kurz *HISCR* angezeigt und der neue Rekord gespeichert. Ab diesem Zeitpunkt wird der neue Rekord regelmässig auf der SD-Karte gespeichert.
+
 ## Konfiguration von Audioeffekten
 
 ### Dateiformat
@@ -284,7 +289,7 @@ Auf einem Spielfeld sind drei Targets vorhanden. Das erste Target hat einen Wert
 
 **Verdrahtung:** Vom Masse-Ausgang des Ausgabemoduls (*GND*) wird ein Kabel zum einen Kontakt des ersten Targets gezogen. Anschliessend wird von diesem Kontakt in Kabel weiter zum einen Kontakt des zweiten und schliesslich zur dritten Target weitergezogen. Nun ist der eine Kontakt jedes Targets mit der Masse des Ausgabemoduls verbunden. Nun wird der andere Kontakt des ersten Targets mit dem Eingang *IO-A* des Moduls verbunden, anschliessend der andere Kontakt des zweiten Targets mit dem Eingang *IO-B* und schliesslich der andere Kontakt des dritten Targets mit dem Eingang *IO-C*.
 
-![](images/example-target.png)
+![](images/example-target.eps)
 
 Wenn nun ein Target getroffen wird, so wird der Stromkreis geschlossen und am entsprechenden
 Eingang liegt eine Spannung von 0 Volt an und das Ausgabemodul erkennt den Eingang als "aktiv".
@@ -356,7 +361,7 @@ Damit ein Kugelverlust festgestellt werden kann, muss ein Kontakt angebracht wer
 
 **Verdrahtung:** Der eine Kontakt des Tasters und der Ballverlust-Kontakt wird mit der Masse des Ausgabemodus verbunden. Der andere Kontakt des Ballverlust-Kontakts wird mit einem Eingang, z.B. *IO-A* verbunden. Der andere Kontakt des Tasters wird mit dem *RESET*-Eingang des Moduls verbunden.
 
-![](images/example-game-over.png)
+![](images/example-game-over.eps)
 
 **Programmierung:** In der Programmdatei `p.txt` wird festgelegt, dass bei der Aktivierung von Eingang *IO-A* (Ereignis `@a`) die Anzahl Kugeln um eins zu reduzieren ist:
 
@@ -370,7 +375,7 @@ Bei einem Automaten soll ein Target erst Punkte zählen, wenn es aktiviert worde
 
 **Verdrahtung:** Der eine Kontakt des Targets wird mit dem Eingang *IO-A* verbunden, der eine Kontakt des Aktivators mit dem Eingang *IO-B*. Die anderen Kontakte der beiden Targets werden mit der Masse verbunden. Die Anode der Leuchtdiode wird mit dem Ausgang *IO-C* verbunden, die Kathode über einen Widerstand mit der Masse. Die Grösse des zu verwendenden Widerstands hängt vom Stromverbrauch der Leuchtdiode ab.
 
-![](images/example-target-activation.png)
+![](images/example-target-activation.eps)
 
 **Programmierung:** Über den Ausgang *IO-C* wird festgelegt, ob das Target aktiv ist. Wird der Ausgang mit dem Befehlt `c:1` aktiviert, dann leuchtet die Leuchtdiode. Mit `c:0` wird der Ausgang deaktiviert.
 
@@ -385,9 +390,9 @@ In der Programmdatei `p.txt` wird also festgelegt, dass bei der Aktivierung von 
 
 Für das Aktivieren einer Spule, welche häufig zur Steuerung von mechanischen Komponenten verwendet werden, ist eine grössere Spannung nötig als die 5 Volt, welche vom Mikrocontroller-Modul geliefert werden. Um mit einer kleinen Spannung eine grössere Spannung zu schalten, wird ein Relais verwendet.
 
-Das verwendetet Relais (Maluska DIL Miniaturrelais HJR-4102) hat fünf Pins mit folgender Anordnung:
+Das verwendete Relais (Maluska DIL Miniaturrelais HJR-4102) hat fünf Pins mit folgender Anordnung:
 
-![](images/relais.png)
+![](images/relais.eps)
 
 Das Relais wird geschaltet, indem zwischen Pin 11 und 12 eine Spannung von 5 V angelegt wird. Der Pin 11 muss also mit einem Ausgang (z.B. *IO-A*), der Pin 12 mit der Masse *GND* verbunden werden.
 
@@ -404,4 +409,4 @@ Bei einem Flipperautomaten soll nach dem Treffen eines Targets ein Tor für zehn
 @m b:0
 ```
 
-![](images/example-timed-relais.png)
+![](images/example-timed-relais.eps)
