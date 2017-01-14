@@ -87,13 +87,13 @@ const uint8_t IO_PINS[IO_PIN_COUNT] = {
 
 #define MAX_ACTIONS 64
 
-#define CONTINUE_FLAG 0x8000
+#define CONTINUE_FLAG 0x80000000
 
 #define OP_SHIFT 27
-#define OP_MASK 0x000F
+#define OP_MASK       0x0000000F
 #define VAR_SHIFT 21
-#define VAR_MASK 31
-#define NUMBER_MASK 0x000FFFFF
+#define VAR_MASK      0x0000001F
+#define NUMBER_MASK   0x000FFFFF
 
 #define OP_NONE        0 // 0000
 #define OP_SET         1 // 0001
