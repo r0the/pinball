@@ -1,8 +1,8 @@
 ---
 title: Mikrocontroller-Modul für Flipperautomaten 2016
-subtitle: Anleitung (r 3)
+subtitle: Anleitung (r 4)
 author: ros
-date: 28.10.2016
+date: 02.12.2016
 department: Fachschaft IN
 ---
 # Mikrocontroller-Modul für Flipperautomaten 2016
@@ -198,9 +198,9 @@ Alle Kleinbuchstaben von `a` bis `z` sind Variablen.
 
 Die Variablen `a` bis `k` repräsentieren die entsprechenden Pins *IO-A* bis *IO-K*. Sie enthalten den Wert `1`, falls der Pin aktiviert ist, ansonsten den Wert `0`. Indem die Variable auf `1` oder `0` gesetzt wird, kann die Ausgabespannung des Pins auf 5 Volt bzw. 0 Volt geändert werden.
 
-Die Variablen `l` bis `q` sind frei benutzbar. Sie können Werte zwischen `0` und `65535` annehmen. Die Variablen `t` bis `y` sind Zählvariablen. Dass heisst, ihr Wert wird im Schnitt jede Millisekunde um eins vermindert. Erreicht eine Zählvariable den Wert Null, so wird das entsprechende Ereignis ausgelöst. Wird beispielsweise die Variable `t` auf 5000 gesetzt, so erreicht sie nach fünf Sekunde den Wert Null und löst das Ereignis `@t` aus.
+Die Variablen `u` bis `z` sind frei benutzbar. Sie können Werte zwischen `0` und `65535` annehmen. Die Variablen `l` bis `q` sind Zählvariablen. Dass heisst, ihr Wert wird im Schnitt jede Millisekunde um eins vermindert. Erreicht eine Zählvariable den Wert Null, so wird das entsprechende Ereignis ausgelöst. Wird beispielsweise die Variable `m` auf 5000 gesetzt, so erreicht sie nach fünf Sekunde den Wert Null und löst das Ereignis `@m` aus.
 
-In der Variable `s` ist der aktuelle Punktestand gespeichert, in der Variable `z` die aktuelle Anzahl Bälle.
+In der Variable `s` ist der aktuelle Punktestand gespeichert, in der Variable `t` die aktuelle Anzahl Bälle.
 
 | Name | ID | Beschreibung             | Maximaler Wert |
 | ---- | -- | ------------------------ | -------------- |
