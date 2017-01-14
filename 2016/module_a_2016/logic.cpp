@@ -43,10 +43,13 @@ void LogicClass::setup() {
         Display.showError(ERROR_PARSE);
     }
 
-    // check for i/o events
-    for (uint8_t eventId = 0; eventId < EVENT_COUNT; ++eventId) {
-        if (_actions[_events[eventId]] != 0) {
-            Vars.setPinInputMode(eventId);
+    // configure i/o pins
+    for (uint8_t varId = 0; varId < 11; ++varId) {
+        if (_actions[_events[varId]] == 0) {
+            Vars.setPinOutputMode(varId);
+        }
+        else {
+            Vars.setPinInputMode(varId);
         }
     }
 

@@ -42,7 +42,7 @@ void VarsClass::setup() {
     for (int i = 0; i < IO_PIN_COUNT; ++i) {
         _pinInputLocks[i] = 0;
         _pinInputStates[i] = STATE_OPEN;
-        pinMode(IO_PINS[i], INPUT_PULLUP);
+        pinMode(IO_PINS[i], OUTPUT);
     }
 
     // 2) set all countdowns to zero
@@ -186,6 +186,14 @@ void VarsClass::setPinInputMode(uint8_t varId) {
         uint16_t pinMask = 1 << (varId - VAR_FIRST_PIN);
         pinMode(pin, INPUT_PULLUP);
         _pinInputMode |= pinMask;
+    }
+}
+
+void VarsClass::setPinOutputMode(uint8_t varId) {
+    if (VAR_FIRST_PIN <= varId && varId <= VAR_LAST_PIN) {
+        uint8_t pin = IO_PINS[varId - VAR_FIRST_PIN];
+        pinMode(pin, OUTPUT);
+        digitalWrite(pin, LOW);
     }
 }
 

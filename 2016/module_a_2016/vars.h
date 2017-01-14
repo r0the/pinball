@@ -32,6 +32,7 @@ public:
     uint32_t score() const;
     void set(uint8_t varId, uint32_t value);
     void setPinInputMode(uint8_t varId);
+    void setPinOutputMode(uint8_t varId);
     uint32_t value(uint8_t varId) const;
 private:
     uint8_t _balls;
