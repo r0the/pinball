@@ -103,7 +103,7 @@ void VarsClass::loop() {
         }
     }
 
-    // 2) handle counters
+    // 2) handle countdowns
     for (uint8_t i = 0; i < COUNTDOWN_COUNT; ++i) {
         if (_countdowns[i] > 0) {
             if (_countdowns[i] > dMillis) {
@@ -133,11 +133,11 @@ void VarsClass::set(uint8_t varId, uint32_t value) {
         // only if pin is in output mode
         if (!(_pinInputMode & pinMask)) {
             if (value == 0) {
-                digitalWrite(pin, HIGH);
+                digitalWrite(pin, LOW);
                 _pinState |= pinMask;
             }
             else {
-                digitalWrite(pin, LOW);
+                digitalWrite(pin, HIGH);
                 _pinState &= ~pinMask;
             }
         }
