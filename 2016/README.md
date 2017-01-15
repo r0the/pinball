@@ -1,6 +1,6 @@
 ---
 title: Mikrocontroller-Modul für Flipperautomaten 2016
-subtitle: Anleitung (r 4)
+subtitle: Anleitung (r 6)
 author: ros
 date: 02.12.2016
 department: Fachschaft IN
@@ -24,7 +24,7 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 ### Basis
 
 | Komponente            | Einzelpreis | Anzahl | Total |
-| --------------------- | ----------- | ------ | ----- |
+|:--------------------- |:----------- |:------ |:----- |
 | Puffer-Treiber        |  0.40       | 1      |  0.40 |
 | IC-Fassung 16 Pol     |  0.30       | 1      |  0.30 |
 | Schraubklemmblock     |  1.10       | 2      |  2.20 |
@@ -43,7 +43,7 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 ### Siebensegmentanzeige
 
 | Komponente            | Einzelpreis | Anzahl | Total |
-| --------------------- | ----------- | ------ | ----- |
+|:--------------------- |:----------- |:------ |:----- |
 | Siebensegmentanzeige  |  2.90       | 5      | 14.50 |
 | Schieberegister       |  0.50       | 5      |  2.50 |
 | IC-Fassung 16 Pol     |  0.30       | 5      |  1.50 |
@@ -52,7 +52,7 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 ### Audioausgabe
 
 | Komponente            | Einzelpreis | Anzahl | Total |
-| --------------------- | ----------- | ------ | ----- |
+|:--------------------- |:----------- |:------ |:----- |
 | Klinkensteckverbinder |  1.25       | 1      |  1.25 |
 | Kondensator 1 nF      |  0.25       | 1      |  0.25 |
 | Widerstand 470 Ohm    |             | 1      |       |
@@ -62,7 +62,7 @@ Audio- und Konfigurationsdateien sowie der Punkterekord werden auf einer SD-Kart
 ### Steuerung
 
 | Komponente            | Einzelpreis | Anzahl | Total |
-| --------------------- | ----------- | ------ | ----- |
+|:--------------------- |:----------- |:------ |:----- |
 | Relais                | 1.20        |        |       |
 | Transistor            | 0.45        |        |       |
 
@@ -103,7 +103,7 @@ Anschliessend werden die Siebensegmentanzeigen auf der Vorderseite der Platine a
 Das Modul stellt mit den grünen Schraubklemmblöcken 16 Anschlüsse zu Verfügung, mit welchen das Modul mit dem Automaten verbunden werden kann. Die folgende Tabelle zeigt die Anschlüsse:
 
 | Nr. | Bezeichnung | Arduino | Bedeutung                       |
-| --- | ----------- | ------- | ------------------------------- |
+|:--- |:----------- |:------- |:------------------------------- |
 |  1  | PWM         | D10     | Audioausgabe                    |
 |  2  | IO-A        | D2      | Digitale Ein-/Ausgang A         |
 |  3  | IO-B        | D3      | Digitale Ein-/Ausgang B         |
@@ -149,19 +149,19 @@ Die Programmierung findet über die Datei `p.txt` auf der SD-Karte statt.
 
 ```
 @a s+1000 m:3 t:2000
+
 @t m>0 m-1 m=0 b:1
 ```
-
 ### Ereignisse
 
 Ein Ereignis wird durch das `@`-Zeichen, gefolgt von einem kleinen Buchstaben gekennzeichnet.
 Die folgende Tabelle gibt einen Überblick über alle möglichen Ereignisse:
 
 | Name | ID | Beschreibung                                                   |
-| ---- | -- | -------------------------------------------------------------- |
+|:---- |:-- |:-------------------------------------------------------------- |
 | `@a` |  0 | Anschluss IO-A ist aktiviert worden                            |
-| `@b` |  1 | Anschluss IO-B ist aktiviert worden                            |
 | `@c` |  2 | Anschluss IO-C ist aktiviert worden                            |
+| `@b` |  1 | Anschluss IO-B ist aktiviert worden                            |
 | `@d` |  3 | Anschluss IO-D ist aktiviert worden                            |
 | `@e` |  4 | Anschluss IO-E ist aktiviert worden                            |
 | `@f` |  5 | Anschluss IO-F ist aktiviert worden                            |
@@ -203,7 +203,7 @@ Die Variablen `u` bis `z` sind frei benutzbar. Sie können Werte zwischen `0` un
 In der Variable `s` ist der aktuelle Punktestand gespeichert, in der Variable `t` die aktuelle Anzahl Bälle.
 
 | Name | ID | Beschreibung             | Maximaler Wert |
-| ---- | -- | ------------------------ | -------------- |
+|:---- |:-- |:------------------------ |:-------------- |
 | `a`  |  0 | Anschluss IO-A           |              1 |
 | `b`  |  1 | Anschluss IO-B           |              1 |
 | `c`  |  2 | Anschluss IO-C           |              1 |
@@ -236,7 +236,7 @@ In der Variable `s` ist der aktuelle Punktestand gespeichert, in der Variable `t
 Es gibt sechs Operationszeichen, die in der folgenden Tabelle beschrieben werden:
 
 | Name | Beschreibung                                                             |
-| ---- | ------------------------------------------------------------------------ |
+|:---- |:------------------------------------------------------------------------ |
 | `:`  | Setze die Variable auf die Zahl                                          |
 | `+`  | Erhöhe die Variable um die Zahl                                          |
 | `-`  | Subtrahiere die Zahl von der Variable                                    |
@@ -319,7 +319,7 @@ Der andere Kontakt des Targets wird mit dem Eingang *IO-A* verbunden.
 Das Programm liest sich so:
 
 | Befehl     | Bedeutung                                                                |
-| ---------- | ------------------------------------------------------------------------ |
+|:---------- |:------------------------------------------------------------------------ |
 | `@a`       | Wenn Eingang *IO-A* aktiviert wird, führe die folgenden Anweisungen aus: |
 | `x+1`      | Erhöhe den Wert `n` um eins.                                             |
 | `x=3 s+50` | Wenn `x` gleich drei ist, erhöhe den Punktestand um 50.                  |
@@ -344,7 +344,7 @@ Der andere Kontakt des Targets wird mit dem Eingang *IO-B* verbunden.
 ```
 
 | Befehl     | Bedeutung                                                                |
-| ---------- | ------------------------------------------------------------------------ |
+|:---------- |:------------------------------------------------------------------------ |
 | `@b`       | Wenn Eingang *IO-B* aktiviert wird, führe die folgenden Anweisungen aus: |
 | `y:100`    | Setze den Wert von `y` auf 100                                           |
 | `m:10`     | Setze den Countdown `m` auf 10 Millisekunden                             |
