@@ -1,8 +1,8 @@
 ---
 title: Mikrocontroller-Modul für Flipperautomaten 2016
-subtitle: Anleitung (r 6)
+subtitle: Anleitung (r 8)
 author: ros
-date: 02.12.2016
+date: 25.01.2017
 department: Fachschaft IN
 ---
 # Mikrocontroller-Modul für Flipperautomaten 2016
@@ -408,5 +408,72 @@ Bei einem Flipperautomaten soll nach dem Treffen eines Targets ein Tor für zehn
 @a b:1 m:10000
 @m b:0
 ```
-
 ![](images/example-timed-relais.eps)
+
+### Anschluss einer Nixie-Anzeige
+
+Anstelle der Siebensegmentanzeige kann die Nixie-Anzeige *QS30-1/SZ-8 Nixie Uhr* verwendet werden, um den Punktestand anzuzeigen.
+
+Die Nixie-Anzeige wird grundsätzlich auf die gleiche Weise wie die Siebensegmentanzeige angesteuert. Am einfachsten wird die Anzeige an den für den Chip IC1 vorgesehenen Pinholes der Platine angeschlossen. Sie kann aber auch direkt mit
+dem Arduino verbunden werden. Die untenstehende Tabelle zeigt, wie die Pins verbunden werden müssen:
+
+| Pin Nixie | Pin Arduino | Pin IC1 |
+|:--------- |:----------- |:------- |
+| DIN       | 8           | 14      |
+| STCP      | 7           | 12      |
+| SHCP      | 9           | 11      |
+
+Um das Modul mit einer Nixie-Anzeige zu betreiben, muss das Arduino-Programm mit dem zusätzlichen Define `NIXIE` compiliert werden.
+
+### Steuerung eines RGB-LED-Streifens
+
+Mit dem Mikrocontroller-Modul kann ein farbiger LED-Streifen angesteuert werden. Es können handelsübliche LED-Streifen verwendet werden. Ein RGB-LED-Streifen weist üblicherweise vier Anschlüsse auf: Ein gemeinsamer Anschluss für alle Anoden, sowie je ein Anschluss für die Kathoden der roten, grünen und blauen Leuchtdioden.
+
+Der gemeinsame Anschluss wird mit dem positiven Pol der mitgelieferten Spannungsversorgung verbunden. Die Kathodenanschlüsse werden über je ein Relais mit entweder dem positiven oder dem negativen Pol des Spannungsversorgung
+verbunden. Dabei muss der Ruhekontakt des Relais (Pin 1) mit dem positiven under der Aktivkontakt (Pin 2) mit dem negativen Pol verbunden werden.
+
+Die Relais werden gemäss dem Kapitel "Steuerung von Spulen" angeschlossen und gesteuert.
+
+![](images/led-stripe.eps)
+
+### Sondermodus doppelte Punktzahl mit LED-Streifen
+
+Auf einem Automaten mit RGB-LED-Streifen soll ein spezielles Target einen Sondermodus aktivieren. Während der Sondermodus aktiv ist, zählen alle Targets doppelt. Der Sondermodus wird optisch durch ein regelmässiges Wechseln der Farbe der Leuchtdioden signalisiert. Nach 20 Sekunden wird der Sondermodus beendet.
+
+**Verdrahtung:** Der LED-Streifen wird an den Eingängen *IO-A*, *IO-B* und *IO-C* angeschlossen. Das spezielle Target am
+Eingang *IO-D*. Exemplarisch für die Punkte zählenden Targets wird der Anschluss *IO-E* verwendet.
+
+**Programmierung:** Für den Sondermodus wird der Timer `@m` verwendet. Die Variable `u` zeigt an, ob Punkte doppelt gezählt werden sollen, die Variable `v` wird verwendet, um den aktuellen Farbschritt zu speichern: 0 entspricht rot, 1 entspricht grün, 2 entspricht blau. Im folgenden wird das Programm zeilenweise erläutert:
+
+```
+@d m:1 n:20000 u:1
+```
+
+Wird das spezielle Target aktiviert (`@d`), dann wird der Timer `m` auf eins gesetzt, um möglichst bald das Ereignis `@m` auszulösen. Der Timer `n` wird auf 20 Sekunden gesetzt, um das Ende des Sondermodus erkennen zu können. Die Variable `u` wird auf 1 gesetzt, um das doppelte Zählen der Punkte einzuschalten.
+
+```
+@m a:0 b:0 c:0 v=0 a:1 v=1 b:1 v=2 c:1 v+1 v=3 v:0 m:500
+```
+
+Das Ablaufen des Timers `m` signalisiert, dass die Farbe gewechselt werden muss. Dazu werden erst alle drei Farben ausgeschaltet, danach je nach Wert von `v` eine der drei Farben wieder eingeschaltet. Anschliessend wird `v` um eins erhöht. Wenn `v` zu hoch ist, wird die Variable wieder auf 0 gesetzt. Zuletzt wird der Timer `m` neu gestartet. Hier wird die Frequenz des Farbwechsels festgelegt.
+
+```
+@n m:0 a:0 b:0 c:0 u:0
+```
+
+Das Ereignis `@n` signalisiert, dass der Sondermodus zu Ende ist. Der Timer `m` wird auf 0 gesetzt, um einen weiteren Aufruf des Ereignisses `@m` zu verhindern. Alle drei Farben werden ausgeschaltet. Die Variable `u` wird wieder auf 0 gesetzt, um das doppelte Zählen der Punkte auszuschalten.
+
+```
+@e s+100 u=1 s+100
+```
+
+Beim Ereignis `@e` wird der Punktestand um 100 erhöht. Falls der Sondermodus aktiv ist (d.h. wenn die Variable `u` den Wert 1 hat), wird die Punktestand nochmals erhöht.
+
+Das vollständige Programm sieht so aus:
+
+```
+@d m:1 n:20000 u:1
+@m a:0 b:0 c:0 v=0 a:1 v=1 b:1 v=2 c:1 v+1 v=3 v:0 m:500
+@n m:0 a:0 b:0 c:0 u:0
+@e s+100 u=1 s+100
+```
