@@ -18,6 +18,7 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 
+#define NIXIE
 
 #define DISPLAY_TEXT_TIMEOUT 1500
 #define HIGHSCORE_SAVE_TIMEOUT 5000

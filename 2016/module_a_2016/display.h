@@ -18,7 +18,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-//#define NIXIE
+#include <Arduino.h>
+#include "consts.h"
 
 #define CHAR_SPACE 10
 #define CHAR_MINUS 11
@@ -60,6 +61,15 @@
 #define TEXT_SCORE 0x1485e4a2
 #define TEXT_BALLS 0x226db411
 
+#define COLOR_WHITE 0
+#define COLOR_MAGENTA 1
+#define COLOR_CYAN 2
+#define COLOR_BLUE 3
+#define COLOR_YELLOW 4
+#define COLOR_RED 5
+#define COLOR_GREEN 6
+#define COLOR_BLACK 7
+
 #define ERROR_PARSE 1
 
 #include <Arduino.h>
@@ -67,11 +77,18 @@
 class DisplayClass {
 public:
     void setup();
+#ifdef NIXIE
+    void setColor(uint8_t color);
+#endif
     void show(uint32_t message);
     void showError(uint8_t error);
     void showNumber(uint32_t number);
     void showPin(uint8_t pinId);
     void showVersion(uint8_t version);
+private:
+#ifdef NIXIE
+    uint8_t _color;
+#endif
 };
 
 extern DisplayClass Display;

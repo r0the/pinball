@@ -111,6 +111,9 @@ void LogicClass::loop() {
         }
     }
 
+#ifdef NIXIE
+    Display.setColor(Vars.value(20));
+#endif
     if (_displayLock < now) {
         Display.showNumber(Vars.score());
     }

@@ -18,9 +18,108 @@
 #include "display.h"
 #include "consts.h"
 
+#ifdef NIXIE
+
+// ----------------------------------------------------------------------------
+// display implementation for Nixie tubes
+// ----------------------------------------------------------------------------
+
+#define DISPLAY_CHAR_COUNT 4
+
+static void shiftOutDigit(uint8_t digit, uint8_t color) {
+    uint16_t value = 0;
+    if (digit < 10) {
+        if (digit == 0) {
+            digit = 10;
+        }
+        value = 1 << (13 - digit);
+    }
+
+    value |= color << 13;
+    shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_SHIFT_CLOCK, MSBFIRST, highByte(value));
+    shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_SHIFT_CLOCK, MSBFIRST, lowByte(value));
+}
+
+void DisplayClass::setup() {
+    pinMode(PIN_DISPLAY_LATCH_CLOCK, OUTPUT);
+    pinMode(PIN_DISPLAY_DATA, OUTPUT);
+    pinMode(PIN_DISPLAY_SHIFT_CLOCK, OUTPUT);
+    _color = COLOR_WHITE;
+}
+
+void DisplayClass::setColor(uint8_t color) {
+    _color = color;
+}
+
+void DisplayClass::show(uint32_t message) {
+}
+
+void DisplayClass::showError(uint8_t error) {
+}
+
+void DisplayClass::showNumber(uint32_t number) {
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
+    uint32_t d = 1000;
+    for (int i = 0; i < DISPLAY_CHAR_COUNT; ++i) {
+        shiftOutDigit((number / d) % 10, _color);
+        d /= 10;
+    }
+
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
+}
+
+void DisplayClass::showPin(uint8_t pinId) {
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
+    shiftOutDigit(0xFF, COLOR_GREEN);
+    shiftOutDigit(0xFF, COLOR_GREEN);
+    shiftOutDigit((pinId / 10) % 10, COLOR_GREEN);
+    shiftOutDigit(pinId % 10, COLOR_GREEN);
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
+}
+
+void DisplayClass::showVersion(uint8_t version) {
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, LOW);
+    shiftOutDigit(0xFF, COLOR_CYAN);
+    shiftOutDigit(0xFF, COLOR_CYAN);
+    shiftOutDigit((version / 10) % 10, COLOR_CYAN);
+    shiftOutDigit(version % 10, COLOR_CYAN);
+    digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
+}
+
+// ----------------------------------------------------------------------------
+// default display implementation for 5x seven segment
+// ----------------------------------------------------------------------------
+#else
+
 #define DISPLAY_CHAR_COUNT 5
 
-#ifndef QT_CORE_LIB
+#ifdef QT_CORE_LIB
+
+uint8_t bufferPos = 0;
+char buffer[5];
+
+static void shiftOutCode(uint8_t code) {
+    if (code < 10) {
+        buffer[bufferPos] = '0' + code;
+    }
+    else if (code == CHAR_SPACE) {
+        buffer[bufferPos] = ' ';
+    }
+    else if (code == CHAR_MINUS) {
+        buffer[bufferPos] = '-';
+    }
+    else if (CHAR_A <= code && code <= CHAR_Z) {
+        buffer[bufferPos] = 'A' + code - CHAR_A;
+    }
+
+    ++bufferPos;
+    if (bufferPos > 4) {
+        qDebug() << "Display:" << buffer;
+        bufferPos = 0;
+    }
+}
+
+#else
 
 static const uint8_t FONT[] PROGMEM = {
 //   .gfedcba
@@ -71,32 +170,6 @@ static const uint8_t FONT[] PROGMEM = {
 static void shiftOutCode(uint8_t code) {
     shiftOut(PIN_DISPLAY_DATA, PIN_DISPLAY_SHIFT_CLOCK, MSBFIRST,
              pgm_read_byte_near(FONT + code));
-}
-
-#else
-
-uint8_t bufferPos = 0;
-char buffer[5];
-
-static void shiftOutCode(uint8_t code) {
-    if (code < 10) {
-        buffer[bufferPos] = '0' + code;
-    }
-    else if (code == CHAR_SPACE) {
-        buffer[bufferPos] = ' ';
-    }
-    else if (code == CHAR_MINUS) {
-        buffer[bufferPos] = '-';
-    }
-    else if (CHAR_A <= code && code <= CHAR_Z) {
-        buffer[bufferPos] = 'A' + code - CHAR_A;
-    }
-
-    ++bufferPos;
-    if (bufferPos > 4) {
-        qDebug() << "Display:" << buffer;
-        bufferPos = 0;
-    }
 }
 
 #endif
@@ -173,6 +246,8 @@ void DisplayClass::showVersion(uint8_t version) {
     shiftOutCode(version % 10);
     digitalWrite(PIN_DISPLAY_LATCH_CLOCK, HIGH);
 }
+
+#endif
 
 DisplayClass Display;
 

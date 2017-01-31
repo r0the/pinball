@@ -26,7 +26,7 @@
 #include "logic.h"
 #include "vars.h"
 
-#define VERSION 6
+#define VERSION 8
 
 #define MODE_TEST 1
 #define MODE_GAME 2
